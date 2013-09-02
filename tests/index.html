@@ -1,0 +1,24 @@
+<!doctype html>
+
+<html>
+    <head>
+        <title>DaHelpers Tests</title>
+        <link rel="stylesheet" href="tools/mocha.css" />
+    </head>
+    <body>
+        <div id="mocha"></div>
+        <script src="tools/mocha.js"></script>
+        <script src="tools/chai.js"></script>
+        <script src="../dahelpers.js"></script>
+        <script>
+            mocha.setup('bdd');
+        </script>
+        <script src="test_dahelpers.js"></script>
+        <script>
+            mocha.checkLeaks();
+            mocha.run();
+        </script>
+    </body>
+</html>
+
+

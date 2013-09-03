@@ -166,7 +166,7 @@ define(function() {
       if (isNaN(num)) {
         return '';
       }
-      _ref = num.toString().split(decimalSeparator), num = _ref[0], frac = _ref[1];
+      _ref = num.toString().split('.'), num = _ref[0], frac = _ref[1];
       num = h.reverse(num);
       num = h.sgroup(num, 3).join(separator);
       num = h.reverse(num);
@@ -175,10 +175,19 @@ define(function() {
       }
       return num;
     },
-    si: function(num, d) {
+    si: function(num, d, thousands, sep, decSep) {
       var adjustment, factor, idx, unit, units, _i, _len;
       if (d == null) {
         d = 0;
+      }
+      if (thousands == null) {
+        thousands = false;
+      }
+      if (sep == null) {
+        sep = ",";
+      }
+      if (decSep == null) {
+        decSep = '.';
       }
       if (num == null) {
         return '';
@@ -191,7 +200,11 @@ define(function() {
       for (idx = _i = 0, _len = units.length; _i < _len; idx = ++_i) {
         unit = units[idx];
         if (num % 1000) {
-          return "" + (num / adjustment) + unit;
+          num = num / adjustment;
+          if (thousands) {
+            num = h.thousands(num, sep, decSep);
+          }
+          return "" + num + unit;
         } else {
           num = num / 1000;
         }
@@ -251,6 +264,18 @@ define(function() {
         num = h.pad(num, 0, '0', dec, decSep);
       }
       return h.prefix(num, currency);
+    },
+    siCurrency: function(num, currency, dec, sep, decSep) {
+      return h.currency(num, currency, dec, sep, decSep, true);
+    },
+    dollars: function(num, dec, si) {
+      return h.currency(num, '$', dec, null, null, si);
+    },
+    yen: function(num, dec, sep, decSep, si) {
+      return h.currency(num, '¥', dec, null, null, si);
+    },
+    pounds: function(num, dec, si) {
+      return h.currency(num, '£', dec, null, null, si);
     }
   };
   tags = 'a p strong em ul ol li div span'.split(' ');

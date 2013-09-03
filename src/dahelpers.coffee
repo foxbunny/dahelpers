@@ -195,20 +195,22 @@ define () ->
       num = num.replace /[^\d\.-]/g, ''
       num = parseFloat(num)
       return '' if isNaN(num)
-      [num, frac] = num.toString().split decimalSeparator
+      [num, frac] = num.toString().split '.'
       num = h.reverse num
       num = h.sgroup(num, 3).join(separator)
       num = h.reverse num
       num = "#{num}#{decimalSeparator}#{frac}" if frac
       num
 
-    # ## `#si(num, d)`
+    # ## `#si(num, d, thousands)`
     #
     # Convert the number to closes SI factor (Kilo, Mega, etc). Uses only factors
     # of thousand (k, M, G, T, P, E, Z, and Y).
     #
     # If `d` is specified, it will allow `d` number of decimals after the main
     # unit.
+    #
+    # if `thousands` is `true`, the thousands separator will be added.
     #
     # Example:
     #
@@ -217,7 +219,7 @@ define () ->
     #   h.si(1200); // '1200'
     #
     #   h.si(1200, 1); // '1.2k'
-    si: (num, d=0) ->
+    si: (num, d=0, thousands=false, sep=",", decSep='.') ->
       return '' if not num?
       units = 'kMGTPEZ'.split ''
       units.unshift ''
@@ -229,7 +231,9 @@ define () ->
       factor = 0
       for unit, idx in units
         if num % 1000
-          return "#{num / adjustment}#{unit}"
+          num = num / adjustment
+          num = h.thousands(num, sep, decSep) if thousands
+          return "#{num}#{unit}"
         else
           num = num / 1000
 
@@ -283,6 +287,30 @@ define () ->
         num = h.thousands(num, sep, decSep)
         num = h.pad num, 0, '0', dec, decSep
       h.prefix num, currency
+
+    # ## `siCurrency(num, [currency, dec, sep, decSep])`
+    #
+    # This is a shortcut for `#currency` which passes the si argument.
+    siCurrency: (num, currency, dec, sep, decSep) ->
+      h.currency num, currency, dec, sep, decSep, true
+
+    # ## `dollars(num, dec, si)`
+    #
+    # Shortcut for `#currency()` which sets '$' as currency.
+    dollars: (num, dec, si) ->
+      h.currency num, '$', dec, null, null, si
+
+    # ## `yen(num, dec, si)`
+    #
+    # Shortcut for `#currency()` which sets '¥' as currency.
+    yen: (num, dec, sep, decSep, si) ->
+      h.currency num, '¥', dec, null, null, si
+
+    # ## `pounds(num, dec, si)`
+    #
+    # Shortcut for `#currency()` which sets '£' as currency.
+    pounds: (num, dec, si) ->
+      h.currency num, '£', dec, null, null, si
 
   tags = 'a p strong em ul ol li div span'.split ' '
 

@@ -379,6 +379,21 @@ describe('#si()', function() {
     s = h.si(-1200000, 1);
     return assert.equal(s, '-1.2M');
   });
+  it('should add thousands separators if told to', function() {
+    var s;
+    s = h.si(12401000, 1, true);
+    return assert.equal(s, '12,401k');
+  });
+  it('should use a thousands separator specified', function() {
+    var s;
+    s = h.si(12401000, 1, true, "'");
+    return assert.equal(s, "12'401k");
+  });
+  it('should use a different decimal separator if told to', function() {
+    var s;
+    s = h.si(12401200, 1, true, '.', ',');
+    return assert.equal(s, '12.401,2k');
+  });
   return it('will return an empty string if provided no arguments', function() {
     var s;
     s = h.si();

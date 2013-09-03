@@ -289,6 +289,18 @@ describe '#si()', () ->
     s = h.si -1200000, 1
     assert.equal s, '-1.2M'
 
+  it 'should add thousands separators if told to', () ->
+    s = h.si 12401000, 1, true
+    assert.equal s, '12,401k'
+
+  it 'should use a thousands separator specified', () ->
+    s = h.si 12401000, 1, true, "'"
+    assert.equal s, "12'401k"
+
+  it 'should use a different decimal separator if told to', () ->
+    s = h.si 12401200, 1, true, '.', ','
+    assert.equal s, '12.401,2k'
+
   it 'will return an empty string if provided no arguments', () ->
     s = h.si()
     assert.equal s, ''

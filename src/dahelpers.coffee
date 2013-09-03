@@ -281,7 +281,7 @@ define () ->
     # `false`.
     currency: (num, currency='$', dec=2, sep=',', decSep='.', si=false) ->
       if si
-        num = h.si num, dec
+        num = h.si num, dec, true, sep, decSep
       else
         num = h.round num, dec
         num = h.thousands(num, sep, decSep)

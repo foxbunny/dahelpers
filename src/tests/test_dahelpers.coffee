@@ -145,6 +145,52 @@ describe '#sgroup()', () ->
     a = h.sgroup()
     assert.deepEqual a, []
 
+describe '#pad()', () ->
+  it 'should pad a number with leading characters', () ->
+    s = h.pad 123, 4
+    assert.equal s, '0123'
+
+  it 'should not pad if length is 0', () ->
+    s = h.pad 123, 0
+    assert.equal s, '123'
+
+  it 'should pad a number with different character if told to', () ->
+    s = h.pad 123, 5, '%'
+    assert.equal s, '%%123'
+
+  it 'should pad the tail if tail is specified', () ->
+    s = h.pad 123.12, 5, null, 4
+    assert.equal s, '00123.1200'
+
+  it 'should use a different separator for tail if specified', () ->
+    s = h.pad '123,12', 5, null, 4, ','
+    assert.equal s, '00123,1200'
+
+  it 'should pad the tail even if head length is 0', () ->
+    s = h.pad 123.12, 0, null, 4
+    assert.equal s, '123.1200'
+
+  it 'should be able to pad anything really', () ->
+    s = h.pad 'foo-bar', 6, '!', 6, '-'
+    assert.equal s, '!!!foo-bar!!!'
+
+describe '#round()', () ->
+  it 'should round numbers', () ->
+    n = h.round 1.2345, 3
+    assert.equal n, 1.235
+
+  it 'should round to 0 digits by default', () ->
+    n = h.round 1.2345
+    assert.equal n, 1
+
+  it 'should parse numbers from strings', () ->
+    n = h.round '1.234', 2
+    assert.equal n, 1.23
+
+  it 'should return 0 if input is not numeric', () ->
+    n = h.round 'foo'
+    assert.equal n, 0
+
 describe '#thousands()', () ->
   it 'will add thousands separator to a number', () ->
     s = h.thousands 1000
@@ -177,6 +223,10 @@ describe '#thousands()', () ->
   it 'will use a different decimal separator if one is given', () ->
     s = h.thousands 1000.123, '.', ','
     assert.equal s, '1.000,123'
+
+  it 'should play nice with negative numbers', () ->
+    s = h.thousands -12000
+    assert.equal s, '-12,000'
 
 describe '#si()', () ->
   it 'will suffix k for thousands', () ->
@@ -235,6 +285,10 @@ describe '#si()', () ->
     s = h.si 1234560000, 5
     assert.equal s, '1.23456G'
 
+  it 'should play nice with negative numbers', () ->
+    s = h.si -1200000, 1
+    assert.equal s, '-1.2M'
+
   it 'will return an empty string if provided no arguments', () ->
     s = h.si()
     assert.equal s, ''
@@ -247,6 +301,54 @@ describe '#digits()', () ->
   it 'will return an empty string if given no arguments', () ->
     s = h.digits()
     assert.equal s, ''
+
+describe '#prefix()', () ->
+  it 'should add specified prefix to a number', () ->
+    assert.equal h.prefix(12, '$'), '$12'
+
+  it 'should add minus in front of prefix if number is negative', () ->
+    assert.equal h.prefix(-12, '$'), '-$12'
+
+  it 'should not care if number is a number or not', () ->
+    assert.equal h.prefix('abc', '$'), '$abc'
+    assert.equal h.prefix('-abc', '$'), '-$abc'
+
+describe '#currency()', () ->
+  it 'should work fine with defaults', () ->
+    s = h.currency 12
+    assert.equal s, '$12.00'
+
+  it 'should add thousands separators', () ->
+    s = h.currency 1200
+    assert.equal s, '$1,200.00'
+
+  it 'should use any currency we tell it to', () ->
+    s = h.currency 1200, 'USD'
+    assert.equal s, 'USD1,200.00'
+
+  it 'should round to number of decimals', () ->
+    s = h.currency 1200.55, null, 1
+    assert.equal s, '$1,200.6'
+
+  it 'should play nice with negative numbers', () ->
+    s = h.currency -1200
+    assert.equal s, '-$1,200.00'
+
+  it 'should use different separators if told to', () ->
+    s = h.currency 1200, null, null, "'", ';'
+    assert.equal s, "$1'200;00"
+
+  it 'should use SI suffixes if told to', () ->
+    s = h.currency 1200, null, null, null, null, true
+    assert.equal s, "$1.2k"
+
+  it 'should play nice with string input', () ->
+    s = h.currency '1200'
+    assert.equal s, '$1,200.00'
+
+  it 'should return 0 if no input', () ->
+    s = h.currency()
+    assert.equal s, '$0.00'
 
 describe 'tag aliases', () ->
   it 'will render appropriate tags', () ->

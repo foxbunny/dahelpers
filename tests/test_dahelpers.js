@@ -201,6 +201,67 @@ describe('#sgroup()', function() {
   });
 });
 
+describe('#pad()', function() {
+  it('should pad a number with leading characters', function() {
+    var s;
+    s = h.pad(123, 4);
+    return assert.equal(s, '0123');
+  });
+  it('should not pad if length is 0', function() {
+    var s;
+    s = h.pad(123, 0);
+    return assert.equal(s, '123');
+  });
+  it('should pad a number with different character if told to', function() {
+    var s;
+    s = h.pad(123, 5, '%');
+    return assert.equal(s, '%%123');
+  });
+  it('should pad the tail if tail is specified', function() {
+    var s;
+    s = h.pad(123.12, 5, null, 4);
+    return assert.equal(s, '00123.1200');
+  });
+  it('should use a different separator for tail if specified', function() {
+    var s;
+    s = h.pad('123,12', 5, null, 4, ',');
+    return assert.equal(s, '00123,1200');
+  });
+  it('should pad the tail even if head length is 0', function() {
+    var s;
+    s = h.pad(123.12, 0, null, 4);
+    return assert.equal(s, '123.1200');
+  });
+  return it('should be able to pad anything really', function() {
+    var s;
+    s = h.pad('foo-bar', 6, '!', 6, '-');
+    return assert.equal(s, '!!!foo-bar!!!');
+  });
+});
+
+describe('#round()', function() {
+  it('should round numbers', function() {
+    var n;
+    n = h.round(1.2345, 3);
+    return assert.equal(n, 1.235);
+  });
+  it('should round to 0 digits by default', function() {
+    var n;
+    n = h.round(1.2345);
+    return assert.equal(n, 1);
+  });
+  it('should parse numbers from strings', function() {
+    var n;
+    n = h.round('1.234', 2);
+    return assert.equal(n, 1.23);
+  });
+  return it('should return 0 if input is not numeric', function() {
+    var n;
+    n = h.round('foo');
+    return assert.equal(n, 0);
+  });
+});
+
 describe('#thousands()', function() {
   it('will add thousands separator to a number', function() {
     var s;
@@ -237,10 +298,15 @@ describe('#thousands()', function() {
     s = h.thousands(1000, "'");
     return assert.equal(s, "1'000");
   });
-  return it('will use a different decimal separator if one is given', function() {
+  it('will use a different decimal separator if one is given', function() {
     var s;
     s = h.thousands(1000.123, '.', ',');
     return assert.equal(s, '1.000,123');
+  });
+  return it('should play nice with negative numbers', function() {
+    var s;
+    s = h.thousands(-12000);
+    return assert.equal(s, '-12,000');
   });
 });
 
@@ -308,6 +374,11 @@ describe('#si()', function() {
     s = h.si(1234560000, 5);
     return assert.equal(s, '1.23456G');
   });
+  it('should play nice with negative numbers', function() {
+    var s;
+    s = h.si(-1200000, 1);
+    return assert.equal(s, '-1.2M');
+  });
   return it('will return an empty string if provided no arguments', function() {
     var s;
     s = h.si();
@@ -325,6 +396,67 @@ describe('#digits()', function() {
     var s;
     s = h.digits();
     return assert.equal(s, '');
+  });
+});
+
+describe('#prefix()', function() {
+  it('should add specified prefix to a number', function() {
+    return assert.equal(h.prefix(12, '$'), '$12');
+  });
+  it('should add minus in front of prefix if number is negative', function() {
+    return assert.equal(h.prefix(-12, '$'), '-$12');
+  });
+  return it('should not care if number is a number or not', function() {
+    assert.equal(h.prefix('abc', '$'), '$abc');
+    return assert.equal(h.prefix('-abc', '$'), '-$abc');
+  });
+});
+
+describe('#currency()', function() {
+  it('should work fine with defaults', function() {
+    var s;
+    s = h.currency(12);
+    return assert.equal(s, '$12.00');
+  });
+  it('should add thousands separators', function() {
+    var s;
+    s = h.currency(1200);
+    return assert.equal(s, '$1,200.00');
+  });
+  it('should use any currency we tell it to', function() {
+    var s;
+    s = h.currency(1200, 'USD');
+    return assert.equal(s, 'USD1,200.00');
+  });
+  it('should round to number of decimals', function() {
+    var s;
+    s = h.currency(1200.55, null, 1);
+    return assert.equal(s, '$1,200.6');
+  });
+  it('should play nice with negative numbers', function() {
+    var s;
+    s = h.currency(-1200);
+    return assert.equal(s, '-$1,200.00');
+  });
+  it('should use different separators if told to', function() {
+    var s;
+    s = h.currency(1200, null, null, "'", ';');
+    return assert.equal(s, "$1'200;00");
+  });
+  it('should use SI suffixes if told to', function() {
+    var s;
+    s = h.currency(1200, null, null, null, null, true);
+    return assert.equal(s, "$1.2k");
+  });
+  it('should play nice with string input', function() {
+    var s;
+    s = h.currency('1200');
+    return assert.equal(s, '$1,200.00');
+  });
+  return it('should return 0 if no input', function() {
+    var s;
+    s = h.currency();
+    return assert.equal(s, '$0.00');
   });
 });
 

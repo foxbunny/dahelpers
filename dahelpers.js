@@ -24,7 +24,7 @@ define = (function(root) {
 })(this);
 
 define(function() {
-  var h, tag, tags, _i, _len;
+  var h, pad, tag, tags, _i, _len;
   h = {
     FIRST_CHAR: /\b([a-z])/gi,
     objAttrs: function(o) {
@@ -126,6 +126,32 @@ define(function() {
       m = s.match(new RegExp("(.{1," + n + "})", 'g'));
       return m;
     },
+    pad: pad = function(s, len, char, tail, separator) {
+      var t, _ref;
+      if (char == null) {
+        char = '0';
+      }
+      if (tail == null) {
+        tail = false;
+      }
+      if (separator == null) {
+        separator = '.';
+      }
+      if (tail === false) {
+        return ((new Array(len)).join(char) + s).slice(-len);
+      } else {
+        _ref = s.toString().split(separator), s = _ref[0], t = _ref[1];
+        if (tail === 0) {
+          return pad(s, len, char);
+        } else {
+          s = pad(s, len, char);
+          t || (t = char);
+          t = pad(h.reverse(t), tail, char);
+          t = h.reverse(t);
+          return [s, t].join(separator);
+        }
+      }
+    },
     thousands: function(num, separator, decimalSeparator) {
       var frac, _ref;
       if (separator == null) {
@@ -135,8 +161,12 @@ define(function() {
         decimalSeparator = '.';
       }
       num = num.toString();
-      num = num.replace(/[^\d\.]/g, '');
-      _ref = num.toString().split('.'), num = _ref[0], frac = _ref[1];
+      num = num.replace(/[^\d\.-]/g, '');
+      num = parseFloat(num);
+      if (isNaN(num)) {
+        return '';
+      }
+      _ref = num.toString().split(decimalSeparator), num = _ref[0], frac = _ref[1];
       num = h.reverse(num);
       num = h.sgroup(num, 3).join(separator);
       num = h.reverse(num);
@@ -172,6 +202,55 @@ define(function() {
         return '';
       }
       return s.toString().replace(/[^\d]/g, '');
+    },
+    prefix: function(num, prefix) {
+      if (num == null) {
+        return '';
+      }
+      num = num.toString();
+      if (!prefix) {
+        return num;
+      }
+      if (num[0] === '-') {
+        return "-" + prefix + num.slice(1);
+      } else {
+        return "" + prefix + num;
+      }
+    },
+    round: function(num, d) {
+      if (d == null) {
+        d = 0;
+      }
+      num = parseFloat(num);
+      if (isNaN(num)) {
+        return 0;
+      }
+      return Math.round(num * Math.pow(10, d)) / Math.pow(10, d);
+    },
+    currency: function(num, currency, dec, sep, decSep, si) {
+      if (currency == null) {
+        currency = '$';
+      }
+      if (dec == null) {
+        dec = 2;
+      }
+      if (sep == null) {
+        sep = ',';
+      }
+      if (decSep == null) {
+        decSep = '.';
+      }
+      if (si == null) {
+        si = false;
+      }
+      if (si) {
+        num = h.si(num, dec);
+      } else {
+        num = h.round(num, dec);
+        num = h.thousands(num, sep, decSep);
+        num = h.pad(num, 0, '0', dec, decSep);
+      }
+      return h.prefix(num, currency);
     }
   };
   tags = 'a p strong em ul ol li div span'.split(' ');

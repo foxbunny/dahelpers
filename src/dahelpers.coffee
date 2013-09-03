@@ -154,14 +154,48 @@ define () ->
       m = s.match new RegExp "(.{1,#{n}})", 'g'
       m
 
-    # ## thousands(num, [separator])
+    # ## `#pad(s, len, [char, tail, separator])`
+    #
+    # Pads a string `s` with `char` so that the output is at least `len` long.
+    #
+    # The `char` is '0' by default.
+    #
+    # If `tail` is specified, the `separator` string will be used to split the
+    # string into two parts, and then the tail end of the string will be padded
+    # in reverse, up to at least as long as `tail` number of characters.
+    pad: pad = (s, len, char='0', tail=false, separator='.') ->
+      if tail is false
+        ((new Array len).join(char) + s).slice -len
+      else
+        [s, t] = s.toString().split(separator)
+        if tail is 0
+          pad s, len, char
+        else
+          # Pad the head-end
+          s = pad s, len, char
+
+          # Pad the tail end
+          t or= char
+          t = pad h.reverse(t), tail, char
+          t = h.reverse(t)
+          [s, t].join(separator)
+
+    # ## thousands(num, [separator, decimalSeparator])
     #
     # Adds the thousands separator to `num`. Default separator is a comma, and
     # can be customized by passing the `separator` argument.
+    #
+    # The `decimalSeparator` argument can be used to customize the
+    # decimalSeparator ('.' by default).
+    #
+    # `decimalPlaces` argument is used to limit and/or zero-pad the decimal
+    # places. It is 0 by default (use whatever decimal places are there).
     thousands: (num, separator=',', decimalSeparator='.') ->
       num = num.toString()
-      num = num.replace /[^\d\.]/g, ''
-      [num, frac] = num.toString().split '.'
+      num = num.replace /[^\d\.-]/g, ''
+      num = parseFloat(num)
+      return '' if isNaN(num)
+      [num, frac] = num.toString().split decimalSeparator
       num = h.reverse num
       num = h.sgroup(num, 3).join(separator)
       num = h.reverse num
@@ -205,6 +239,50 @@ define () ->
     digits: (s) ->
       return '' if not s?
       s.toString().replace(/[^\d]/g, '')
+
+    # ## `#prefix(num, prefix)`
+    #
+    # Add a `prefix` prefix to `num`.
+    prefix: (num, prefix) ->
+      return '' if not num?
+      num = num.toString()
+      return num if not prefix
+      if num[0] is '-'
+        "-#{prefix}#{num[1..]}"
+      else
+        "#{prefix}#{num}"
+
+    # ## `#round(num, [d])
+    #
+    # Round the number to `d` decimal places. `d` is 0 by default.
+    round: (num, d=0) ->
+      num = parseFloat num
+      return 0 if isNaN num
+      Math.round(num * Math.pow(10, d)) / Math.pow(10, d)
+
+    # ## `#currency(num, [currency, dec, sep, decSep, si])`
+    #
+    # Formats `num` as `currency` currency  with thousands separator or SI
+    # suffix. Default currency is '$'.
+    #
+    # The `dec` argument specifies the number of decimal places (default is 2).
+    # This number is also used when converting to SI suffix.
+    #
+    # The `sep` argument specifies the thousands separator (default is ',').
+    #
+    # The `decSep` argument specifies the decimal separator (default is '.').
+    #
+    # The `si` argument should be a boolean and tells the method to render the
+    # number with `SI` prefix instead of with thousands separator. Default is
+    # `false`.
+    currency: (num, currency='$', dec=2, sep=',', decSep='.', si=false) ->
+      if si
+        num = h.si num, dec
+      else
+        num = h.round num, dec
+        num = h.thousands(num, sep, decSep)
+        num = h.pad num, 0, '0', dec, decSep
+      h.prefix num, currency
 
   tags = 'a p strong em ul ol li div span'.split ' '
 

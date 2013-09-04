@@ -3,6 +3,37 @@
 @license MIT
 ###
 
+# # DaHelpers
+#
+# These are da helpers to help you out.
+#
+# Miscellaneous general-purpose helper methods for JavaScript in browsers and
+# on NodeJS.
+#
+# ::TOC::
+#
+# ## Installation
+#
+# This module is in UMD format. It can be used with an AMD loader such as
+# RequireJS, on NodeJS, or in browsers using `<script>` tag.
+#
+# ### NodeJS
+#
+# Install with NPM:
+#
+#     npm install dahelpers
+#
+# ### volo
+#
+# Install with:
+#
+#     volo add foxbunny/dahelpers
+#
+# ### Browser
+#
+# Either `require()` it if using RequireJS, or add a `<script>` tag. When using
+# with the `<script>` tag, the module will create a `dahelpers` global.
+#
 define = ((root) ->
   if typeof root.define is 'function' and root.define.amd
     root.define

@@ -39,7 +39,7 @@ NodeJS.
    - [`#siCurrency(num, [currency, dec, sep, decSep])`](#sicurrency-num-currency-dec-sep-decsep)
    - [`dollars(num, dec, si)`](#dollars-num-dec-si)
    - [`#euros(num, dec, si)`](#euros-num-dec-si)
-   - [`yen(num, dec, si)`](#yen-num-dec-si)
+   - [`#yen(num, dec, si)`](#yen-num-dec-si)
    - [`#yuan(num, dec, si)`](#yuan-num-dec-si)
    - [`#pounds(num, dec, si)`](#pounds-num-dec-si)
    - [`#wrap(s, [len, sep])`](#wrap-s-len-sep)
@@ -481,7 +481,7 @@ Example:
     dahelpers.euros(100);  // returns '€100.00'
 
 
-### `yen(num, dec, si)` <a name="yen-num-dec-si"></a>
+### `#yen(num, dec, si)` <a name="yen-num-dec-si"></a>
 
 Shortcut method for formatting Japanese currency.
 

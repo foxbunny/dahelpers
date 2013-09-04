@@ -620,7 +620,7 @@ define () ->
     euros: (num, dec, si, suffix) ->
       h.currency num, h.EUR, dec, null, null, si, suffix
 
-    # ### `yen(num, dec, si)`
+    # ### `#yen(num, dec, si)`
     #
     # Shortcut method for formatting Japanese currency.
     #

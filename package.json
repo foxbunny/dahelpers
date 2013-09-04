@@ -30,8 +30,9 @@
     "ignore": [
       "tests",
       "package.json",
+      "CHANGES.mkd",
       ".gitignore",
-      "README.md",
+      "README.mkd",
       "LICENSE",
       "volofile",
       "src"

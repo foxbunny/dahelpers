@@ -32,6 +32,7 @@ define(function() {
     GBP: '£',
     DEFAULT_CURRENCY: '$',
     FIRST_CHAR: /\b[a-z]/gi,
+    WRAP_WIDTH: 79,
     FORMAT_CHARACTER: '#',
     PLURAL_RULES: function(n) {
       if (n === 1) {
@@ -329,6 +330,38 @@ define(function() {
     },
     pounds: function(num, dec, si, suffix) {
       return h.currency(num, h.GBP, dec, null, null, si, suffix);
+    },
+    wrap: function(s, len, sep) {
+      var l, lines, rxp;
+      if (len == null) {
+        len = h.WRAP_WIDTH;
+      }
+      if (sep == null) {
+        sep = '\n';
+      }
+      if (s == null) {
+        return '';
+      }
+      rxp = new RegExp(".{1," + len + "}(\\s|$)", "g");
+      lines = s.match(rxp);
+      lines = (function() {
+        var _i, _len, _results;
+        _results = [];
+        for (_i = 0, _len = lines.length; _i < _len; _i++) {
+          l = lines[_i];
+          _results.push(l.replace(/\s*$/, ''));
+        }
+        return _results;
+      })();
+      return lines.join(sep);
+    },
+    slug: function(s) {
+      if (!s) {
+        return '';
+      }
+      s = s.toString().toLowerCase().replace(/\W+/g, '-');
+      s = s.replace(/[_-]+$/, '');
+      return s.replace(/^[_-]+/, '');
     }
   };
   tags = 'a p strong em ul ol li div span'.split(' ');

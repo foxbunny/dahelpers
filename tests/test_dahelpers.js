@@ -532,6 +532,46 @@ describe('#makeCurrency()', function() {
   });
 });
 
+describe('#wrap()', function() {
+  it('should wrap long lines', function() {
+    var output, s, text;
+    text = "This is a longer piece of text that needs to be wrapped. It\ncontains no linebreaks, though.".replace('\n', ' ');
+    output = "This is a longer\npiece of text that\nneeds to be wrapped.\nIt contains no\nlinebreaks, though.";
+    s = h.wrap(text, 20);
+    return assert.equal(s, output);
+  });
+  return it('returns empty string if no output is given', function() {
+    var s;
+    s = h.wrap();
+    return assert.equal(s, '');
+  });
+});
+
+describe('#slug()', function() {
+  it('should convert text to slug', function() {
+    var s;
+    s = h.slug("This is some text, and it's got some non-word characters");
+    return assert.equal(s, 'this-is-some-text-and-it-s-got-some-non-word-characters');
+  });
+  it('should keep numbers and underscores', function() {
+    var s;
+    s = h.slug("This is text containing numbers 1, 2, and 3, and _ character");
+    return assert.equal(s, 'this-is-text-containing-numbers-1-2-and-3-and-_-character');
+  });
+  it('strips leading and trailing underscores and dashes', function() {
+    var s;
+    s = h.slug('### boo ###');
+    assert.equal(s, 'boo');
+    s = h.slug('___ boo ___');
+    return assert.equal(s, 'boo');
+  });
+  return it('returns empty string if no argument is given', function() {
+    var s;
+    s = h.slug();
+    return assert.equal(s, '');
+  });
+});
+
 describe('tag aliases', function() {
   it('will render appropriate tags', function() {
     var tag, tags, _i, _len, _results;

@@ -405,6 +405,43 @@ describe '#makeCurrency()', () ->
     assert.deepEqual currencyArgs, [1000, 'Din', 2, '.', ',', false, true]
     h.currency = originalCurrency
 
+describe '#wrap()', () ->
+  it 'should wrap long lines', () ->
+    text = """This is a longer piece of text that needs to be wrapped. It
+    contains no linebreaks, though.""".replace('\n', ' ')
+
+    output = """This is a longer
+    piece of text that
+    needs to be wrapped.
+    It contains no
+    linebreaks, though."""
+
+    s = h.wrap text, 20
+    assert.equal s, output
+
+  it 'returns empty string if no output is given', () ->
+    s = h.wrap()
+    assert.equal s, ''
+
+describe '#slug()', () ->
+  it 'should convert text to slug', () ->
+    s = h.slug "This is some text, and it's got some non-word characters"
+    assert.equal s, 'this-is-some-text-and-it-s-got-some-non-word-characters'
+
+  it 'should keep numbers and underscores', () ->
+    s = h.slug "This is text containing numbers 1, 2, and 3, and _ character"
+    assert.equal s, 'this-is-text-containing-numbers-1-2-and-3-and-_-character'
+
+  it 'strips leading and trailing underscores and dashes', () ->
+    s = h.slug '### boo ###'
+    assert.equal s, 'boo'
+    s = h.slug '___ boo ___'
+    assert.equal s, 'boo'
+
+  it 'returns empty string if no argument is given', () ->
+    s = h.slug()
+    assert.equal s, ''
+
 describe 'tag aliases', () ->
   it 'will render appropriate tags', () ->
     tags = 'a p strong em ul ol li div span'.split ' '

@@ -3,14 +3,6 @@
 @license MIT
 ###
 
-# # DaHelpers
-#
-# This module is in UMD format. It can be used with an AMD loader such as
-# RequireJS, on NodeJS, or in browsers using `<script>` tag.
-#
-# It has no external dependencies.
-#
-# If used without module loaders, it creates a `dahelpers` global.
 define = ((root) ->
   if typeof root.define is 'function' and root.define.amd
     root.define
@@ -23,12 +15,6 @@ define = ((root) ->
 
 define () ->
 
-  # ## About the exports
-  #
-  # Although all the methods are exported as one object, they are completely
-  # decoupled (they call each other by using the reference to the module
-  # object `h`, instead of `this`), so you can assign individual methods to
-  # variables and pass them around.
   h =
 
     # ## Variables
@@ -36,40 +22,54 @@ define () ->
     # Although some of the properties of this module are all-caps, they are by
     # no means constants. They are, in fact, variables that configure various
     # aspects of DaHelpers. You are free to modify them any way you need.
+    #
 
     # ### `#USD`
     #
     # Symbol for US currency
+    #
     USD: '$'
 
     # ### `#EUR`
     #
     # Symbol for EU currency
+    #
     EUR: '€'
 
     # ### `#JPY`
     #
     # Symbol for Japanese currency
+    #
     JPY: '¥'
 
     # ### `#GBP`
     #
     # Symbol for UK currency
+    #
     GBP: '£'
 
     # ### `#DEFAULT_CURRENCY`
     #
     # Default curency used by `#currency()` method.
+    #
     DEFAULT_CURRENCY: '$'
 
     # ### `#FIRST_CHAR`
     #
     # Regular expression for capturing the first character of a word.
+    #
     FIRST_CHAR: /\b[a-z]/gi
+
+    # ### `#WRAP_WIDTH`
+    #
+    # Default text wrap width.
+    #
+    WRAP_WIDTH: 79
 
     # ### `#FORMAT_CHARACTER`
     #
     # Character used by default in `#format()` method.
+    #
     FORMAT_CHARACTER: '#'
 
     # ### `#PLURAL_RULES`
@@ -85,10 +85,19 @@ define () ->
     #
     # You can see different rules for different langauges on [Unicode
     # CLDR](http://www.unicode.org/cldr/charts/supplemental/language_plural_rules.html)
+    #
     PLURAL_RULES: (n) ->
       if n is 1 then 0 else 1
 
-    # ## `#objAttrs(o)`
+    # ## Helper functions
+    #
+    # Although all the methods are exported as one object, they are completely
+    # decoupled (they call each other by using the reference to the module
+    # object `h`, instead of `this`), so you can assign individual methods to
+    # variables and pass them around.
+    #
+
+    # ### `#objAttrs(o)`
     #
     # Converts a JavaScript object `o` into a set of HTML attributes where a
     # key is the attribute name, and value is the attribute value.
@@ -110,7 +119,7 @@ define () ->
         attrs.push "#{key}=\"#{o[key].replace(/"/g, '\\"')}\"" if o[key]
       attrs.join ' '
 
-    # ## `#tag(name, content, [attrs, silence])`
+    # ### `#tag(name, content, [attrs, silence])`
     #
     # Wraps optional content into a HTML tag with optional attributes hash.
     #
@@ -135,7 +144,7 @@ define () ->
       s += ">#{content}</#{name}>"
       s
 
-    # ## `#plural(singular, plural, [plural2...] count)`
+    # ### `#plural(singular, plural, [plural2...] count)`
     #
     # Provides support for pluralization. All but the last argument are plural
     # forms, starting with singular, which is the first argument, followed by 0
@@ -159,7 +168,7 @@ define () ->
       forms = args
       forms[h.PLURAL_RULES count]
 
-    # ## `#capitalize(s)`
+    # ### `#capitalize(s)`
     #
     # Capitalizes the first character of the string `s`. You can used this to
     # build sentence case.
@@ -172,7 +181,7 @@ define () ->
       return '' if not s
       "#{s[0].toUpperCase()}#{s[1..]}"
 
-    # ## `#titleCase(s, [lowerFirst])`
+    # ### `#titleCase(s, [lowerFirst])`
     #
     # Converts the string `s` to Title Case.
     #
@@ -213,7 +222,7 @@ define () ->
       s.replace h.FIRST_CHAR, (match) ->
         h.capitalize match
 
-    # ## `#format(s, format, [formatChar])`
+    # ### `#format(s, format, [formatChar])`
     #
     # Formats a string according to the `format`. The format is simply a series
     # of hash character '#' that map the string's characters to appropriate
@@ -244,7 +253,7 @@ define () ->
         format = format.replace(formatChar, chr)
       format
 
-    # ## `#reverse(s)`
+    # ### `#reverse(s)`
     #
     # Reverses a string.
     #
@@ -255,7 +264,7 @@ define () ->
     reverse: (s) ->
       if s then s.split('').reverse().join '' else ''
 
-    # ## `#sgroup(s, n)`
+    # ### `#sgroup(s, n)`
     #
     # Groups the string's characters into groups of `n` characters and returns
     # the groups as an array.
@@ -279,7 +288,7 @@ define () ->
       m = s.match new RegExp "(.{1,#{n}})", 'g'
       m
 
-    # ## `#pad(s, len, [char, tail, sep])`
+    # ### `#pad(s, len, [char, tail, sep])`
     #
     # Pads a string `s` with `char` characters, so that the output is at least
     # `len` long.
@@ -324,7 +333,7 @@ define () ->
           t = h.reverse(t)
           [s, t].join sep
 
-    # ## thousands(num, [sep, decSep])
+    # ### thousands(num, [sep, decSep])
     #
     # Adds the thousands separator to `num`.
     #
@@ -357,7 +366,7 @@ define () ->
       num = "#{num}#{decSep}#{frac}" if frac
       num
 
-    # ## `#si(num, [d, thousands, sep, decSep])`
+    # ### `#si(num, [d, thousands, sep, decSep])`
     #
     # Converts the number to closes SI factor (Kilo, Mega, etc). Uses only
     # factors of thousand (k, M, G, T, P, E, and Z) larger than 0.
@@ -408,7 +417,7 @@ define () ->
         else
           num = num / 1000
 
-    # ## `#digits(s)`
+    # ### `#digits(s)`
     #
     # Removes all non-digit characters from a string. This includes decimal
     # points, minus sign, and anyting else that does not match the `\d` regular
@@ -423,7 +432,7 @@ define () ->
       return '' if not s?
       s.toString().replace(/[^\d]/g, '')
 
-    # ## `#prefix(num, prefix, sepLong)`
+    # ### `#prefix(num, prefix, sepLong)`
     #
     # Adds a prefix to a number. The `prefix` argument can be any string of any
     # length. `num` can be a real number, or just any string.
@@ -455,19 +464,21 @@ define () ->
       else
         "#{prefix}#{num}"
 
-    # ## `#round(num, [d])
+    # ### `#round(num, [d])
     #
     # Round the number to `d` decimal places. `d` is 0 by default.
     #
     # Examples:
     #
-    #     dahelpers.round(
+    #     dahelpers.round(12.34);     // returns 12
+    #     dahelpers.round(12.34, 1);  // returns 12.3
+    #
     round: (num, d=0) ->
       num = parseFloat num
       return 0 if isNaN num
       Math.round(num * Math.pow(10, d)) / Math.pow(10, d)
 
-    # ## `#currency(num, [currency, dec, sep, decSep, si, suffix])`
+    # ### `#currency(num, [currency, dec, sep, decSep, si, suffix])`
     #
     # Formats `num` as currency  with thousands separator or SI suffix. Default
     # currency is '$', and thousands separators are used by default.
@@ -506,7 +517,7 @@ define () ->
       else
         h.prefix num, currency, true
 
-    # ## `#makeCurrency(name, currency, dec, sep, decSep, si, suffix)`
+    # ### `#makeCurrency(name, currency, dec, sep, decSep, si, suffix)`
     #
     # Because the `#currency()` method takes many arguments and you might not
     # always use them all, this method will help you create a somewhat
@@ -538,18 +549,18 @@ define () ->
       h["_#{name}"] = (num) ->
         h.currency(num, currency, dec, sep, decSep, si, suffix)
 
-    # ## `siCurrency(num, [currency, dec, sep, decSep])`
+    # ### `siCurrency(num, [currency, dec, sep, decSep])`
     #
     # This is a shortcut for `#currency` which passes the si argument.
     #
     # Example:
     #
-    #   dahelpers.siCurrency(1200, 'Fr');  // returns 'Fr 1.2k'
+    #     dahelpers.siCurrency(1200, 'Fr');  // returns 'Fr 1.2k'
     #
     siCurrency: (num, currency, dec, sep, decSep, suffix) ->
       h.currency num, currency, dec, sep, decSep, true, suffix
 
-    # ## `dollars(num, dec, si)`
+    # ### `dollars(num, dec, si)`
     #
     # Shortcut method for formatting US currency.
     #
@@ -560,7 +571,7 @@ define () ->
     dollars: (num, dec, si, suffix) ->
       h.currency num, h.USD, dec, null, null, si, suffix
 
-    # ## `euros(num, dec, si)`
+    # ### `euros(num, dec, si)`
     #
     # Shortcut method for formatting EU currency.
     #
@@ -571,7 +582,7 @@ define () ->
     euros: (num, dec, si, suffix) ->
       h.currency num, h.EUR, dec, null, null, si, suffix
 
-    # ## `yen(num, dec, si)`
+    # ### `yen(num, dec, si)`
     #
     # Shortcut method for formatting Japanese currency.
     #
@@ -582,7 +593,7 @@ define () ->
     yen: (num, dec, si, suffix) ->
       h.currency num, h.JPY, dec, null, null, si, suffix
 
-    # ## `yuan(num, dec, si)`
+    # ### `yuan(num, dec, si)`
     #
     # Shortcut method for formatting Chinese currency. Since both Chinese and
     # Japanese currencies use the same symbol, this method is a simple alias
@@ -595,7 +606,7 @@ define () ->
     yuan: (args...) ->
       h.yen args...
 
-    # ## `pounds(num, dec, si)`
+    # ### `pounds(num, dec, si)`
     #
     # Shortcut method for formatting UK currency.
     #
@@ -606,30 +617,89 @@ define () ->
     pounds: (num, dec, si, suffix) ->
       h.currency num, h.GBP, dec, null, null, si, suffix
 
+    # ### `wrap(s, [len, sep])`
+    #
+    # Wraps the text to make lines of `len` length separated by `sep`
+    # separator. The `len` is 79 by default, and separator is a LF character
+    # ('\n').
+    #
+    # Code for this method is based on the idea from [James Padolsey's blog
+    # post](http://james.padolsey.com/javascript/wordwrap-for-javascript/).
+    #
+    # Example:
+    #
+    #     dahelpers.wrap('The quick brown fox jumps over lazy old fox.', 20);
+    #     // returns:
+    #     // 'The quick brown\n
+    #     // fox jumps over\n
+    #     // lazy old fox.'
+    #
+    wrap: (s, len=h.WRAP_WIDTH, sep='\n') ->
+      return '' if not s?
+      rxp = new RegExp ".{1,#{len}}(\\s|$)", "g"
+      lines = s.match(rxp)
+      lines = (l.replace(/\s*$/, '') for l in lines)  # Strip trailing spaces
+      lines.join(sep)
+
+    # ### `slug(s)`
+    #
+    # Converts a string to a slug (URL-compatible string). This method is
+    # fairly basic, so don't depend on it for strings that contain non-ASCII
+    # letters.
+    #
+    # Example:
+    #
+    #     dahelpers.slug('This is some text.');
+    #     // returns 'this-is-some-text'
+    #
+    slug: (s) ->
+      return '' if not s
+      s = s.toString().toLowerCase().replace /\W+/g, '-'
+      s = s.replace /[_-]+$/, ''  # Strip trailing non-letters
+      s.replace /^[_-]+/, ''  # Strip leading non-letters
+
+  # ## Tag aliases
+  #
+  # For convenience we include a few aliases for HTML tags that will call
+  # `#tag()` method with a specific HTML tag name. The tags that are aliased
+  # are:
+  #
+  #  + a
+  #  + p
+  #  + strong
+  #  + em
+  #  + ul
+  #  + ol
+  #  + li
+  #  + div
+  #  + span
+  #
+  # They take the same arguments as the `#tag()` method except `name`.
+  #
   tags = 'a p strong em ul ol li div span'.split ' '
 
   for tag in tags
-    # For instance, if we did this:
-    #
-    #     for tag in tags
-    #       h[tag] = (args...) ->
-    #         args.unshift tag
-    #         h.tag.apply h, args
-    #
-    # The above would simply use the last value of the `tag` variable at
-    # runtime, which happens to be the last value assigned to it ever, which is
-    # `'footer'`. This is because there are no block scopes in JavaScript. The
-    # `tag` variable used above is defined at the top of the scope in which we
-    # are making the `for` loop, and since the method is referring to the same
-    # variable, it will use the last value the variable points to.
-    #
-    # Because of that, we create a closure using immediate-execution pattern.
-    # We pass the immediately-executing function the `tag` variable. The
-    # function will name the argument `tag` (could have been any other name)
-    # and that new `tag` variable is now defined within its own scope and has
-    # nothing to do with the `tag` variable outside it. We then define the
-    # method we want within that closure and the new `tag` variable is
-    # available to the method.
+    ## For instance, if we did this:
+    ##
+    ##     for tag in tags
+    ##       h[tag] = (args...) ->
+    ##         args.unshift tag
+    ##         h.tag.apply h, args
+    ##
+    ## The above would simply use the last value of the `tag` variable at
+    ## runtime, which happens to be the last value assigned to it ever, which
+    ## is `'footer'`. This is because there are no block scopes in JavaScript.
+    ## The `tag` variable used above is defined at the top of the scope in
+    ## which we are making the `for` loop, and since the method is referring to
+    ## the same variable, it will use the last value the variable points to.
+    ##
+    ## Because of that, we create a closure using immediate-execution pattern.
+    ## We pass the immediately-executing function the `tag` variable. The
+    ## function will name the argument `tag` (could have been any other name)
+    ## and that new `tag` variable is now defined within its own scope and has
+    ## nothing to do with the `tag` variable outside it. We then define the
+    ## method we want within that closure and the new `tag` variable is
+    ## available to the method.
     h[tag] = ((tag) ->
       (args...) ->
         args.unshift tag

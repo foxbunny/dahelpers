@@ -28,6 +28,9 @@ module.exports = {
             ));
         }
     },
+    docs: {
+      run: 'node tools/extract_comments.js src/dahelpers.coffee > README.mkd'
+    },
     test: {
       run: 'n.mocha tests/*.js -C -R spec'
     },

@@ -30,7 +30,7 @@ NodeJS.
    - [`#pad(s, len, [char, tail, sep])`](#pad-s-len-char-tail-sep)
    - [`#si(num, [d, thousands, sep, decSep])`](#si-num-d-thousands-sep-decsep)
    - [`#prefix(num, prefix, sepLong)`](#prefix-num-prefix-seplong)
-   - [`#round(num, [d])](#round-num-d)
+   - [`#round(num, [d])`](#round-num-d)
    - [`#currency(num, [currency, dec, sep, decSep, si, suffix])`](#currency-num-currency-dec-sep-decsep-si-suffix)
    - [`#makeCurrency(name, currency, dec, sep, decSep, si, suffix)`](#makecurrency-name-currency-dec-sep-decsep-si-suffix)
    - [`siCurrency(num, [currency, dec, sep, decSep])`](#sicurrency-num-currency-dec-sep-decsep)
@@ -376,7 +376,7 @@ Examples:
     dahelpers.prefix(12, 'foo', true);  // returns 'foo 12'
 
 
-### `#round(num, [d]) <a name="round-num-d"></a>
+### `#round(num, [d])` <a name="round-num-d"></a>
 
 Round the number to `d` decimal places. `d` is 0 by default.
 

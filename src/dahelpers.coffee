@@ -98,6 +98,12 @@ define () ->
     #
     # All attribute values are double-quoted and any double quotes inside the
     # attribute values are escaped.
+    #
+    # Example:
+    #
+    #     dahelpers.obAttrs({foo: 1, bar: 'foo'});
+    #     // returns 'foo="1" bar="foo"'
+    #
     objAttrs: (o) ->
       attrs = []
       for key of o
@@ -115,6 +121,12 @@ define () ->
     # If the `silence` argument is `true`, the whole `tag` is only rendered if
     # `content` is not null or undefined, and can be coerced into a non-empty
     # string.
+    #
+    # Example:
+    #
+    #     dahelpers.tag('a', 'click here', {href: '#'});
+    #     // returns '<a href="#">click here</a>'
+    #
     tag: (name, content='', attrs=null, silence=false) ->
       return '' if not name
       return '' if silence and (not content? or content.toString() is '')
@@ -174,6 +186,12 @@ define () ->
     #
     # If the `lowerFirst` is `ture`, the whole string will be lower-cased
     # before applying the title case. Default is `false`.
+    #
+    # Example:
+    #
+    #     dahelpers.titleCase('This is a title');
+    #     // returns 'This Is A Title'
+    #
     titleCase: (s, lowerFirst=false) ->
       return '' if not s
       s = s.toLowerCase() if lowerFirst

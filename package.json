@@ -35,6 +35,7 @@
       "README.mkd",
       "LICENSE",
       "volofile",
+      "tools",
       "src"
     ]
   },

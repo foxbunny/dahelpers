@@ -100,10 +100,8 @@ define(function() {
       if (lowerFirst) {
         s = s.toLowerCase();
       }
-      return s.replace(h.FIRST_CHAR, function() {
-        var groups, match;
-        match = arguments[0], groups = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
-        return groups[0].toUpperCase();
+      return s.replace(h.FIRST_CHAR, function(match, group) {
+        return h.capitalize(group);
       });
     },
     format: function(s, format, formatChar) {

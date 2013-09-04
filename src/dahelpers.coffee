@@ -177,8 +177,8 @@ define () ->
     titleCase: (s, lowerFirst=false) ->
       return '' if not s
       s = s.toLowerCase() if lowerFirst
-      s.replace h.FIRST_CHAR, (match, groups...) ->
-        groups[0].toUpperCase()
+      s.replace h.FIRST_CHAR, (match, group) ->
+        h.capitalize group
 
     # ## `#format(s, format, [formatChar])`
     #

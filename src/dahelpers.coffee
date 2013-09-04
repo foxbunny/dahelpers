@@ -5,7 +5,12 @@
 
 # # DaHelpers
 #
-
+# This module is in UMD format. It can be used with an AMD loader such as
+# RequireJS, on NodeJS, or in browsers using `<script>` tag.
+#
+# It has no external dependencies.
+#
+# If used without module loaders, it creates a `dahelpers` global.
 define = ((root) ->
   if typeof root.define is 'function' and root.define.amd
     root.define
@@ -18,18 +23,78 @@ define = ((root) ->
 
 define () ->
 
+  # ## About the exports
+  #
+  # Although all the methods are exported as one object, they are completely
+  # decoupled (they call each other by using the reference to the module
+  # object `h`, instead of `this`), so you can assign individual methods to
+  # variables and pass them around.
   h =
-    # ## `#FIRST_CHAR`
+
+    # ## Variables
+    #
+    # Although some of the properties of this module are all-caps, they are by
+    # no means constants. They are, in fact, variables that configure various
+    # aspects of DaHelpers. You are free to modify them any way you need.
+
+    # ### `#USD`
+    #
+    # Symbol for US currency
+    USD: '$'
+
+    # ### `#EUR`
+    #
+    # Symbol for EU currency
+    EUR: '€'
+
+    # ### `#JPY`
+    #
+    # Symbol for Japanese currency
+    JPY: '¥'
+
+    # ### `#GBP`
+    #
+    # Symbol for UK currency
+    GBP: '£'
+
+    # ### `#DEFAULT_CURRENCY`
+    #
+    # Default curency used by `#currency()` method.
+    DEFAULT_CURRENCY: '$'
+
+    # ### `#FIRST_CHAR`
     #
     # Regular expression for capturing the first character of a word.
     FIRST_CHAR: /\b([a-z])/gi
 
+    # ### `#FORMAT_CHARACTER`
+    #
+    # Character used by default in `#format()` method.
+    FORMAT_CHARACTER: '#'
+
+    # ### `#PLURAL_RULES`
+    #
+    # Returns the form to use based on number `n`. The form is 0 for singular,
+    # and 1 or more for plural forms.
+    #
+    # This function is called by the `#plural()` method to yield the correct
+    # form.
+    #
+    # Default function accounts for English and compatible pluralization where
+    # singular is used when n==1, and a single plural form for all other cases.
+    #
+    # You can see different rules for different langauges on [Unicode
+    # CLDR](http://www.unicode.org/cldr/charts/supplemental/language_plural_rules.html)
+    PLURAL_RULES: (n) ->
+      if n is 1 then 0 else 1
+
     # ## `#objAttrs(o)`
     #
-    # Converts a JavaScript object into a set of HTML attributes where the key is
-    # the name of the attribute, and value is the attribute value.
+    # Converts a JavaScript object `o` into a set of HTML attributes where a
+    # key is the attribute name, and value is the attribute value.
     #
-    # Note that we do _not_ check whether keys represent valid attribute names.
+    # Note that the validity of attribute names are not checked, so it's
+    # developer's job to make sure valid attributes are being generated.
     #
     # All attribute values are double-quoted and any double quotes inside the
     # attribute values are escaped.
@@ -41,8 +106,11 @@ define () ->
 
     # ## `#tag(name, content, [attrs, silence])`
     #
-    # Wraps `content` into a `name` HTML tag with optional `attrs` attributes.
-    # The `attrs` is an object containing element's attributes.
+    # Wraps optional content into a HTML tag with optional attributes hash.
+    #
+    # The `name` represents the name of the HTML tag (and it is not checked for
+    # validity at all. The `attrs` is an object whic is passed to
+    # `#objAttrs()`.
     #
     # If the `silence` argument is `true`, the whole `tag` is only rendered if
     # `content` is not null or undefined, and can be coerced into a non-empty
@@ -55,42 +123,44 @@ define () ->
       s += ">#{content}</#{name}>"
       s
 
-    # ## `#plural(singular, [plural,] count)`
+    # ## `#plural(singular, plural, [plural2...] count)`
     #
-    # Rudimentary support for plurals.
+    # Provides support for pluralization. All but the last argument are plural
+    # forms, starting with singular, which is the first argument, followed by 0
+    # or more plural forms.
     #
-    # If the `plural` argument is missing, 's' will be appended to the singular
-    # to build the plural form. This does not take into account any
-    # language-specific methods of pluralization or English exceptions, and does
-    # not provide support for complex plurals with multiple forms.
-    plural: (singular, plural, count) ->
-      return '' if not singular
-      if not count?
-        count = plural
-        plural = singular + 's'
-
-      if count is 1 then singular else plural
+    # The function will return an empty string if at least one form of singular
+    # and one form of plural are not passed along with the count.
+    #
+    # The pluralization rules are actually defined in the `PLURAL_RULES`
+    # property, which is a function that returns 0 for singular, and 1 or more
+    # for plural forms. The correct form is then selected from the arguments
+    # passed to this function.
+    #
+    # Example:
+    #
+    #     dahelpers.plural('bear', 'bears', 3);  // returns 'bears'
+    #
+    plural: (args...) ->
+      return '' if not args.length or args.length < 3
+      count = args.pop()  # Last argument is count
+      forms = args
+      forms[h.PLURAL_RULES count]
 
     # ## `#capitalize(s)`
     #
-    # Capitalize the first character of the string `s`. You can used this to
+    # Capitalizes the first character of the string `s`. You can used this to
     # build sentence case.
     #
-    # For example:
+    # Example:
     #
-    #     <%= h.capitalize('foo bar fam') %>
+    #     dahelpers.capitalize('foo bar fam');  // returns 'Foo bar fam'
     #
-    # will render:
-    #
-    #     Foo bar fam
-    #
-    # The method internally uses `String.prototype.toUpperCase()` so anything
-    # that the string method doesn't support is also not supported.
     capitalize: (s) ->
       return '' if not s
       "#{s[0].toUpperCase()}#{s[1..]}"
 
-    # ## `#titleCase(s)`
+    # ## `#titleCase(s, [lowerFirst])`
     #
     # Converts the string `s` to Title Case.
     #
@@ -98,77 +168,118 @@ define () ->
     # exceptions (e.g., it cannot do fancy title cases such as 'Question of
     # Time').
     #
-    # This method will also not touch characters that are already in uppercase.
-    # For example, calling it on all-caps text will achieve nothing.
-    titleCase: (s) ->
+    # You can change the `FIRST_CHAR` property to customize the regular
+    # expression used to find the first character if you need a more complex
+    # behavior.
+    #
+    # If the `lowerFirst` is `ture`, the whole string will be lower-cased
+    # before applying the title case. Default is `false`.
+    titleCase: (s, lowerFirst=false) ->
       return '' if not s
+      s = s.toLowerCase() if lowerFirst
       s.replace h.FIRST_CHAR, (match, groups...) ->
         groups[0].toUpperCase()
 
-    # ## `#format(s, format)`
+    # ## `#format(s, format, [formatChar])`
     #
     # Formats a string according to the `format`. The format is simply a series
     # of hash character '#' that map the string's characters to appropriate
-    # places one by one. Here's an example:
-    #
-    #     <%= h.format('abcdef', '##-##-##') %>
-    #
-    # will render:
-    #
-    #     ab-cd-ef
+    # places one by one.
     #
     # This works best with source strings were internal structure has no
-    # semantic like unformatted phone numbers or serial numbers. It doesn't work
-    # well for strings that already have structure or whose length is variable.
+    # semantic like unformatted phone numbers or serial numbers. It doesn't
+    # work well for strings that already have structure or whose length is
+    # variable.
     #
-    # For example:
+    # The character used in the `format` string can be customed either by
+    # passing an alternative as `formatChar` argument, or by modifying the
+    # `FORMAT_CHARACTER` property.
     #
-    #     <%= h.format('John Smith', '### ### ###') %>
-    #     <%= h.format('John Doe', '### ### ###') %>
+    # Examples:
     #
-    # renders:
+    #     dahelpers.format('abcdef', '##-##-##');  // returns 'ab-cd-ef'
+    #     dahelpers.format('John Doe', '## ###');  // returns 'Jo hnD'
+    #     dahelpers.format('1234', '$$$-$', '$');  // returns '123-4'
     #
-    #     Joh nSm ith
-    #     Joh nDo e##
-    format: (s, format) ->
+    format: (s, format, formatChar=h.FORMAT_CHARACTER) ->
       return '' if not s
       s = '' + s # Coerce into string
       return s if not format
       s = s.split '' # Splits into individual characters as array
       for chr in s
         # Replace first unreplaced '#' with `chr`
-        format = format.replace('#', chr)
+        format = format.replace(formatChar, chr)
       format
 
-    # ## reverse(s)
+    # ## `#reverse(s)`
     #
-    # Reverses a string
+    # Reverses a string.
+    #
+    # Example:
+    #
+    #     dahelpers.reverse('esrever');  // returns 'reverse'
+    #
     reverse: (s) ->
       if s then s.split('').reverse().join '' else ''
 
-    # ## sgroup(s)
+    # ## `#sgroup(s, n)`
+    #
+    # Groups the string's characters into groups of `n` characters and returns
+    # the groups as an array.
+    #
+    # The last group can be shorter than `n` if there are not enough
+    # characters.
+    #
+    # An empty string is returned if `s` is not defined or is an empty string,
+    # and an array containing the orginal string if `n` is not specified or is
+    # 0.
+    #
+    # Examples:
+    #
+    #     dahelpers.sgroup('Groupings', 3);  // returns ['Gro', 'upi', 'ngs']
+    #     dahelpers.sgroup('Grouping', 3);   // returns ['Gro', 'upi', 'ng']
+    #
     sgroup: (s, n) ->
-      return [] if not s?
+      return [] if not s? or s is ''
       s = s.toString()
       return [s] if not n
       m = s.match new RegExp "(.{1,#{n}})", 'g'
       m
 
-    # ## `#pad(s, len, [char, tail, separator])`
+    # ## `#pad(s, len, [char, tail, sep])`
     #
-    # Pads a string `s` with `char` so that the output is at least `len` long.
+    # Pads a string `s` with `char` characters, so that the output is at least
+    # `len` long.
     #
     # The `char` is '0' by default.
     #
-    # If `tail` is specified, the `separator` string will be used to split the
-    # string into two parts, and then the tail end of the string will be padded
-    # in reverse, up to at least as long as `tail` number of characters.
-    pad: pad = (s, len, char='0', tail=false, separator='.') ->
+    # If `len` is 0 or less than the length of `s`, no padding is done, and the
+    # original string is left intact.
+    #
+    # Tail has the same meaning as `len` but from the tail end of the string.
+    # The `sep` character is used to split the string into head and tail, and
+    # they are padded separately and re-merged using the same separator
+    # character.
+    #
+    # The only case where `tail` behaves differently than `len` is when it is
+    # set to `false`. This has a special meaning internally, where it disables
+    # any processing of the tail if it is `false`.
+    #
+    # Examples:
+    #
+    #     dahelpers.pad('2', 2);             // returns '02'
+    #     dahelpers.pad('2.5', 0, null, 3);  // returns '2.50'
+    #
+    pad: pad = (s, len, char='0', tail=false, sep='.') ->
+      if s? then s = s.toString() else return ''
       if tail is false
-        ((new Array len).join(char) + s).slice -len
+        if s.length < len
+          ((new Array len).join(char) + s).slice -len
+        else
+          s
       else
-        [s, t] = s.toString().split(separator)
-        if tail is 0
+        [s, t] = s.toString().split sep
+        if tail is false
           pad s, len, char
         else
           # Pad the head-end
@@ -178,47 +289,71 @@ define () ->
           t or= char
           t = pad h.reverse(t), tail, char
           t = h.reverse(t)
-          [s, t].join(separator)
+          [s, t].join sep
 
-    # ## thousands(num, [separator, decimalSeparator])
+    # ## thousands(num, [sep, decSep])
     #
-    # Adds the thousands separator to `num`. Default separator is a comma, and
-    # can be customized by passing the `separator` argument.
+    # Adds the thousands separator to `num`.
     #
-    # The `decimalSeparator` argument can be used to customize the
-    # decimalSeparator ('.' by default).
+    # Default separator is a comma, and can be customized by passing the `sep`
+    # argument.
     #
-    # `decimalPlaces` argument is used to limit and/or zero-pad the decimal
-    # places. It is 0 by default (use whatever decimal places are there).
-    thousands: (num, separator=',', decimalSeparator='.') ->
+    # The `decSep` argument can be used to customize the decimal separator ('.'
+    # by default).
+    #
+    # Although the `decSep` can control the output decimal separator, the input
+    # decimal separator is always period. This is a tradeoff to give
+    # `#thousands()` the ability to take JavaScript numbers as input, and still
+    # use a different separator in the output without cluttering the function
+    # signature.
+    #
+    # Examples:
+    #
+    #     dahelpers.thousands(1200000);               // returns '1,200,000'
+    #     dahelpers.thousands(1200000.12, '.', ',');  // returns '1.200.000,00'
+    #
+    thousands: (num, sep=',', decSep='.') ->
       num = num.toString()
       num = num.replace /[^\d\.-]/g, ''
       num = parseFloat(num)
       return '' if isNaN(num)
       [num, frac] = num.toString().split '.'
       num = h.reverse num
-      num = h.sgroup(num, 3).join(separator)
+      num = h.sgroup(num, 3).join(sep)
       num = h.reverse num
-      num = "#{num}#{decimalSeparator}#{frac}" if frac
+      num = "#{num}#{decSep}#{frac}" if frac
       num
 
-    # ## `#si(num, d, thousands)`
+    # ## `#si(num, [d, thousands, sep, decSep])`
     #
-    # Convert the number to closes SI factor (Kilo, Mega, etc). Uses only factors
-    # of thousand (k, M, G, T, P, E, Z, and Y).
+    # Converts the number to closes SI factor (Kilo, Mega, etc). Uses only
+    # factors of thousand (k, M, G, T, P, E, and Z) larger than 0.
+    #
+    # Due to overlow issues, the Y suffix is not avilable.
+    #
+    # The method will only add the next bigger suffix if the number is
+    # divisible by that factor. For example, 1000 can use the 'k' suffix, but
+    # 1100 will be returned as is.
     #
     # If `d` is specified, it will allow `d` number of decimals after the main
-    # unit.
+    # unit. For example, with number 1100, with `d` of 1, the method will add
+    # return '1.1k'. With `d` of 1, 1110 would still be returned as is.
+    # Increasing `d` to 2 would allow the method to output '1.11k'. And so on.
+    # `d` can be as large as you want.
     #
     # if `thousands` is `true`, the thousands separator will be added.
     #
-    # Example:
+    # You can control the characters used for separator and decimal separator
+    # by using the `sep` and `decSep` arguments. They work the same way as the
+    # `thousands`.
     #
-    #   h.si(1000); // '1k'
+    # Examples:
     #
-    #   h.si(1200); // '1200'
+    #     dahelpers.si(1000);                 // returns '1k'
+    #     dahelpers.si(1200);                 // returns '1200'
+    #     dahelpers.si(1200, 1);              // returns '1.2k'
+    #     dahelpers.si(1200, null, true);     // returns '1,200'
     #
-    #   h.si(1200, 1); // '1.2k'
     si: (num, d=0, thousands=false, sep=",", decSep='.') ->
       return '' if not num?
       units = 'kMGTPEZ'.split ''
@@ -232,25 +367,56 @@ define () ->
       for unit, idx in units
         if num % 1000
           num = num / adjustment
-          num = h.thousands(num, sep, decSep) if thousands
+          if thousands
+            num = h.thousands(num, sep, decSep)
+          else
+            num = num.toString().replace('.', decSep)
           return "#{num}#{unit}"
         else
           num = num / 1000
 
     # ## `#digits(s)`
     #
-    # Removes all non-digits from a string.
+    # Removes all non-digit characters from a string. This includes decimal
+    # points, minus sign, and anyting else that does not match the `\d` regular
+    # expression.
+    #
+    # Examples:
+    #
+    #     dahelpers.digits('123.456.7890');           // returns '1234567890'
+    #     dahelpers.digits('Number of items is 12');  // returns '12'
+    #
     digits: (s) ->
       return '' if not s?
       s.toString().replace(/[^\d]/g, '')
 
-    # ## `#prefix(num, prefix)`
+    # ## `#prefix(num, prefix, sepLong)`
     #
-    # Add a `prefix` prefix to `num`.
-    prefix: (num, prefix) ->
+    # Adds a prefix to a number. The `prefix` argument can be any string of any
+    # length. `num` can be a real number, or just any string.
+    #
+    # The main difference between `#prefix()` and simple string concatenation
+    # is the handling of the leading minus sign. If there is a minus sign at
+    # the beginning of the number, the prefix will be inserted between the
+    # minus sign and the rest of the number.
+    #
+    # The `sepLong` argument is used to separate long prefixes from the number.
+    #
+    # Examples:
+    #
+    #     dahlperss.prefix(12, '$');          // returns '$12'
+    #     dahelpers.prefix(-12, '$');         // returns '-$12'
+    #     dahelpers.prefix(12, 'foo');        // returns 'foo12'
+    #     dahelpers.prefix(12, 'foo', true);  // returns 'foo 12'
+    #
+    prefix: (num, prefix, sepLong=false) ->
       return '' if not num?
       num = num.toString()
-      return num if not prefix
+      return num if not prefix and not prefix.length
+
+      if prefix.length > 1 and sepLong
+        return "#{prefix} #{num}"
+
       if num[0] is '-'
         "-#{prefix}#{num[1..]}"
       else
@@ -259,15 +425,19 @@ define () ->
     # ## `#round(num, [d])
     #
     # Round the number to `d` decimal places. `d` is 0 by default.
+    #
+    # Examples:
+    #
+    #     dahelpers.round(
     round: (num, d=0) ->
       num = parseFloat num
       return 0 if isNaN num
       Math.round(num * Math.pow(10, d)) / Math.pow(10, d)
 
-    # ## `#currency(num, [currency, dec, sep, decSep, si])`
+    # ## `#currency(num, [currency, dec, sep, decSep, si, suffix])`
     #
-    # Formats `num` as `currency` currency  with thousands separator or SI
-    # suffix. Default currency is '$'.
+    # Formats `num` as currency  with thousands separator or SI suffix. Default
+    # currency is '$', and thousands separators are used by default.
     #
     # The `dec` argument specifies the number of decimal places (default is 2).
     # This number is also used when converting to SI suffix.
@@ -277,40 +447,131 @@ define () ->
     # The `decSep` argument specifies the decimal separator (default is '.').
     #
     # The `si` argument should be a boolean and tells the method to render the
-    # number with `SI` prefix instead of with thousands separator. Default is
+    # number with SI prefix instead of with thousands separator. Default is
     # `false`.
-    currency: (num, currency='$', dec=2, sep=',', decSep='.', si=false) ->
+    #
+    # The `suffix` argument is used to suffix the currency instead of prefixing
+    # it.
+    #
+    # Example:
+    #
+    #     dahelpers.currency(12);            // returns '$12.00'
+    #     dahelpers.currency(12, null, 0);   // returns '$12'
+    #     dahelpers.currency(12, 'Fr');      // returns 'Fr 12.00'
+    #     dahelpers.currency(12, 'USD');     // returns 'USD 12.00'
+    #
+    currency: (num, currency=h.DEFAULT_CURRENCY, dec=2, sep=',', decSep='.',
+      si=false, suffix=false) ->
       if si
         num = h.si num, dec, true, sep, decSep
       else
         num = h.round num, dec
         num = h.thousands(num, sep, decSep)
         num = h.pad num, 0, '0', dec, decSep
-      h.prefix num, currency
+      if suffix
+        "#{num} #{currency}"
+      else
+        h.prefix num, currency, true
+
+    # ## `#makeCurrency(name, currency, dec, sep, decSep, si, suffix)`
+    #
+    # Because the `#currency()` method takes many arguments and you might not
+    # always use them all, this method will help you create a somewhat
+    # permanent alias for the mix of arguments you wish to use often.
+    #
+    # Except for the `name` argument, the others are passed through to
+    # `#currency()` method, and work the same way. The `name` is the name you
+    # wish to use to refer to the currency. You can basically use any name you
+    # want, but since the name is used to create a new key on JavaScript
+    # object, you should use a name that can be used effectively in that
+    # context.
+    #
+    # The method returns a function which takes only the `num` argument and
+    # uess previously specified arguments to return formatted currency. The
+    # function is also accessible through `dahelpers._NAME` key where `NAME` is
+    # the name you originally specified.
+    #
+    # To modify the definition of an existing currency, simply call this method
+    # again and use the same name. To remove a currency, you should simply
+    # `delete` the property from the `dahelpers` module (see examples below).
+    #
+    # Examples:
+    #
+    #     dahelpers.makeCurrency('din', 'Din', 2, '.', ',', false, true);
+    #     dahelpers._din(15000);  // returns '15.000,00 Din'
+    #     delete dahelpers._din;  // removes 'din' currency
+    #
+    makeCurrency: (name, currency, dec, sep, decSep, si, suffix) ->
+      h["_#{name}"] = (num) ->
+        h.currency(num, currency, dec, sep, decSep, si, suffix)
 
     # ## `siCurrency(num, [currency, dec, sep, decSep])`
     #
     # This is a shortcut for `#currency` which passes the si argument.
-    siCurrency: (num, currency, dec, sep, decSep) ->
-      h.currency num, currency, dec, sep, decSep, true
+    #
+    # Example:
+    #
+    #   dahelpers.siCurrency(1200, 'Fr');  // returns 'Fr 1.2k'
+    #
+    siCurrency: (num, currency, dec, sep, decSep, suffix) ->
+      h.currency num, currency, dec, sep, decSep, true, suffix
 
     # ## `dollars(num, dec, si)`
     #
-    # Shortcut for `#currency()` which sets '$' as currency.
-    dollars: (num, dec, si) ->
-      h.currency num, '$', dec, null, null, si
+    # Shortcut method for formatting US currency.
+    #
+    # Example:
+    #
+    #     dahelpers.dollars(100);  // returns '$100.00'
+    #
+    dollars: (num, dec, si, suffix) ->
+      h.currency num, h.USD, dec, null, null, si, suffix
+
+    # ## `euros(num, dec, si)`
+    #
+    # Shortcut method for formatting EU currency.
+    #
+    # Example:
+    #
+    #     dahelpers.euros(100);  // returns '€100.00'
+    #
+    euros: (num, dec, si, suffix) ->
+      h.currency num, h.EUR, dec, null, null, si, suffix
 
     # ## `yen(num, dec, si)`
     #
-    # Shortcut for `#currency()` which sets '¥' as currency.
-    yen: (num, dec, sep, decSep, si) ->
-      h.currency num, '¥', dec, null, null, si
+    # Shortcut method for formatting Japanese currency.
+    #
+    # Example:
+    #
+    #     dahelpers.yen(100);  // returns '¥100.00'
+    #
+    yen: (num, dec, si, suffix) ->
+      h.currency num, h.JPY, dec, null, null, si, suffix
+
+    # ## `yuan(num, dec, si)`
+    #
+    # Shortcut method for formatting Chinese currency. Since both Chinese and
+    # Japanese currencies use the same symbol, this method is a simple alias
+    # for `#yen()`.
+    #
+    # Example:
+    #
+    #     dahelpers.yuan(100);  // returns '¥100.00'
+    #
+    yuan: (args...) ->
+      h.yen args...
 
     # ## `pounds(num, dec, si)`
     #
-    # Shortcut for `#currency()` which sets '£' as currency.
-    pounds: (num, dec, si) ->
-      h.currency num, '£', dec, null, null, si
+    # Shortcut method for formatting UK currency.
+    #
+    # Example:
+    #
+    #     dahelpers.pounds(100); // returns '£100.00'
+    #
+    pounds: (num, dec, si, suffix) ->
+      h.currency num, h.GBP, dec, null, null, si, suffix
 
   tags = 'a p strong em ul ol li div span'.split ' '
 

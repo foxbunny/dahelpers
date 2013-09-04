@@ -26,7 +26,20 @@ define = (function(root) {
 define(function() {
   var h, pad, tag, tags, _i, _len;
   h = {
+    USD: '$',
+    EUR: '€',
+    JPY: '¥',
+    GBP: '£',
+    DEFAULT_CURRENCY: '$',
     FIRST_CHAR: /\b([a-z])/gi,
+    FORMAT_CHARACTER: '#',
+    PLURAL_RULES: function(n) {
+      if (n === 1) {
+        return 0;
+      } else {
+        return 1;
+      }
+    },
     objAttrs: function(o) {
       var attrs, key;
       attrs = [];
@@ -61,19 +74,15 @@ define(function() {
       s += ">" + content + "</" + name + ">";
       return s;
     },
-    plural: function(singular, plural, count) {
-      if (!singular) {
+    plural: function() {
+      var args, count, forms;
+      args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+      if (!args.length || args.length < 3) {
         return '';
       }
-      if (count == null) {
-        count = plural;
-        plural = singular + 's';
-      }
-      if (count === 1) {
-        return singular;
-      } else {
-        return plural;
-      }
+      count = args.pop();
+      forms = args;
+      return forms[h.PLURAL_RULES(count)];
     },
     capitalize: function(s) {
       if (!s) {
@@ -81,9 +90,15 @@ define(function() {
       }
       return "" + (s[0].toUpperCase()) + s.slice(1);
     },
-    titleCase: function(s) {
+    titleCase: function(s, lowerFirst) {
+      if (lowerFirst == null) {
+        lowerFirst = false;
+      }
       if (!s) {
         return '';
+      }
+      if (lowerFirst) {
+        s = s.toLowerCase();
       }
       return s.replace(h.FIRST_CHAR, function() {
         var groups, match;
@@ -91,8 +106,11 @@ define(function() {
         return groups[0].toUpperCase();
       });
     },
-    format: function(s, format) {
+    format: function(s, format, formatChar) {
       var chr, _i, _len;
+      if (formatChar == null) {
+        formatChar = h.FORMAT_CHARACTER;
+      }
       if (!s) {
         return '';
       }
@@ -103,7 +121,7 @@ define(function() {
       s = s.split('');
       for (_i = 0, _len = s.length; _i < _len; _i++) {
         chr = s[_i];
-        format = format.replace('#', chr);
+        format = format.replace(formatChar, chr);
       }
       return format;
     },
@@ -116,7 +134,7 @@ define(function() {
     },
     sgroup: function(s, n) {
       var m;
-      if (s == null) {
+      if ((s == null) || s === '') {
         return [];
       }
       s = s.toString();
@@ -126,7 +144,7 @@ define(function() {
       m = s.match(new RegExp("(.{1," + n + "})", 'g'));
       return m;
     },
-    pad: pad = function(s, len, char, tail, separator) {
+    pad: pad = function(s, len, char, tail, sep) {
       var t, _ref;
       if (char == null) {
         char = '0';
@@ -134,31 +152,40 @@ define(function() {
       if (tail == null) {
         tail = false;
       }
-      if (separator == null) {
-        separator = '.';
+      if (sep == null) {
+        sep = '.';
+      }
+      if (s != null) {
+        s = s.toString();
+      } else {
+        return '';
       }
       if (tail === false) {
-        return ((new Array(len)).join(char) + s).slice(-len);
+        if (s.length < len) {
+          return ((new Array(len)).join(char) + s).slice(-len);
+        } else {
+          return s;
+        }
       } else {
-        _ref = s.toString().split(separator), s = _ref[0], t = _ref[1];
-        if (tail === 0) {
+        _ref = s.toString().split(sep), s = _ref[0], t = _ref[1];
+        if (tail === false) {
           return pad(s, len, char);
         } else {
           s = pad(s, len, char);
           t || (t = char);
           t = pad(h.reverse(t), tail, char);
           t = h.reverse(t);
-          return [s, t].join(separator);
+          return [s, t].join(sep);
         }
       }
     },
-    thousands: function(num, separator, decimalSeparator) {
+    thousands: function(num, sep, decSep) {
       var frac, _ref;
-      if (separator == null) {
-        separator = ',';
+      if (sep == null) {
+        sep = ',';
       }
-      if (decimalSeparator == null) {
-        decimalSeparator = '.';
+      if (decSep == null) {
+        decSep = '.';
       }
       num = num.toString();
       num = num.replace(/[^\d\.-]/g, '');
@@ -168,10 +195,10 @@ define(function() {
       }
       _ref = num.toString().split('.'), num = _ref[0], frac = _ref[1];
       num = h.reverse(num);
-      num = h.sgroup(num, 3).join(separator);
+      num = h.sgroup(num, 3).join(sep);
       num = h.reverse(num);
       if (frac) {
-        num = "" + num + decimalSeparator + frac;
+        num = "" + num + decSep + frac;
       }
       return num;
     },
@@ -203,6 +230,8 @@ define(function() {
           num = num / adjustment;
           if (thousands) {
             num = h.thousands(num, sep, decSep);
+          } else {
+            num = num.toString().replace('.', decSep);
           }
           return "" + num + unit;
         } else {
@@ -216,13 +245,19 @@ define(function() {
       }
       return s.toString().replace(/[^\d]/g, '');
     },
-    prefix: function(num, prefix) {
+    prefix: function(num, prefix, sepLong) {
+      if (sepLong == null) {
+        sepLong = false;
+      }
       if (num == null) {
         return '';
       }
       num = num.toString();
-      if (!prefix) {
+      if (!prefix && !prefix.length) {
         return num;
+      }
+      if (prefix.length > 1 && sepLong) {
+        return "" + prefix + " " + num;
       }
       if (num[0] === '-') {
         return "-" + prefix + num.slice(1);
@@ -240,9 +275,9 @@ define(function() {
       }
       return Math.round(num * Math.pow(10, d)) / Math.pow(10, d);
     },
-    currency: function(num, currency, dec, sep, decSep, si) {
+    currency: function(num, currency, dec, sep, decSep, si, suffix) {
       if (currency == null) {
-        currency = '$';
+        currency = h.DEFAULT_CURRENCY;
       }
       if (dec == null) {
         dec = 2;
@@ -256,6 +291,9 @@ define(function() {
       if (si == null) {
         si = false;
       }
+      if (suffix == null) {
+        suffix = false;
+      }
       if (si) {
         num = h.si(num, dec, true, sep, decSep);
       } else {
@@ -263,19 +301,36 @@ define(function() {
         num = h.thousands(num, sep, decSep);
         num = h.pad(num, 0, '0', dec, decSep);
       }
-      return h.prefix(num, currency);
+      if (suffix) {
+        return "" + num + " " + currency;
+      } else {
+        return h.prefix(num, currency, true);
+      }
     },
-    siCurrency: function(num, currency, dec, sep, decSep) {
-      return h.currency(num, currency, dec, sep, decSep, true);
+    makeCurrency: function(name, currency, dec, sep, decSep, si, suffix) {
+      return h["_" + name] = function(num) {
+        return h.currency(num, currency, dec, sep, decSep, si, suffix);
+      };
     },
-    dollars: function(num, dec, si) {
-      return h.currency(num, '$', dec, null, null, si);
+    siCurrency: function(num, currency, dec, sep, decSep, suffix) {
+      return h.currency(num, currency, dec, sep, decSep, true, suffix);
     },
-    yen: function(num, dec, sep, decSep, si) {
-      return h.currency(num, '¥', dec, null, null, si);
+    dollars: function(num, dec, si, suffix) {
+      return h.currency(num, h.USD, dec, null, null, si, suffix);
     },
-    pounds: function(num, dec, si) {
-      return h.currency(num, '£', dec, null, null, si);
+    euros: function(num, dec, si, suffix) {
+      return h.currency(num, h.EUR, dec, null, null, si, suffix);
+    },
+    yen: function(num, dec, si, suffix) {
+      return h.currency(num, h.JPY, dec, null, null, si, suffix);
+    },
+    yuan: function() {
+      var args;
+      args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+      return h.yen.apply(h, args);
+    },
+    pounds: function(num, dec, si, suffix) {
+      return h.currency(num, h.GBP, dec, null, null, si, suffix);
     }
   };
   tags = 'a p strong em ul ol li div span'.split(' ');

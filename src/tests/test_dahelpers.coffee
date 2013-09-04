@@ -45,11 +45,11 @@ describe '#tag()', () ->
 
 describe '#plural()', () ->
   it 'will return plural with number greater than 1', () ->
-    s = h.plural 'foo', 2
+    s = h.plural 'foo', 'foos', 2
     assert.equal s, 'foos'
 
   it 'will return a singular when count 1', () ->
-    s = h.plural 'foo', 1
+    s = h.plural 'foo', 'foos', 1
     assert.equal s, 'foo'
 
   it 'will return different plural if specified', () ->
@@ -90,6 +90,10 @@ describe '#titleCase()', () ->
     s = h.titleCase 'fOO bAR'
     assert.equal s, 'FOO BAR'
 
+  it 'will lower-case everything if told to', () ->
+    s = h.titleCase 'FOO BAR', true
+    assert.equal s, 'Foo Bar'
+
   it 'will return an empty string if no arguments are passed', () ->
     s = h.titleCase()
     assert.equal s, ''
@@ -110,6 +114,10 @@ describe '#format()', () ->
   it 'will return original value if no format is specified', () ->
     s = h.format 123
     assert.equal s, '123'
+
+  it 'can use a different format character', () ->
+    s = h.format 123, '$$/$', '$'
+    assert.equal s, '12/3'
 
   it 'will output an empty string if there are no arguments', () ->
     s = h.format()
@@ -137,12 +145,20 @@ describe '#sgroup()', () ->
     a = h.sgroup '12345'
     assert.deepEqual a, ['12345']
 
+  it 'will return original string as one group if n is 0', () ->
+    a = h.sgroup '12345', 0
+    assert.deepEqual a, ['12345']
+
   it 'will return original string as one group if too short', () ->
     a = h.sgroup '1', 2
     assert.deepEqual a, ['1']
 
   it 'will return empty array given no arguments', () ->
     a = h.sgroup()
+    assert.deepEqual a, []
+
+  it 'will return an empty array if string is empty', () ->
+    a = h.sgroup ''
     assert.deepEqual a, []
 
 describe '#pad()', () ->
@@ -157,6 +173,10 @@ describe '#pad()', () ->
   it 'should pad a number with different character if told to', () ->
     s = h.pad 123, 5, '%'
     assert.equal s, '%%123'
+
+  it 'should keep the original string if given length is shorter', () ->
+    s = h.pad 123, 1
+    assert.equal s, '123'
 
   it 'should pad the tail if tail is specified', () ->
     s = h.pad 123.12, 5, null, 4
@@ -173,6 +193,10 @@ describe '#pad()', () ->
   it 'should be able to pad anything really', () ->
     s = h.pad 'foo-bar', 6, '!', 6, '-'
     assert.equal s, '!!!foo-bar!!!'
+
+  it 'shold return an empty string if no arguments are passed', () ->
+    s = h.pad()
+    assert.equal s, ''
 
 describe '#round()', () ->
   it 'should round numbers', () ->
@@ -321,6 +345,10 @@ describe '#prefix()', () ->
   it 'should add minus in front of prefix if number is negative', () ->
     assert.equal h.prefix(-12, '$'), '-$12'
 
+  it 'should separate long prefix from number', () ->
+    assert.equal h.prefix(12, 'USD', true), 'USD 12'
+    assert.equal h.prefix(-12, 'USD', true), 'USD -12'
+
   it 'should not care if number is a number or not', () ->
     assert.equal h.prefix('abc', '$'), '$abc'
     assert.equal h.prefix('-abc', '$'), '-$abc'
@@ -336,7 +364,7 @@ describe '#currency()', () ->
 
   it 'should use any currency we tell it to', () ->
     s = h.currency 1200, 'USD'
-    assert.equal s, 'USD1,200.00'
+    assert.equal s, 'USD 1,200.00'
 
   it 'should round to number of decimals', () ->
     s = h.currency 1200.55, null, 1
@@ -358,9 +386,24 @@ describe '#currency()', () ->
     s = h.currency '1200'
     assert.equal s, '$1,200.00'
 
+  it 'should suffix the currency if we tell it to', () ->
+    s = h.currency 1200, null, null, null, null, null, true
+    assert.equal s, '1,200.00 $'
+
   it 'should return 0 if no input', () ->
     s = h.currency()
     assert.equal s, '$0.00'
+
+describe '#makeCurrency()', () ->
+  it 'should create me a custom currency', () ->
+    originalCurrency = h.currency
+    currencyArgs = null
+    h.currency = (args...) ->
+      currencyArgs = args
+    h.makeCurrency 'din', 'Din', 2, '.', ',', false, true
+    h._din 1000
+    assert.deepEqual currencyArgs, [1000, 'Din', 2, '.', ',', false, true]
+    h.currency = originalCurrency
 
 describe 'tag aliases', () ->
   it 'will render appropriate tags', () ->

@@ -12,7 +12,7 @@ NodeJS.
  + [Variables](#variables)
    - [`#USD`](#usd)
    - [`#EUR`](#eur)
-   - [`#JPY`](#jpy)
+   - [`#YN`](#yn)
    - [`#GBP`](#gbp)
    - [`#DEFAULT_CURRENCY`](#default_currency)
    - [`#FIRST_CHAR`](#first_char)
@@ -26,22 +26,27 @@ NodeJS.
    - [`#capitalize(s)`](#capitalize-s)
    - [`#titleCase(s, [lowerFirst])`](#titlecase-s-lowerfirst)
    - [`#format(s, format, [formatChar])`](#format-s-format-formatchar)
+   - [`#reverse(s)`](#reverse-s)
    - [`#sgroup(s, n)`](#sgroup-s-n)
    - [`#pad(s, len, [char, tail, sep])`](#pad-s-len-char-tail-sep)
+   - [`#thousands(num, [sep, decSep])`](#thousands-num-sep-decsep)
    - [`#si(num, [d, thousands, sep, decSep])`](#si-num-d-thousands-sep-decsep)
+   - [`#digits(s)`](#digits-s)
    - [`#prefix(num, prefix, sepLong)`](#prefix-num-prefix-seplong)
    - [`#round(num, [d])`](#round-num-d)
    - [`#currency(num, [currency, dec, sep, decSep, si, suffix])`](#currency-num-currency-dec-sep-decsep-si-suffix)
    - [`#makeCurrency(name, currency, dec, sep, decSep, si, suffix)`](#makecurrency-name-currency-dec-sep-decsep-si-suffix)
-   - [`siCurrency(num, [currency, dec, sep, decSep])`](#sicurrency-num-currency-dec-sep-decsep)
+   - [`#siCurrency(num, [currency, dec, sep, decSep])`](#sicurrency-num-currency-dec-sep-decsep)
    - [`dollars(num, dec, si)`](#dollars-num-dec-si)
-   - [`euros(num, dec, si)`](#euros-num-dec-si)
+   - [`#euros(num, dec, si)`](#euros-num-dec-si)
    - [`yen(num, dec, si)`](#yen-num-dec-si)
-   - [`yuan(num, dec, si)`](#yuan-num-dec-si)
-   - [`pounds(num, dec, si)`](#pounds-num-dec-si)
-   - [`wrap(s, [len, sep])`](#wrap-s-len-sep)
-   - [`slug(s)`](#slug-s)
- + [Tag aliases](#tag-aliases)
+   - [`#yuan(num, dec, si)`](#yuan-num-dec-si)
+   - [`#pounds(num, dec, si)`](#pounds-num-dec-si)
+   - [`#wrap(s, [len, sep])`](#wrap-s-len-sep)
+   - [`#slug(s)`](#slug-s)
+   - [Tag aliases](#tag-aliases)
+ + [Running tests](#running-tests)
+ + [Reporting bugs](#reporting-bugs)
 
 
 ## Installation <a name="installation"></a>
@@ -76,27 +81,30 @@ DaHelpers. You are free to modify them any way you need.
 
 ### `#USD` <a name="usd"></a>
 
-Symbol for US currency
+Symbol for US currency. Default is '$'.
 
 ### `#EUR` <a name="eur"></a>
 
-Symbol for EU currency
+Symbol for EU currency. Default is '€'.
 
-### `#JPY` <a name="jpy"></a>
+### `#YN` <a name="yn"></a>
 
-Symbol for Japanese currency
+Symbol for Japanese and Chinese currencies. Default is '¥'.
 
 ### `#GBP` <a name="gbp"></a>
 
-Symbol for UK currency
+Symbol for UK currency. Default is '£'.
 
 ### `#DEFAULT_CURRENCY` <a name="default_currency"></a>
 
-Default curency used by `#currency()` method.
+Default curency used by `#currency()` method. Default is '$'.
 
 ### `#FIRST_CHAR` <a name="first_char"></a>
 
-Regular expression for capturing the first character of a word.
+Regular expression for capturing the first character of a word. Default is
+`/\b[a-z]/gi`. Please see documentation for the
+[`#titleCase()`](#titlecase-s-lowerfirst] for information on how this variable
+is used.
 
 ### `#WRAP_WIDTH` <a name="wrap_width"></a>
 
@@ -104,20 +112,22 @@ Default text wrap width.
 
 ### `#FORMAT_CHARACTER` <a name="format_character"></a>
 
-Character used by default in `#format()` method.
+Character used by default in [`#format()`](#format-s-format-formatchar) method.
 
 ### `#PLURAL_RULES` <a name="plural_rules"></a>
 
 Returns the form to use based on number `n`. The form is 0 for singular, and 1
 or more for plural forms.
 
-This function is called by the `#plural()` method to yield the correct form.
+This function is called by the
+[`#plural()`](#plural-singular-plural-plural2-count) method to yield the
+correct form.
 
 Default function accounts for English and compatible pluralization where
 singular is used when n==1, and a single plural form for all other cases.
 
-You can see different rules for different langauges on [Unicode
-DR](http://www.unicode.org/cldr/charts/supplemental/language_plural_rules.html)
+You can see different rules for different langauges at [Unicode
+R](http://www.unicode.org/cldr/charts/supplemental/language_plural_rules.html).
 
 ## Helper functions <a name="helper-functions"></a>
 
@@ -148,7 +158,8 @@ Example:
 Wraps optional content into a HTML tag with optional attributes hash.
 
 The `name` represents the name of the HTML tag (and it is not checked for
-validity at all. The `attrs` is an object whic is passed to `#objAttrs()`.
+validity at all. The `attrs` is an object whic is passed to
+[`#objAttrs()`](#objattrs-o).
 
 If the `silence` argument is `true`, the whole `tag` is only rendered if
 `content` is not null or undefined, and can be coerced into a non-empty string.
@@ -168,10 +179,10 @@ plural forms.
 The function will return an empty string if at least one form of singular and
 one form of plural are not passed along with the count.
 
-The pluralization rules are actually defined in the `PLURAL_RULES` property,
-which is a function that returns 0 for singular, and 1 or more for plural
-forms. The correct form is then selected from the arguments passed to this
-function.
+The pluralization rules are actually defined in the
+[`PLURAL_RULES`](#plural_rules) property, which is a function that returns 0
+for singular, and 1 or more for plural forms. The correct form is then selected
+from the arguments passed to this function.
 
 Example:
 
@@ -195,14 +206,15 @@ Converts the string `s` to Title Case.
 This method uses a simple algorhythm for title-casing, so do not expect
 exceptions (e.g., it cannot do fancy title cases such as 'Question of Time').
 
-You can change the `FIRST_CHAR` property to customize the regular expression
-used to find the first character if you need a more complex behavior.
+You can change the [`FIRST_CHAR`](#first_char) variable to customize the
+regular expression used to find the first character if you need a more complex
+behavior.
 
 To understand how the customization works here is a short description of what
 `#titleCase()` does with the regexp internally.  The regexp is used in a
 `String.prototype.replace()` call as the first argument, and the callback
 function is passed the entire match. The match (not any captured group) is then
-capitalized using `#capitalize()`.
+capitalized using [`#capitalize()`](#capitalize-s).
 
 Because of the way this method works, you generally must include the 'g' flag
 in your regexp. The rest is up to you. There is a very crude example of a
@@ -234,8 +246,8 @@ like unformatted phone numbers or serial numbers. It doesn't work well for
 strings that already have structure or whose length is variable.
 
 The character used in the `format` string can be customed either by passing an
-alternative as `formatChar` argument, or by modifying the `FORMAT_CHARACTER`
-property.
+alternative as `formatChar` argument, or by modifying the
+[`FORMAT_CHARACTER`](#format_character) variable.
 
 Examples:
 
@@ -244,7 +256,7 @@ Examples:
     dahelpers.format('1234', '$$$-$', '$');  // returns '123-4'
 
 
-Replace first unreplaced '#' with `chr` ### `#reverse(s)`
+### `#reverse(s)` <a name="reverse-s"></a>
 
 Reverses a string.
 
@@ -293,7 +305,7 @@ Examples:
     dahelpers.pad('2.5', 0, null, 3);  // returns '2.50'
 
 
-Pad the head-end Pad the tail end ### thousands(num, [sep, decSep])
+### `#thousands(num, [sep, decSep])` <a name="thousands-num-sep-decsep"></a>
 
 Adds the thousands separator to `num`.
 
@@ -345,7 +357,7 @@ Examples:
     dahelpers.si(1200, null, true);     // returns '1,200'
 
 
-Add `d` zeros to the number before starting ### `#digits(s)`
+### `#digits(s)` <a name="digits-s"></a>
 
 Removes all non-digit characters from a string. This includes decimal points,
 minus sign, and anyting else that does not match the `\d` regular expression.
@@ -417,11 +429,12 @@ Because the `#currency()` method takes many arguments and you might not always
 use them all, this method will help you create a somewhat permanent alias for
 the mix of arguments you wish to use often.
 
-Except for the `name` argument, the others are passed through to `#currency()`
-method, and work the same way. The `name` is the name you wish to use to refer
-to the currency. You can basically use any name you want, but since the name is
-used to create a new key on JavaScript object, you should use a name that can
-be used effectively in that context.
+Except for the `name` argument, the others are passed through to
+[`#currency()`](#currency-num-currency-dec-sep-decsep-si-suffix) method, and
+work the same way. The `name` is the name you wish to use to refer to the
+currency. You can basically use any name you want, but since the name is used
+to create a new key on JavaScript object, you should use a name that can be
+used effectively in that context.
 
 The method returns a function which takes only the `num` argument and uess
 previously specified arguments to return formatted currency. The function is
@@ -439,9 +452,11 @@ Examples:
     delete dahelpers._din;  // removes 'din' currency
 
 
-### `siCurrency(num, [currency, dec, sep, decSep])` <a name="sicurrency-num-currency-dec-sep-decsep"></a>
+### `#siCurrency(num, [currency, dec, sep, decSep])` <a name="sicurrency-num-currency-dec-sep-decsep"></a>
 
-This is a shortcut for `#currency` which passes the si argument.
+This is a shortcut for
+[`#currency()`](#currency-num-currency-dec-sep-decsep-si-suffix) which passes
+the si argument.
 
 Example:
 
@@ -457,7 +472,7 @@ Example:
     dahelpers.dollars(100);  // returns '$100.00'
 
 
-### `euros(num, dec, si)` <a name="euros-num-dec-si"></a>
+### `#euros(num, dec, si)` <a name="euros-num-dec-si"></a>
 
 Shortcut method for formatting EU currency.
 
@@ -475,18 +490,18 @@ Example:
     dahelpers.yen(100);  // returns '¥100.00'
 
 
-### `yuan(num, dec, si)` <a name="yuan-num-dec-si"></a>
+### `#yuan(num, dec, si)` <a name="yuan-num-dec-si"></a>
 
 Shortcut method for formatting Chinese currency. Since both Chinese and
 Japanese currencies use the same symbol, this method is a simple alias for
-`#yen()`.
+[`#yen()`](#yen-num-dec-si).
 
 Example:
 
     dahelpers.yuan(100);  // returns '¥100.00'
 
 
-### `pounds(num, dec, si)` <a name="pounds-num-dec-si"></a>
+### `#pounds(num, dec, si)` <a name="pounds-num-dec-si"></a>
 
 Shortcut method for formatting UK currency.
 
@@ -495,10 +510,13 @@ Example:
     dahelpers.pounds(100); // returns '£100.00'
 
 
-### `wrap(s, [len, sep])` <a name="wrap-s-len-sep"></a>
+### `#wrap(s, [len, sep])` <a name="wrap-s-len-sep"></a>
 
 Wraps the text to make lines of `len` length separated by `sep` separator. The
 `len` is 79 by default, and separator is a LF character ('\n').
+
+Default wrap width can be customized globally by changing the
+[`WRAP_WIDTH`](#wrap_width) variable.
 
 Code for this method is based on the idea from [James Padolsey's blog
 post](http://james.padolsey.com/javascript/wordwrap-for-javascript/).
@@ -512,7 +530,7 @@ Example:
     // lazy old fox.'
 
 
-### `slug(s)` <a name="slug-s"></a>
+### `#slug(s)` <a name="slug-s"></a>
 
 Converts a string to a slug (URL-compatible string). This method is fairly
 basic, so don't depend on it for strings that contain non-ASCII letters.
@@ -523,7 +541,7 @@ Example:
     // returns 'this-is-some-text'
 
 
-## Tag aliases <a name="tag-aliases"></a>
+### Tag aliases <a name="tag-aliases"></a>
 
 For convenience we include a few aliases for HTML tags that will call `#tag()`
 method with a specific HTML tag name. The tags that are aliased are:
@@ -540,3 +558,25 @@ method with a specific HTML tag name. The tags that are aliased are:
 
 
 They take the same arguments as the `#tag()` method except `name`.
+
+## Running tests <a name="running-tests"></a>
+
+To run the tests you first need to install all development dependencies. In the
+source directory run:
+
+    npm install
+
+
+Next run:
+
+    node node_modules/mocha/bin/_mocha tests/*.js
+
+
+To run tests in your browser, simply open `index.html` located in `tests`
+directory.
+
+## Reporting bugs <a name="reporting-bugs"></a>
+
+Please report all bugs to the [GitHub issue
+tracker](https://github.com/foxbunny/dahelpers/issues). Please check if there
+are any failing tests and include that information in the report.

@@ -57,37 +57,40 @@ define () ->
 
     # ### `#USD`
     #
-    # Symbol for US currency
+    # Symbol for US currency. Default is '$'.
     #
     USD: '$'
 
     # ### `#EUR`
     #
-    # Symbol for EU currency
+    # Symbol for EU currency. Default is '€'.
     #
     EUR: '€'
 
-    # ### `#JPY`
+    # ### `#YN`
     #
-    # Symbol for Japanese currency
+    # Symbol for Japanese and Chinese currencies. Default is '¥'.
     #
-    JPY: '¥'
+    YN: '¥'
 
     # ### `#GBP`
     #
-    # Symbol for UK currency
+    # Symbol for UK currency. Default is '£'.
     #
     GBP: '£'
 
     # ### `#DEFAULT_CURRENCY`
     #
-    # Default curency used by `#currency()` method.
+    # Default curency used by `#currency()` method. Default is '$'.
     #
     DEFAULT_CURRENCY: '$'
 
     # ### `#FIRST_CHAR`
     #
-    # Regular expression for capturing the first character of a word.
+    # Regular expression for capturing the first character of a word. Default
+    # is `/\b[a-z]/gi`. Please see documentation for the
+    # [`#titleCase()`](#titlecase-s-lowerfirst] for information on how this
+    # variable is used.
     #
     FIRST_CHAR: /\b[a-z]/gi
 
@@ -99,7 +102,8 @@ define () ->
 
     # ### `#FORMAT_CHARACTER`
     #
-    # Character used by default in `#format()` method.
+    # Character used by default in [`#format()`](#format-s-format-formatchar)
+    # method.
     #
     FORMAT_CHARACTER: '#'
 
@@ -108,14 +112,15 @@ define () ->
     # Returns the form to use based on number `n`. The form is 0 for singular,
     # and 1 or more for plural forms.
     #
-    # This function is called by the `#plural()` method to yield the correct
-    # form.
+    # This function is called by the
+    # [`#plural()`](#plural-singular-plural-plural2-count) method to yield the
+    # correct form.
     #
     # Default function accounts for English and compatible pluralization where
     # singular is used when n==1, and a single plural form for all other cases.
     #
-    # You can see different rules for different langauges on [Unicode
-    # CLDR](http://www.unicode.org/cldr/charts/supplemental/language_plural_rules.html)
+    # You can see different rules for different langauges at [Unicode
+    # CLDR](http://www.unicode.org/cldr/charts/supplemental/language_plural_rules.html).
     #
     PLURAL_RULES: (n) ->
       if n is 1 then 0 else 1
@@ -156,7 +161,7 @@ define () ->
     #
     # The `name` represents the name of the HTML tag (and it is not checked for
     # validity at all. The `attrs` is an object whic is passed to
-    # `#objAttrs()`.
+    # [`#objAttrs()`](#objattrs-o).
     #
     # If the `silence` argument is `true`, the whole `tag` is only rendered if
     # `content` is not null or undefined, and can be coerced into a non-empty
@@ -184,10 +189,10 @@ define () ->
     # The function will return an empty string if at least one form of singular
     # and one form of plural are not passed along with the count.
     #
-    # The pluralization rules are actually defined in the `PLURAL_RULES`
-    # property, which is a function that returns 0 for singular, and 1 or more
-    # for plural forms. The correct form is then selected from the arguments
-    # passed to this function.
+    # The pluralization rules are actually defined in the
+    # [`PLURAL_RULES`](#plural_rules) property, which is a function that
+    # returns 0 for singular, and 1 or more for plural forms. The correct form
+    # is then selected from the arguments passed to this function.
     #
     # Example:
     #
@@ -220,15 +225,15 @@ define () ->
     # exceptions (e.g., it cannot do fancy title cases such as 'Question of
     # Time').
     #
-    # You can change the `FIRST_CHAR` property to customize the regular
-    # expression used to find the first character if you need a more complex
-    # behavior.
+    # You can change the [`FIRST_CHAR`](#first_char) variable to customize the
+    # regular expression used to find the first character if you need a more
+    # complex behavior.
     #
     # To understand how the customization works here is a short description of
     # what `#titleCase()` does with the regexp internally.  The regexp is used
     # in a `String.prototype.replace()` call as the first argument, and the
     # callback function is passed the entire match. The match (not any captured
-    # group) is then capitalized using `#capitalize()`.
+    # group) is then capitalized using [`#capitalize()`](#capitalize-s).
     #
     # Because of the way this method works, you generally must include the 'g'
     # flag in your regexp. The rest is up to you. There is a very crude example
@@ -266,7 +271,7 @@ define () ->
     #
     # The character used in the `format` string can be customed either by
     # passing an alternative as `formatChar` argument, or by modifying the
-    # `FORMAT_CHARACTER` property.
+    # [`FORMAT_CHARACTER`](#format_character) variable.
     #
     # Examples:
     #
@@ -280,7 +285,7 @@ define () ->
       return s if not format
       s = s.split '' # Splits into individual characters as array
       for chr in s
-        # Replace first unreplaced '#' with `chr`
+        ## Replace first unreplaced '#' with `chr`
         format = format.replace(formatChar, chr)
       format
 
@@ -355,16 +360,16 @@ define () ->
         if tail is false
           pad s, len, char
         else
-          # Pad the head-end
+          ## Pad the head-end
           s = pad s, len, char
 
-          # Pad the tail end
+          ## Pad the tail end
           t or= char
           t = pad h.reverse(t), tail, char
           t = h.reverse(t)
           [s, t].join sep
 
-    # ### thousands(num, [sep, decSep])
+    # ### `#thousands(num, [sep, decSep])`
     #
     # Adds the thousands separator to `num`.
     #
@@ -432,7 +437,7 @@ define () ->
       units = 'kMGTPEZ'.split ''
       units.unshift ''
 
-      # Add `d` zeros to the number before starting
+      ## Add `d` zeros to the number before starting
       adjustment = Math.pow(10, d)
       num = num * adjustment
 
@@ -555,11 +560,11 @@ define () ->
     # permanent alias for the mix of arguments you wish to use often.
     #
     # Except for the `name` argument, the others are passed through to
-    # `#currency()` method, and work the same way. The `name` is the name you
-    # wish to use to refer to the currency. You can basically use any name you
-    # want, but since the name is used to create a new key on JavaScript
-    # object, you should use a name that can be used effectively in that
-    # context.
+    # [`#currency()`](#currency-num-currency-dec-sep-decsep-si-suffix) method,
+    # and work the same way. The `name` is the name you wish to use to refer to
+    # the currency. You can basically use any name you want, but since the name
+    # is used to create a new key on JavaScript object, you should use a name
+    # that can be used effectively in that context.
     #
     # The method returns a function which takes only the `num` argument and
     # uess previously specified arguments to return formatted currency. The
@@ -580,9 +585,11 @@ define () ->
       h["_#{name}"] = (num) ->
         h.currency(num, currency, dec, sep, decSep, si, suffix)
 
-    # ### `siCurrency(num, [currency, dec, sep, decSep])`
+    # ### `#siCurrency(num, [currency, dec, sep, decSep])`
     #
-    # This is a shortcut for `#currency` which passes the si argument.
+    # This is a shortcut for
+    # [`#currency()`](#currency-num-currency-dec-sep-decsep-si-suffix) which
+    # passes the si argument.
     #
     # Example:
     #
@@ -602,7 +609,7 @@ define () ->
     dollars: (num, dec, si, suffix) ->
       h.currency num, h.USD, dec, null, null, si, suffix
 
-    # ### `euros(num, dec, si)`
+    # ### `#euros(num, dec, si)`
     #
     # Shortcut method for formatting EU currency.
     #
@@ -622,13 +629,13 @@ define () ->
     #     dahelpers.yen(100);  // returns '¥100.00'
     #
     yen: (num, dec, si, suffix) ->
-      h.currency num, h.JPY, dec, null, null, si, suffix
+      h.currency num, h.YN, dec, null, null, si, suffix
 
-    # ### `yuan(num, dec, si)`
+    # ### `#yuan(num, dec, si)`
     #
     # Shortcut method for formatting Chinese currency. Since both Chinese and
     # Japanese currencies use the same symbol, this method is a simple alias
-    # for `#yen()`.
+    # for [`#yen()`](#yen-num-dec-si).
     #
     # Example:
     #
@@ -637,7 +644,7 @@ define () ->
     yuan: (args...) ->
       h.yen args...
 
-    # ### `pounds(num, dec, si)`
+    # ### `#pounds(num, dec, si)`
     #
     # Shortcut method for formatting UK currency.
     #
@@ -648,11 +655,14 @@ define () ->
     pounds: (num, dec, si, suffix) ->
       h.currency num, h.GBP, dec, null, null, si, suffix
 
-    # ### `wrap(s, [len, sep])`
+    # ### `#wrap(s, [len, sep])`
     #
     # Wraps the text to make lines of `len` length separated by `sep`
     # separator. The `len` is 79 by default, and separator is a LF character
     # ('\n').
+    #
+    # Default wrap width can be customized globally by changing the
+    # [`WRAP_WIDTH`](#wrap_width) variable.
     #
     # Code for this method is based on the idea from [James Padolsey's blog
     # post](http://james.padolsey.com/javascript/wordwrap-for-javascript/).
@@ -672,7 +682,7 @@ define () ->
       lines = (l.replace(/\s*$/, '') for l in lines)  # Strip trailing spaces
       lines.join(sep)
 
-    # ### `slug(s)`
+    # ### `#slug(s)`
     #
     # Converts a string to a slug (URL-compatible string). This method is
     # fairly basic, so don't depend on it for strings that contain non-ASCII
@@ -689,7 +699,7 @@ define () ->
       s = s.replace /[_-]+$/, ''  # Strip trailing non-letters
       s.replace /^[_-]+/, ''  # Strip leading non-letters
 
-  # ## Tag aliases
+  # ### Tag aliases
   #
   # For convenience we include a few aliases for HTML tags that will call
   # `#tag()` method with a specific HTML tag name. The tags that are aliased
@@ -739,3 +749,23 @@ define () ->
 
   h # return the module
 
+# ## Running tests
+#
+# To run the tests you first need to install all development dependencies. In
+# the source directory run:
+#
+#     npm install
+#
+# Next run:
+#
+#     node node_modules/mocha/bin/_mocha tests/*.js
+#
+# To run tests in your browser, simply open `index.html` located in `tests`
+# directory.
+#
+# ## Reporting bugs
+#
+# Please report all bugs to the [GitHub issue
+# tracker](https://github.com/foxbunny/dahelpers/issues). Please check if there
+# are any failing tests and include that information in the report.
+#

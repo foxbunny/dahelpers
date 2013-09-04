@@ -28,7 +28,7 @@ define(function() {
   h = {
     USD: '$',
     EUR: '€',
-    JPY: '¥',
+    YN: '¥',
     GBP: '£',
     DEFAULT_CURRENCY: '$',
     FIRST_CHAR: /\b[a-z]/gi,
@@ -321,7 +321,7 @@ define(function() {
       return h.currency(num, h.EUR, dec, null, null, si, suffix);
     },
     yen: function(num, dec, si, suffix) {
-      return h.currency(num, h.JPY, dec, null, null, si, suffix);
+      return h.currency(num, h.YN, dec, null, null, si, suffix);
     },
     yuan: function() {
       var args;

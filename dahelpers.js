@@ -31,7 +31,7 @@ define(function() {
     JPY: '¥',
     GBP: '£',
     DEFAULT_CURRENCY: '$',
-    FIRST_CHAR: /\b([a-z])/gi,
+    FIRST_CHAR: /\b[a-z]/gi,
     FORMAT_CHARACTER: '#',
     PLURAL_RULES: function(n) {
       if (n === 1) {
@@ -100,8 +100,8 @@ define(function() {
       if (lowerFirst) {
         s = s.toLowerCase();
       }
-      return s.replace(h.FIRST_CHAR, function(match, group) {
-        return h.capitalize(group);
+      return s.replace(h.FIRST_CHAR, function(match) {
+        return h.capitalize(match);
       });
     },
     format: function(s, format, formatChar) {

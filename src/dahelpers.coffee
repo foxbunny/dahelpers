@@ -65,7 +65,7 @@ define () ->
     # ### `#FIRST_CHAR`
     #
     # Regular expression for capturing the first character of a word.
-    FIRST_CHAR: /\b([a-z])/gi
+    FIRST_CHAR: /\b[a-z]/gi
 
     # ### `#FORMAT_CHARACTER`
     #
@@ -184,19 +184,34 @@ define () ->
     # expression used to find the first character if you need a more complex
     # behavior.
     #
+    # To understand how the customization works here is a short description of
+    # what `#titleCase()` does with the regexp internally.  The regexp is used
+    # in a `String.prototype.replace()` call as the first argument, and the
+    # callback function is passed the entire match. The match (not any captured
+    # group) is then capitalized using `#capitalize()`.
+    #
+    # Because of the way this method works, you generally must include the 'g'
+    # flag in your regexp. The rest is up to you. There is a very crude example
+    # of a customized title case which only capitalizes words that are longer
+    # than 4 and contain only letters.
+    #
     # If the `lowerFirst` is `ture`, the whole string will be lower-cased
     # before applying the title case. Default is `false`.
     #
-    # Example:
+    # Examples:
     #
     #     dahelpers.titleCase('This is a title');
     #     // returns 'This Is A Title'
     #
+    #     dahelpers.FIRST_CHAR = /\b[a-z]{4,}/gi;
+    #     dahelpers.titleCase('This is the title');
+    #     // returns 'This is the Title'
+    #
     titleCase: (s, lowerFirst=false) ->
       return '' if not s
       s = s.toLowerCase() if lowerFirst
-      s.replace h.FIRST_CHAR, (match, group) ->
-        h.capitalize group
+      s.replace h.FIRST_CHAR, (match) ->
+        h.capitalize match
 
     # ## `#format(s, format, [formatChar])`
     #

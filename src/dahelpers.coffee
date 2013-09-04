@@ -495,7 +495,7 @@ define () ->
       else
         "#{prefix}#{num}"
 
-    # ### `#round(num, [d])
+    # ### `#round(num, [d])`
     #
     # Round the number to `d` decimal places. `d` is 0 by default.
     #

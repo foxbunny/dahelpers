@@ -1,0 +1,5 @@
+# DaHelpers Changelog
+
+## 0.0.2
+
+Minor improvements to documentation and small refactor of tag aliases code.

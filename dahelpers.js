@@ -24,7 +24,7 @@ define = (function(root) {
 })(this);
 
 define(function() {
-  var h, pad, tag, tags, _i, _len;
+  var h, pad;
   h = {
     USD: '$',
     EUR: '€',
@@ -364,17 +364,20 @@ define(function() {
       return s.replace(/^[_-]+/, '');
     }
   };
-  tags = 'a p strong em ul ol li div span'.split(' ');
-  for (_i = 0, _len = tags.length; _i < _len; _i++) {
-    tag = tags[_i];
-    h[tag] = (function(tag) {
-      return function() {
-        var args;
-        args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
-        args.unshift(tag);
-        return h.tag.apply(h, args);
-      };
-    })(tag);
-  }
+  (function(tags) {
+    var tag, _i, _len;
+    for (_i = 0, _len = tags.length; _i < _len; _i++) {
+      tag = tags[_i];
+      h[tag] = (function(t) {
+        return function() {
+          var args;
+          args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+          args.unshift(t);
+          return h.tag.apply(h, args);
+        };
+      })(tag);
+      return;
+    }
+  })('a p strong em ul ol li div span'.split(' '));
   return h;
 });

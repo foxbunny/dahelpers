@@ -717,35 +717,15 @@ define () ->
   #
   # They take the same arguments as the `#tag()` method except `name`.
   #
-  tags = 'a p strong em ul ol li div span'.split ' '
-
-  for tag in tags
-    ## For instance, if we did this:
-    ##
-    ##     for tag in tags
-    ##       h[tag] = (args...) ->
-    ##         args.unshift tag
-    ##         h.tag.apply h, args
-    ##
-    ## The above would simply use the last value of the `tag` variable at
-    ## runtime, which happens to be the last value assigned to it ever, which
-    ## is `'footer'`. This is because there are no block scopes in JavaScript.
-    ## The `tag` variable used above is defined at the top of the scope in
-    ## which we are making the `for` loop, and since the method is referring to
-    ## the same variable, it will use the last value the variable points to.
-    ##
-    ## Because of that, we create a closure using immediate-execution pattern.
-    ## We pass the immediately-executing function the `tag` variable. The
-    ## function will name the argument `tag` (could have been any other name)
-    ## and that new `tag` variable is now defined within its own scope and has
-    ## nothing to do with the `tag` variable outside it. We then define the
-    ## method we want within that closure and the new `tag` variable is
-    ## available to the method.
-    h[tag] = ((tag) ->
-      (args...) ->
-        args.unshift tag
-        h.tag.apply h, args
-    )(tag)
+  ((tags) ->
+    for tag in tags
+      h[tag] = ((t) ->  # <-- `t` refers to `tag` within the closure
+        (args...) ->
+          args.unshift t
+          h.tag.apply h, args
+      )(tag)
+      return  # Return here so CoffeeScript doesn't return an array of results
+  ) 'a p strong em ul ol li div span'.split ' '
 
   h # return the module
 

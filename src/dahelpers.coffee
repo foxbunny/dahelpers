@@ -726,10 +726,22 @@ define () ->
     #
     # The callback function takes two arguments. The first argument is the
     # property currently being iterated, and the second argument is the name of
-    # the key.
+    # the key. The key name will be a full property path. For example a key
+    # name for `obj.foo.bar.baz` would be 'foo.bar.baz' (see example).
     #
     # The undocumented `key` argument is an internal implementation detail, and
     # should not be be passed under normal circumstances.
+    #
+    # Example:
+    #
+    #     var obj = {a: 1, b: 2, c: {a: 1, b: 2}};
+    #     dahelpers.walk(obj, console.log);
+    #     // Logs:
+    #     // 1 a
+    #     // 2 b
+    #     // Object { a=1, b=2 } c
+    #     // 1 c.a
+    #     // 2 c.b
     #
     walk: (obj, cb, key=null) ->
       if obj is Object(obj) and obj.constructor isnt Array

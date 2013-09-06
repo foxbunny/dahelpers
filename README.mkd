@@ -44,6 +44,12 @@ NodeJS.
    - [`#pounds(num, dec, si)`](#pounds-num-dec-si)
    - [`#wrap(s, [len, sep])`](#wrap-s-len-sep)
    - [`#slug(s)`](#slug-s)
+   - [`#props(o, p)`](#props-o-p)
+   - [`#propset(o, p, [v])`](#propset-o-p-v)
+   - [`#walk(obj, cb)`](#walk-obj-cb)
+   - [`#sweep(obj, cb)`](#sweep-obj-cb)
+   - [`#clone(obj)`](#clone-obj)
+   - [`#rekey(obj, map)`](#rekey-obj-map)
    - [Tag aliases](#tag-aliases)
  + [Running tests](#running-tests)
  + [Reporting bugs](#reporting-bugs)
@@ -539,6 +545,138 @@ Example:
 
     dahelpers.slug('This is some text.');
     // returns 'this-is-some-text'
+
+
+### `#props(o, p)` <a name="props-o-p"></a>
+
+Get a value of a property tree `p` on the object `o` or undefined if any of the
+segments is undefined without throwing an exception.
+
+Example:
+
+    var obj = {foo: {bar: {baz: 1}}};
+    dahelpers.props(obj, 'foo.bar.baz'); // returns 1
+    dahelpers.props(obj, 'foo.foo.baz'); // returns undefined
+
+
+### `#propset(o, p, [v])` <a name="propset-o-p-v"></a>
+
+Sets the value of the property tree `p`'s last leaf to `v` creating all
+intermediate segments as necessary.
+
+Example:
+
+    var obj = {}
+    dahelpers.propset(obj, 'a.b.c.d.e.f', 1);
+    // obj is now {a: {b: {c: {d: {e: {f: 1}}}}}}
+
+
+### `#walk(obj, cb)` <a name="walk-obj-cb"></a>
+
+Recursively walks down `obj`'s properties and invokes the callback on each one.
+
+The callback function takes two arguments. The first argument is the property
+currently being iterated, and the second argument is the name of the key. The
+key name will be a full property path. For example a key name for
+`obj.foo.bar.baz` would be 'foo.bar.baz' (see example).
+
+The undocumented `key` argument is an internal implementation detail, and
+should not be be passed under normal circumstances.
+
+Example:
+
+    var obj = {a: 1, b: 2, c: {a: 1, b: 2}};
+    dahelpers.walk(obj, console.log);
+    // Logs:
+    // 1 a
+    // 2 b
+    // Object { a=1, b=2 } c
+    // 1 c.a
+    // 2 c.b
+
+
+### `#sweep(obj, cb)` <a name="sweep-obj-cb"></a>
+
+Sweeps over the object attributes, and calls the callback on each key. The
+return value of the callback is used to build a new object with the same
+property structure as the old one.
+
+This method is similar to `#walk()` and uses walk to iterate over the object.
+
+The callback function takes four arguments:
+
+ + the value of the key
+ + the full key (e.g, 'foo.bar.baz' for `obj.foo.bar.baz`)
+ + boolean flag which is `true` if value is an object
+
+
+The reason for the latter is that the value's properties will also be iterated
+when a value is an object, so you may want to adjust the handling of that case.
+
+If the callback function returns undefined, the matching property will not be
+set at all on the resulting object.
+
+Example:
+
+    obj = {a: 1, b: 2, c: 3}
+    dahelpers.sweep(obj, function(v) { return v + 1; });
+    // Returns {a: 2, b: 3, c: 4}
+
+
+### `#clone(obj)` <a name="clone-obj"></a>
+
+Returns an exact clone of `obj`.
+
+This metood calls `#sweep()` internally, and special-cases values that use
+`Date`, `RegExp` and `Array` constructor. Other objects are return as is.
+
+It currently does not clone items within arrays embedded in objects. It just
+crates a new array containing the same objects as the original one.
+
+Example:
+
+    obj = {foo: 1, bar: {baz: new Date(2013, 8, 1)}};
+    obj1 = dahelpers.clone(obj)
+    obj1.bar.baz.setFullYear(2020);
+    obj.bar.baz.getFullYear() == obj1.bar.baz.getFullYear()
+    // Should be `false`
+
+
+### `#rekey(obj, map)` <a name="rekey-obj-map"></a>
+
+Creates a new object whose keys are translated to new names using `map`.
+
+`map` should be a simple object that maps original keys to new keys. Both
+original and new keys can be full property subtrees.
+
+The target structure is unrelated to source structure, so an object of
+arbitrary complexity (or simplicity) can be created from any object.
+
+Any keys that are not found in the map will not be present in the new object.
+Keys that are undefined in the original object will also not be present in the
+new object.
+
+Example:
+
+    var obj = {
+      a: {
+        b: 1,
+        c: 2
+      },
+      d: {
+        e: 3,
+        f: 4
+      }
+    };
+
+
+    dahelpers.rekey(obj, {
+      'a.b', 'aa.b.bb',
+      'a.c', 'aa.b.cc',
+      'a.d', 'aa.b.dd'
+    })
+    // Returns
+    // {aa: b: {{bb: 1, cc: 1}}}
 
 
 ### Tag aliases <a name="tag-aliases"></a>

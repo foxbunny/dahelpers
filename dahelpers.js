@@ -366,7 +366,7 @@ define(function() {
     props: function(o, p) {
       var f, r, _ref;
       if (o == null) {
-        return void 0;
+        return;
       }
       if (p == null) {
         return o;
@@ -382,6 +382,21 @@ define(function() {
         }
       }
     },
+    propset: function(o, p, v) {
+      var f, r, _ref;
+      if (o == null) {
+        return;
+      }
+      if ((p == null) || (p === '')) {
+        return o;
+      }
+      _ref = p.split('.'), f = _ref[0], r = 2 <= _ref.length ? __slice.call(_ref, 1) : [];
+      if (o[f] == null) {
+        o[f] = !r.length ? v : {};
+      }
+      h.propset(o[f], r.join('.'), v);
+      return o;
+    },
     walk: function(obj, cb, key) {
       var k;
       if (key == null) {
@@ -395,8 +410,21 @@ define(function() {
           h.walk(obj[k], cb, (key ? [key, k].join('.') : k));
         }
       } else {
-        return cb(obj, key);
+        cb(obj, key);
       }
+    },
+    sweep: function(obj, cb) {
+      return (function(o) {
+        h.walk(obj, function(v, k) {
+          var isObj, v1;
+          isObj = v === Object(v) && v.constructor !== Array;
+          v1 = cb(v, k, isObj);
+          if (typeof v1 !== 'undefined') {
+            return h.propset(o, k, v1);
+          }
+        });
+        return o;
+      })({});
     }
   };
   (function(tags) {

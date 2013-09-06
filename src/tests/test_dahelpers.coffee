@@ -472,6 +472,31 @@ describe '#props()', () ->
     v = h.props()
     assert.equal v, undefined
 
+describe '#propset()', () ->
+  it 'should set a property tree and assign a value to the leaf', () ->
+    obj = {}
+    h.propset obj, 'foo.bar.baz', 1
+    assert.deepEqual obj,
+      foo:
+        bar:
+          baz: 1
+
+  it 'should also accept funky property names', () ->
+    obj = {}
+    h.propset obj, 'foo.This is totally funky!.bar', 1
+    assert.deepEqual obj,
+      foo:
+        'This is totally funky!':
+          bar: 1
+
+  it 'should be chainable', () ->
+    obj = {}
+    h.propset h.propset(obj, 'foo.bar', 2), 'foo.baz', 3
+    assert.deepEqual obj,
+      foo:
+        bar: 2
+        baz: 3
+
 describe '#walk()', () ->
   it 'should access all properties of an object exactly once', () ->
     obj =
@@ -512,6 +537,45 @@ describe '#walk()', () ->
       [[1, 2, 3], 'b']
       [null, 'c']
     ]
+
+describe '#sweep()', () ->
+  it 'should sweep over an object, and create a new one', () ->
+    d = new Date(2013, 8, 1)
+
+    obj =
+      a: 1
+      b: [1,2,3]
+      c:
+        d: null
+        e: d
+
+    obj1 = dahelpers.sweep obj, (args...) ->
+      args[0]
+
+    assert.deepEqual obj, obj1
+
+  it 'should create a clone, not return same object', () ->
+    obj =
+      a: 1
+      b:
+        c:
+          d: 2
+          e: 3
+
+    obj1 = dahelpers.sweep obj, (v) -> v
+    obj1.b = 2
+
+    assert.deepEqual obj1, {a: 1, b: 2}
+    assert.notDeepEqual obj, obj1
+
+  it 'shoud not set any properties that return undefined from cb', () ->
+    obj =
+      a: 1
+      b: 2
+      c: 3
+
+    obj1 = dahelpers.sweep obj, () -> return
+    assert.deepEqual obj1, {}
 
 describe 'tag aliases', () ->
   it 'will render appropriate tags', () ->

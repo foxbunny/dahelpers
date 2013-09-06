@@ -614,6 +614,44 @@ describe('#props()', function() {
   });
 });
 
+describe('#propset()', function() {
+  it('should set a property tree and assign a value to the leaf', function() {
+    var obj;
+    obj = {};
+    h.propset(obj, 'foo.bar.baz', 1);
+    return assert.deepEqual(obj, {
+      foo: {
+        bar: {
+          baz: 1
+        }
+      }
+    });
+  });
+  it('should also accept funky property names', function() {
+    var obj;
+    obj = {};
+    h.propset(obj, 'foo.This is totally funky!.bar', 1);
+    return assert.deepEqual(obj, {
+      foo: {
+        'This is totally funky!': {
+          bar: 1
+        }
+      }
+    });
+  });
+  return it('should be chainable', function() {
+    var obj;
+    obj = {};
+    h.propset(h.propset(obj, 'foo.bar', 2), 'foo.baz', 3);
+    return assert.deepEqual(obj, {
+      foo: {
+        bar: 2,
+        baz: 3
+      }
+    });
+  });
+});
+
 describe('#walk()', function() {
   it('should access all properties of an object exactly once', function() {
     var obj, walkArgs;
@@ -648,6 +686,58 @@ describe('#walk()', function() {
       return walkArgs.push(args);
     });
     return assert.deepEqual(walkArgs, [[1, 'a'], [[1, 2, 3], 'b'], [null, 'c']]);
+  });
+});
+
+describe('#sweep()', function() {
+  it('should sweep over an object, and create a new one', function() {
+    var d, obj, obj1;
+    d = new Date(2013, 8, 1);
+    obj = {
+      a: 1,
+      b: [1, 2, 3],
+      c: {
+        d: null,
+        e: d
+      }
+    };
+    obj1 = dahelpers.sweep(obj, function() {
+      var args;
+      args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+      return args[0];
+    });
+    return assert.deepEqual(obj, obj1);
+  });
+  it('should create a clone, not return same object', function() {
+    var obj, obj1;
+    obj = {
+      a: 1,
+      b: {
+        c: {
+          d: 2,
+          e: 3
+        }
+      }
+    };
+    obj1 = dahelpers.sweep(obj, function(v) {
+      return v;
+    });
+    obj1.b = 2;
+    assert.deepEqual(obj1, {
+      a: 1,
+      b: 2
+    });
+    return assert.notDeepEqual(obj, obj1);
+  });
+  return it('shoud not set any properties that return undefined from cb', function() {
+    var obj, obj1;
+    obj = {
+      a: 1,
+      b: 2,
+      c: 3
+    };
+    obj1 = dahelpers.sweep(obj, function() {});
+    return assert.deepEqual(obj1, {});
   });
 });
 

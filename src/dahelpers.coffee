@@ -711,13 +711,27 @@ define () ->
     #     dahelpers.props(obj, 'foo.foo.baz'); // returns undefined
     #
     props: (o, p) ->
-      return undefined if not o?
+      return if not o?
       return o if not p?
       [f, r...] = p.split('.')
       if not r.length
         return o[f]
       else
         if not o[f]? then undefined else h.props o[f], r.join('.')
+
+    # ### `#propset(o, p, [v])`
+    #
+    # Sets the value of the property tree `p`'s last leaf to `v` creating all
+    # intermediate segments as necessary.
+    #
+    propset: (o, p, v) ->
+      return if not o?
+      return o if (not p?) or (p is '')
+      [f, r...] = p.split('.')
+      if not o[f]?
+        o[f] = if not r.length then v else {}
+      h.propset o[f], (r.join '.'), v
+      o
 
     # ### `#walk(obj, cb)`
     #
@@ -751,6 +765,38 @@ define () ->
         return
       else
         cb obj, key
+        return
+
+    # ### `#sweep(obj, cb)`
+    #
+    # Sweeps over the object attributes, and calls the callback on each key.
+    # The return value of the callback is used to build a new object with the
+    # same property structure as the old one.
+    #
+    # This method is similar to `#walk()` and uses walk to iterate over the
+    # object.
+    #
+    # The callback function takes four arguments:
+    #
+    #  + the value of the key
+    #  + the full key (e.g, 'foo.bar.baz' for `obj.foo.bar.baz`)
+    #  + boolean flag which is `true` if value is an object
+    #
+    # The reason for the latter is that the value's properties will also be
+    # iterated when a value is an object, so you may want to adjust the
+    # handling of that case.
+    #
+    # If the callback function returns undefined, the matching property will
+    # not be set at all on the resulting object.
+    #
+    sweep: (obj, cb) ->
+      ((o) ->
+        h.walk obj, (v, k) ->
+          isObj = v is Object(v) and v.constructor isnt Array
+          v1 = cb(v, k, isObj)
+          h.propset o, k, v1 if typeof v1 isnt 'undefined'
+        o
+      ) {}
 
   # ### Tag aliases
   #

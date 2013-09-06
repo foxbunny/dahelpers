@@ -6,11 +6,24 @@
 
 The tag aliasing was broken after 0.0.2 refactor. This is now fixed.
 
-### Added `#props()` helper
+### Added `#clone()` and `#rekey()` methods
+
+These methods allow developers to clone objects or remap their property 
+structure.
+
+### Added `#walk()` and `#sweep()` methods
+
+These methods allow developers to iterate object properties in various ways and
+perform operations on them.
+
+### Added `#props()` and `#propset()` methods
 
 The `#props()` helper is used for retrieving deeply nested object properties
 without the need for checking whether individual segments of the property tree
 are defined.
+
+The `#propset()` helper allows us to set deeply nested object properties at
+once without having to manually create the intermediate structure.
 
 ### Refactored `#pad()` method
 

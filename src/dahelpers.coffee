@@ -758,7 +758,7 @@ define () ->
     #     // 2 c.b
     #
     walk: (obj, cb, key=null) ->
-      if obj is Object(obj) and obj.constructor isnt Array
+      if obj is Object(obj) and obj.constructor is Object
         cb(obj, key) if key isnt null  # Do once for the entire subtree
         for k of obj
           h.walk obj[k], cb, (if key then [key, k].join('.') else k)
@@ -789,14 +789,53 @@ define () ->
     # If the callback function returns undefined, the matching property will
     # not be set at all on the resulting object.
     #
+    # Example:
+    #
+    #     obj = {a: 1, b: 2, c: 3}
+    #     dahelpers.sweep(obj, function(v) { return v + 1; });
+    #     // Returns {a: 2, b: 3, c: 4}
+    #
     sweep: (obj, cb) ->
       ((o) ->
         h.walk obj, (v, k) ->
-          isObj = v is Object(v) and v.constructor isnt Array
+          isObj = v is Object(v) and v.constructor is Object
           v1 = cb(v, k, isObj)
           h.propset o, k, v1 if typeof v1 isnt 'undefined'
         o
       ) {}
+
+    # ### `#clone(obj)`
+    #
+    # Returns an exact clone of `obj`.
+    #
+    # This metood calls `#sweep()` internally, and special-cases values that
+    # use `Date`, `RegExp` and `Array` constructor. Other objects are return as
+    # is.
+    #
+    # It currently does not clone items within arrays embedded in objects. It
+    # just crates a new array containing the same objects as the original one.
+    #
+    # Example:
+    #
+    #     obj = {foo: 1, bar: {baz: new Date(2013, 8, 1)}};
+    #     obj1 = dahelpers.clone(obj)
+    #     obj1.bar.baz.setFullYear(2020);
+    #     obj.bar.baz.getFullYear() == obj1.bar.baz.getFullYear()
+    #     // Should be `false`
+    #
+    clone: (obj) ->
+      return obj if typeof obj isnt 'object' or obj is null
+      h.sweep obj, (v) ->
+        return if typeof v is 'undefined'
+        return null if v is null
+        return v if typeof v isnt 'object' or not v.constructor?
+
+        switch v.constructor
+          when Object then {}  # Empty because props will be recursed into
+          when Date then new Date v.getTime()
+          when RegExp then new RegExp v
+          when Array then v[0..]
+          else v
 
   # ### Tag aliases
   #

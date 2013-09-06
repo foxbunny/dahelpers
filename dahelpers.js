@@ -402,7 +402,7 @@ define(function() {
       if (key == null) {
         key = null;
       }
-      if (obj === Object(obj) && obj.constructor !== Array) {
+      if (obj === Object(obj) && obj.constructor === Object) {
         if (key !== null) {
           cb(obj, key);
         }
@@ -417,7 +417,7 @@ define(function() {
       return (function(o) {
         h.walk(obj, function(v, k) {
           var isObj, v1;
-          isObj = v === Object(v) && v.constructor !== Array;
+          isObj = v === Object(v) && v.constructor === Object;
           v1 = cb(v, k, isObj);
           if (typeof v1 !== 'undefined') {
             return h.propset(o, k, v1);
@@ -425,6 +425,34 @@ define(function() {
         });
         return o;
       })({});
+    },
+    clone: function(obj) {
+      if (typeof obj !== 'object' || obj === null) {
+        return obj;
+      }
+      return h.sweep(obj, function(v) {
+        if (typeof v === 'undefined') {
+          return;
+        }
+        if (v === null) {
+          return null;
+        }
+        if (typeof v !== 'object' || (v.constructor == null)) {
+          return v;
+        }
+        switch (v.constructor) {
+          case Object:
+            return {};
+          case Date:
+            return new Date(v.getTime());
+          case RegExp:
+            return new RegExp(v);
+          case Array:
+            return v.slice(0);
+          default:
+            return v;
+        }
+      });
     }
   };
   (function(tags) {

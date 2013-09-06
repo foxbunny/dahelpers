@@ -741,6 +741,50 @@ describe('#sweep()', function() {
   });
 });
 
+describe('#clone()', function() {
+  it('should clone objects', function() {
+    var obj, obj1;
+    obj = {
+      a: 1,
+      b: true,
+      c: null,
+      d: {
+        e: new Date(2013, 8, 15),
+        f: /\d+/g,
+        g: [1, 2, 3]
+      }
+    };
+    obj1 = dahelpers.clone(obj);
+    assert.equal(obj.a, obj1.a);
+    assert.equal(obj.b, obj1.b);
+    assert.equal(obj.c, obj1.c);
+    assert.notEqual(obj.d.e, obj1.d.e);
+    assert.equal(obj.d.e.getTime(), obj1.d.e.getTime());
+    assert.notEqual(obj.d.f, obj1.d.f);
+    assert.equal(obj.d.f.toString(), obj1.d.f.toString());
+    return assert.deepEqual(obj.d.g, obj1.d.g);
+  });
+  it('should make real clones, not just two identical copies', function() {
+    var obj, obj1;
+    obj = {
+      a: new Date(2013, 8, 15)
+    };
+    obj1 = dahelpers.clone(obj);
+    obj1.a.setFullYear(2020);
+    return assert.notEqual(obj.a.getTime(), obj1.a.getTime());
+  });
+  return it('should return simple types as is', function() {
+    var v, vals, _i, _len, _results;
+    vals = [1, 12.4, true, false, null, 'a', void 0];
+    _results = [];
+    for (_i = 0, _len = vals.length; _i < _len; _i++) {
+      v = vals[_i];
+      _results.push(assert.equal(v, dahelpers.clone(v)));
+    }
+    return _results;
+  });
+});
+
 describe('tag aliases', function() {
   it('will render appropriate tags', function() {
     var s, tag, tags, _i, _len;

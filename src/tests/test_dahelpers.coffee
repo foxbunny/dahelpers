@@ -577,6 +577,43 @@ describe '#sweep()', () ->
     obj1 = dahelpers.sweep obj, () -> return
     assert.deepEqual obj1, {}
 
+describe '#clone()', () ->
+  it 'should clone objects', () ->
+    obj =
+      a: 1
+      b: true
+      c: null
+      d:
+        e: new Date(2013, 8, 15)
+        f: /\d+/g
+        g: [1, 2, 3]
+
+    obj1 = dahelpers.clone obj
+
+    assert.equal obj.a, obj1.a
+    assert.equal obj.b, obj1.b
+    assert.equal obj.c, obj1.c
+
+    assert.notEqual obj.d.e, obj1.d.e  # They are now different Date objects
+    assert.equal obj.d.e.getTime(), obj1.d.e.getTime()  # but same time
+
+    assert.notEqual obj.d.f, obj1.d.f  # They are now different RegExp objects
+    assert.equal obj.d.f.toString(), obj1.d.f.toString()  # but same regexp
+
+    assert.deepEqual obj.d.g, obj1.d.g
+
+  it 'should make real clones, not just two identical copies', () ->
+    obj =
+      a: new Date(2013, 8, 15)
+    obj1 = dahelpers.clone obj
+    obj1.a.setFullYear 2020
+    assert.notEqual obj.a.getTime(), obj1.a.getTime()
+
+  it 'should return simple types as is', () ->
+    vals = [1, 12.4, true, false, null, 'a', undefined]
+    for v in vals
+      assert.equal v, dahelpers.clone v
+
 describe 'tag aliases', () ->
   it 'will render appropriate tags', () ->
     tags = 'a p strong em ul ol li div span'.split ' '

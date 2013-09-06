@@ -1,5 +1,17 @@
 # DaHelpers Changelog
 
+## 0.0.3
+
+### Fixed aliasing code
+
+The tag aliasing was broken after 0.0.2 refactor. This is now fixed.
+
+### Added `#props()` helper
+
+The `#props()` helper is used for retrieving deeply nested object properties
+without the need for checking whether individual segments of the property tree
+are defined.
+
 ## 0.0.2
 
 Minor improvements to documentation and small refactor of tag aliases code.

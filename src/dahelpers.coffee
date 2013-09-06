@@ -703,6 +703,13 @@ define () ->
     #
     # Get a value of a property tree `p` on the object `o` or undefined if any
     # of the segments is undefined without throwing an exception.
+    #
+    # Example:
+    #
+    #     var obj = {foo: {bar: {baz: 1}}};
+    #     dahelpers.props(obj, 'foo.bar.baz'); // returns 1
+    #     dahelpers.props(obj, 'foo.foo.baz'); // returns undefined
+    #
     props: (o, p) ->
       return undefined if not o?
       return o if not p?

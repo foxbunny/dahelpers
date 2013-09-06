@@ -572,27 +572,67 @@ describe('#slug()', function() {
   });
 });
 
+describe('#props()', function() {
+  it('should retrieve a property tree', function() {
+    var obj, v;
+    obj = {
+      a: {
+        b: {
+          c: {
+            d: 1
+          }
+        }
+      }
+    };
+    v = h.props(obj, 'a.b.c.d');
+    return assert.equal(v, 1);
+  });
+  it('should return undefined if at least one segment is undefined', function() {
+    var obj, v;
+    obj = {
+      a: {
+        b: {
+          c: {
+            d: 1
+          }
+        }
+      }
+    };
+    v = h.props(obj, 'a.b.foo.d');
+    return assert.equal(v, void 0);
+  });
+  it('should return original object if `p` is not passed', function() {
+    var obj, v;
+    obj = 'foo';
+    v = h.props(obj);
+    return assert.equal(v, obj);
+  });
+  return it('should return undefined if object is not passed', function() {
+    var v;
+    v = h.props();
+    return assert.equal(v, void 0);
+  });
+});
+
 describe('tag aliases', function() {
   it('will render appropriate tags', function() {
-    var tag, tags, _i, _len, _results;
+    var s, tag, tags, _i, _len;
     tags = 'a p strong em ul ol li div span'.split(' ');
-    _results = [];
     for (_i = 0, _len = tags.length; _i < _len; _i++) {
       tag = tags[_i];
-      _results.push(assert.equal(h[tag](), "<" + tag + "></" + tag + ">"));
+      s = h[tag]();
+      assert.equal(s, "<" + tag + "></" + tag + ">");
     }
-    return _results;
   });
   return it('accepts the same arguments as #tag()', function() {
-    var tag, tags, _i, _len, _results;
+    var s, tag, tags, _i, _len;
     tags = 'a p strong em ul ol li div span'.split(' ');
-    _results = [];
     for (_i = 0, _len = tags.length; _i < _len; _i++) {
       tag = tags[_i];
-      _results.push(assert.equal(h[tag]('foo', {
+      s = h[tag]('foo', {
         foo: 'bar'
-      }), "<" + tag + " foo=\"bar\">foo</" + tag + ">"));
+      });
+      assert.equal(s, "<" + tag + " foo=\"bar\">foo</" + tag + ">");
     }
-    return _results;
   });
 });

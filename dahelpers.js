@@ -362,6 +362,25 @@ define(function() {
       s = s.toString().toLowerCase().replace(/\W+/g, '-');
       s = s.replace(/[_-]+$/, '');
       return s.replace(/^[_-]+/, '');
+    },
+    props: function(o, p) {
+      var f, r, _ref;
+      if (o == null) {
+        return void 0;
+      }
+      if (p == null) {
+        return o;
+      }
+      _ref = p.split('.'), f = _ref[0], r = 2 <= _ref.length ? __slice.call(_ref, 1) : [];
+      if (!r.length) {
+        return o[f];
+      } else {
+        if (o[f] == null) {
+          return void 0;
+        } else {
+          return h.props(o[f], r.join('.'));
+        }
+      }
     }
   };
   (function(tags) {

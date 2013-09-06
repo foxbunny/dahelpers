@@ -442,16 +442,49 @@ describe '#slug()', () ->
     s = h.slug()
     assert.equal s, ''
 
+describe '#props()', () ->
+  it 'should retrieve a property tree', () ->
+    obj =
+      a:
+        b:
+          c:
+            d: 1
+
+    v = h.props obj, 'a.b.c.d'
+    assert.equal v, 1
+
+  it 'should return undefined if at least one segment is undefined', () ->
+    obj =
+      a:
+        b:
+          c:
+            d:
+              1
+    v = h.props obj, 'a.b.foo.d'
+    assert.equal v, undefined
+
+  it 'should return original object if `p` is not passed', () ->
+    obj = 'foo'
+    v = h.props obj
+    assert.equal v, obj
+
+  it 'should return undefined if object is not passed', () ->
+    v = h.props()
+    assert.equal v, undefined
+
 describe 'tag aliases', () ->
   it 'will render appropriate tags', () ->
     tags = 'a p strong em ul ol li div span'.split ' '
 
     for tag in tags
-      assert.equal h[tag](), "<#{tag}></#{tag}>"
+      s = h[tag]()
+      assert.equal s, "<#{tag}></#{tag}>"
+    return
 
   it 'accepts the same arguments as #tag()', () ->
     tags = 'a p strong em ul ol li div span'.split ' '
 
     for tag in tags
-      assert.equal h[tag]('foo', foo: 'bar'),
-        "<#{tag} foo=\"bar\">foo</#{tag}>"
+      s = h[tag]('foo', foo: 'bar')
+      assert.equal s, "<#{tag} foo=\"bar\">foo</#{tag}>"
+    return

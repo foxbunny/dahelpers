@@ -699,6 +699,19 @@ define () ->
       s = s.replace /[_-]+$/, ''  # Strip trailing non-letters
       s.replace /^[_-]+/, ''  # Strip leading non-letters
 
+    # ### `#props(o, p)`
+    #
+    # Get a value of a property tree `p` on the object `o` or undefined if any
+    # of the segments is undefined without throwing an exception.
+    props: (o, p) ->
+      return undefined if not o?
+      return o if not p?
+      [f, r...] = p.split('.')
+      if not r.length
+        return o[f]
+      else
+        if not o[f]? then undefined else h.props o[f], r.join('.')
+
   # ### Tag aliases
   #
   # For convenience we include a few aliases for HTML tags that will call

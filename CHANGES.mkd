@@ -1,6 +1,6 @@
 # DaHelpers Changelog
 
-## 0.0.3
+## 0.1.0
 
 ### Fixed aliasing code
 

@@ -614,6 +614,43 @@ describe('#props()', function() {
   });
 });
 
+describe('#walk()', function() {
+  it('should access all properties of an object exactly once', function() {
+    var obj, walkArgs;
+    obj = {
+      a: 1,
+      b: 2,
+      c: 3,
+      d: {
+        e: 4,
+        f: 5
+      }
+    };
+    walkArgs = [];
+    dahelpers.walk(obj, function() {
+      var args;
+      args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+      return walkArgs.push(args);
+    });
+    return assert.deepEqual(walkArgs, [[1, 'a'], [2, 'b'], [3, 'c'], [obj.d, 'd'], [4, 'd.e'], [5, 'd.f']]);
+  });
+  return it('should treat arrays as simple values', function() {
+    var obj, walkArgs;
+    obj = {
+      a: 1,
+      b: [1, 2, 3],
+      c: null
+    };
+    walkArgs = [];
+    dahelpers.walk(obj, function() {
+      var args;
+      args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+      return walkArgs.push(args);
+    });
+    return assert.deepEqual(walkArgs, [[1, 'a'], [[1, 2, 3], 'b'], [null, 'c']]);
+  });
+});
+
 describe('tag aliases', function() {
   it('will render appropriate tags', function() {
     var s, tag, tags, _i, _len;

@@ -719,6 +719,27 @@ define () ->
       else
         if not o[f]? then undefined else h.props o[f], r.join('.')
 
+    # ### `#walk(obj, cb)`
+    #
+    # Recursively walks down `obj`'s properties and invokes the callback on
+    # each one.
+    #
+    # The callback function takes two arguments. The first argument is the
+    # property currently being iterated, and the second argument is the name of
+    # the key.
+    #
+    # The undocumented `key` argument is an internal implementation detail, and
+    # should not be be passed under normal circumstances.
+    #
+    walk: (obj, cb, key=null) ->
+      if obj is Object(obj) and obj.constructor isnt Array
+        cb(obj, key) if key isnt null  # Do once for the entire subtree
+        for k of obj
+          h.walk obj[k], cb, (if key then [key, k].join('.') else k)
+        return
+      else
+        cb obj, key
+
   # ### Tag aliases
   #
   # For convenience we include a few aliases for HTML tags that will call

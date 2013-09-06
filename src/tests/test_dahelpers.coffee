@@ -472,6 +472,47 @@ describe '#props()', () ->
     v = h.props()
     assert.equal v, undefined
 
+describe '#walk()', () ->
+  it 'should access all properties of an object exactly once', () ->
+    obj =
+      a: 1
+      b: 2
+      c: 3
+      d:
+        e: 4
+        f: 5
+
+    walkArgs = []
+
+    dahelpers.walk obj, (args...) ->
+      walkArgs.push args
+
+    assert.deepEqual walkArgs, [
+      [1, 'a']
+      [2, 'b']
+      [3, 'c']
+      [obj.d, 'd']
+      [4, 'd.e']
+      [5, 'd.f']
+    ]
+
+  it 'should treat arrays as simple values', () ->
+    obj =
+      a: 1
+      b: [1, 2, 3]
+      c: null
+
+    walkArgs = []
+
+    dahelpers.walk obj, (args...) ->
+      walkArgs.push args
+
+    assert.deepEqual walkArgs, [
+      [1, 'a']
+      [[1, 2, 3], 'b']
+      [null, 'c']
+    ]
+
 describe 'tag aliases', () ->
   it 'will render appropriate tags', () ->
     tags = 'a p strong em ul ol li div span'.split ' '

@@ -381,6 +381,22 @@ define(function() {
           return h.props(o[f], r.join('.'));
         }
       }
+    },
+    walk: function(obj, cb, key) {
+      var k;
+      if (key == null) {
+        key = null;
+      }
+      if (obj === Object(obj) && obj.constructor !== Array) {
+        if (key !== null) {
+          cb(obj, key);
+        }
+        for (k in obj) {
+          h.walk(obj[k], cb, (key ? [key, k].join('.') : k));
+        }
+      } else {
+        return cb(obj, key);
+      }
     }
   };
   (function(tags) {

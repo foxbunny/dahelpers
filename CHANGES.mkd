@@ -12,6 +12,11 @@ The `#props()` helper is used for retrieving deeply nested object properties
 without the need for checking whether individual segments of the property tree
 are defined.
 
+### Refactored `#pad()` method
+
+The `#pad()` method has been refactored to not depend on the same-named
+variable in the outer scope for recursion.
+
 ## 0.0.2
 
 Minor improvements to documentation and small refactor of tag aliases code.

@@ -785,6 +785,60 @@ describe('#clone()', function() {
   });
 });
 
+describe('#rekey()', function() {
+  it('should translate object keys', function() {
+    var map, obj, obj1;
+    obj = {
+      a: 1,
+      b: 2,
+      c: {
+        d: 3,
+        e: 4
+      }
+    };
+    map = {
+      a: 'a.a',
+      b: 'a.b',
+      'c.d': 'b.a',
+      'c.e': 'b.b'
+    };
+    obj1 = dahelpers.rekey(obj, map);
+    return assert.deepEqual(obj1, {
+      a: {
+        a: 1,
+        b: 2
+      },
+      b: {
+        a: 3,
+        b: 4
+      }
+    });
+  });
+  it('returns undefined if no arguments are passed', function() {
+    return assert.equal(dahelpers.rekey(), void 0);
+  });
+  it('returns simple types as is', function() {
+    return assert.equal(dahelpers.rekey(1, {
+      a: 'b'
+    }), 1);
+  });
+  it('returns object clones if no map is specified', function() {
+    var obj, obj1;
+    obj = {
+      a: new Date(2013, 7, 10)
+    };
+    obj1 = dahelpers.rekey(obj);
+    assert.equal(obj1.a.getTime(), obj.a.getTime());
+    obj1.a.setFullYear(2020);
+    return assert.notEqual(obj1.a.getFullYear(), obj.a.getFullYear());
+  });
+  return it('returns an empty object if map is an empty object', function() {
+    return assert.deepEqual(dahelpers.rekey({
+      a: 1
+    }, {}), {});
+  });
+});
+
 describe('tag aliases', function() {
   it('will render appropriate tags', function() {
     var s, tag, tags, _i, _len;

@@ -837,6 +837,50 @@ define () ->
           when Array then v[0..]
           else v
 
+    # ### `#rekey(obj, map)`
+    #
+    # Creates a new object whose keys are translated to new names using `map`.
+    #
+    # `map` should be a simple object that maps original keys to new keys. Both
+    # original and new keys can be full property subtrees.
+    #
+    # The target structure is unrelated to source structure, so an object of
+    # arbitrary complexity (or simplicity) can be created from any object.
+    #
+    # Any keys that are not found in the map will not be present in the new
+    # object. Keys that are undefined in the original object will also not be
+    # present in the new object.
+    #
+    # Example:
+    #
+    #     var obj = {
+    #       a: {
+    #         b: 1,
+    #         c: 2
+    #       },
+    #       d: {
+    #         e: 3,
+    #         f: 4
+    #       }
+    #     };
+    #
+    #     dahelpers.rekey(obj, {
+    #       'a.b', 'aa.b.bb',
+    #       'a.c', 'aa.b.cc',
+    #       'a.d', 'aa.b.dd'
+    #     })
+    #     // Returns
+    #     // {aa: b: {{bb: 1, cc: 1}}}
+    #
+    rekey: (obj, map) ->
+      return if not obj
+      return obj if typeof obj isnt 'object'
+      return h.clone(obj) if typeof map isnt 'object'
+      newObj = {}
+      for source, target of map
+        h.propset newObj, target, h.props obj, source
+      newObj
+
   # ### Tag aliases
   #
   # For convenience we include a few aliases for HTML tags that will call

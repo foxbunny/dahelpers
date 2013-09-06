@@ -453,6 +453,24 @@ define(function() {
             return v;
         }
       });
+    },
+    rekey: function(obj, map) {
+      var newObj, source, target;
+      if (!obj) {
+        return;
+      }
+      if (typeof obj !== 'object') {
+        return obj;
+      }
+      if (typeof map !== 'object') {
+        return h.clone(obj);
+      }
+      newObj = {};
+      for (source in map) {
+        target = map[source];
+        h.propset(newObj, target, h.props(obj, source));
+      }
+      return newObj;
     }
   };
   (function(tags) {

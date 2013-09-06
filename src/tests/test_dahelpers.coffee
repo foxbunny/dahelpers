@@ -614,6 +614,50 @@ describe '#clone()', () ->
     for v in vals
       assert.equal v, dahelpers.clone v
 
+describe '#rekey()', () ->
+  it 'should translate object keys', () ->
+    obj =
+      a: 1
+      b: 2
+      c:
+        d: 3
+        e: 4
+
+    map =
+      a: 'a.a'
+      b: 'a.b'
+      'c.d': 'b.a'
+      'c.e': 'b.b'
+
+    obj1 = dahelpers.rekey obj, map
+
+    assert.deepEqual obj1,
+      a:
+        a: 1
+        b: 2
+      b:
+        a: 3
+        b: 4
+
+  it 'returns undefined if no arguments are passed', () ->
+    assert.equal dahelpers.rekey(), undefined
+
+  it 'returns simple types as is', () ->
+    assert.equal dahelpers.rekey(1, a: 'b'), 1
+
+  it 'returns object clones if no map is specified', () ->
+    obj =
+      a: new Date(2013, 7, 10)
+
+    obj1 = dahelpers.rekey(obj)
+
+    assert.equal obj1.a.getTime(), obj.a.getTime()
+    obj1.a.setFullYear 2020
+    assert.notEqual obj1.a.getFullYear(), obj.a.getFullYear()
+
+  it 'returns an empty object if map is an empty object', () ->
+    assert.deepEqual dahelpers.rekey({a: 1}, {}), {}
+
 describe 'tag aliases', () ->
   it 'will render appropriate tags', () ->
     tags = 'a p strong em ul ol li div span'.split ' '

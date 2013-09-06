@@ -348,7 +348,7 @@ define () ->
     #     dahelpers.pad('2', 2);             // returns '02'
     #     dahelpers.pad('2.5', 0, null, 3);  // returns '2.50'
     #
-    pad: pad = (s, len, char='0', tail=false, sep='.') ->
+    pad: (s, len, char='0', tail=false, sep='.') ->
       if s? then s = s.toString() else return ''
       if tail is false
         if s.length < len
@@ -358,14 +358,14 @@ define () ->
       else
         [s, t] = s.toString().split sep
         if tail is false
-          pad s, len, char
+          h.pad s, len, char
         else
           ## Pad the head-end
-          s = pad s, len, char
+          s = h.pad s, len, char
 
           ## Pad the tail end
           t or= char
-          t = pad h.reverse(t), tail, char
+          t = h.pad h.reverse(t), tail, char
           t = h.reverse(t)
           [s, t].join sep
 

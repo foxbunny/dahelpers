@@ -24,7 +24,7 @@ define = (function(root) {
 })(this);
 
 define(function() {
-  var h, pad;
+  var h;
   h = {
     USD: '$',
     EUR: '€',
@@ -143,7 +143,7 @@ define(function() {
       m = s.match(new RegExp("(.{1," + n + "})", 'g'));
       return m;
     },
-    pad: pad = function(s, len, char, tail, sep) {
+    pad: function(s, len, char, tail, sep) {
       var t, _ref;
       if (char == null) {
         char = '0';
@@ -168,11 +168,11 @@ define(function() {
       } else {
         _ref = s.toString().split(sep), s = _ref[0], t = _ref[1];
         if (tail === false) {
-          return pad(s, len, char);
+          return h.pad(s, len, char);
         } else {
-          s = pad(s, len, char);
+          s = h.pad(s, len, char);
           t || (t = char);
-          t = pad(h.reverse(t), tail, char);
+          t = h.pad(h.reverse(t), tail, char);
           t = h.reverse(t);
           return [s, t].join(sep);
         }

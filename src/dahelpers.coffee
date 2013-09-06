@@ -719,12 +719,12 @@ define () ->
   #
   ((tags) ->
     for tag in tags
-      h[tag] = ((t) ->  # <-- `t` refers to `tag` within the closure
+      h[tag] = ((t) ->
         (args...) ->
           args.unshift t
           h.tag.apply h, args
-      )(tag)
-      return  # Return here so CoffeeScript doesn't return an array of results
+      ) tag
+    return
   ) 'a p strong em ul ol li div span'.split ' '
 
   h # return the module

@@ -376,7 +376,6 @@ define(function() {
           return h.tag.apply(h, args);
         };
       })(tag);
-      return;
     }
   })('a p strong em ul ol li div span'.split(' '));
   return h;

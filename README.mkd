@@ -56,6 +56,8 @@ JavaScript in browsers and on NodeJS.
    - [`#clone(obj)`](#clone-obj)
    - [`#rekey(obj, map)`](#rekey-obj-map)
    - [`#toArray(v)`](#toarray-v)
+   - [`#empty(v)`](#empty-v)
+   - [`#truth(v)`](#truth-v)
    - [Tag aliases](#tag-aliases)
  + [Running tests](#running-tests)
  + [Reporting bugs](#reporting-bugs)
@@ -768,6 +770,39 @@ Example:
     dahelpers.toArray(a);
     // returns ['foo']
 
+
+### `#empty(v)` <a name="empty-v"></a>
+
+Tests if `v` is an empty object, array, or string.
+
+Always returns undefined if `v` is not array, object, nor string.
+
+Examples:
+
+    dahelpers.empty({});         // true
+    dahelpers.empty([]);         // true
+    dahelpers.empty(1);          // undefined
+    dahelpers.empty([1,2,3]);    // false
+    dahelpers.empty('');         // true
+    dahelpers.empty('foo bar');  // false
+
+
+### `#truth(v)` <a name="truth-v"></a>
+
+A more pragmatic truthy and falsy.
+
+This method returns `false` for the following values:
+
+ + `undefined`
+ + `null`
+ + `0`
+ + `''`
+ + `false`
+ + `{}`
+ + `[]`
+
+
+For all other values, it will return `true`.
 
 ### Tag aliases <a name="tag-aliases"></a>
 

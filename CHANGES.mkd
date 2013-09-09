@@ -1,5 +1,21 @@
 # DaHelpers Changelog
 
+## 0.2.0
+
+### Added `#extend()` method
+
+The new jQuery-style `#extend()` method deep-copies properties from one or more
+mixins to an object.
+
+The `#clone()` method now uses `#extend()` under the hood and some of the
+clone's logic has been moved to `#extend()`.
+
+### `#propset()` now overwrites existing properties
+
+As the heading says, propset now properly overwrites existing properties. If
+you have depended on the previous wrong behavior, please fix your code before
+updating to 0.2.0.
+
 ## 0.1.0
 
 ### Fixed aliasing code

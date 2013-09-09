@@ -1,5 +1,11 @@
 # DaHelpers Changelog
 
+## 0.2.2
+
+### Added `#escape()` method
+
+This method escapes special HTML characters.
+
 ## 0.2.0
 
 ### Added `#extend()` method

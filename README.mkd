@@ -53,6 +53,7 @@ NodeJS.
    - [`#extend(obj, mixin, [mixin...])`](#extend-obj-mixin-mixin)
    - [`#clone(obj)`](#clone-obj)
    - [`#rekey(obj, map)`](#rekey-obj-map)
+   - [`#toArray(v)`](#toarray-v)
    - [Tag aliases](#tag-aliases)
  + [Running tests](#running-tests)
  + [Reporting bugs](#reporting-bugs)
@@ -710,6 +711,17 @@ Example:
     })
     // Returns
     // {aa: b: {{bb: 1, cc: 1}}}
+
+
+### `#toArray(v)` <a name="toarray-v"></a>
+
+Converts `v` to an array if it's not an array.
+
+Example:
+
+    a = 'foo'
+    dahelpers.toArray(a);
+    // returns ['foo']
 
 
 ### Tag aliases <a name="tag-aliases"></a>

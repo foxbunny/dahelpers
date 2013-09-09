@@ -789,6 +789,31 @@ describe '#toArray()', () ->
     a = [1, 2, 3]
     assert.deepEqual dahelpers.toArray(a), a
 
+describe '#empty()', () ->
+  it 'should tell us if array is empty', () ->
+    a1 = [1, 2, 3]
+    a2 = []
+    assert.notOk dahelpers.empty a1
+    assert.ok dahelpers.empty a2
+
+  it 'should tell us if object is empty', () ->
+    o1 = foo: 'bar'
+    o2 = {}
+    assert.notOk dahelpers.empty o1
+    assert.ok dahelpers.empty o2
+
+  it 'should tell us if string is empty', () ->
+    s1 = 'foo bar'
+    s2 = ''
+    assert.notOk dahelpers.empty s1
+    assert.ok dahelpers.empty s2
+
+  it 'should treat anything else as empty', () ->
+    assert.equal dahelpers.empty(1), undefined
+    assert.equal dahelpers.empty(null), undefined
+    assert.equal dahelpers.empty(undefined), undefined
+    assert.equal dahelpers.empty(true), undefined
+
 describe 'tag aliases', () ->
   it 'will render appropriate tags', () ->
     tags = 'a p strong em ul ol li div span'.split ' '

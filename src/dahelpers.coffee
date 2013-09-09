@@ -1008,6 +1008,25 @@ define () ->
       return [] if not v?
       if h.type(v, 'array') then v else [v]
 
+    # ### `#empty(v)`
+    #
+    # Tests if `v` is an empty object, array, or string.
+    #
+    # Always returns undefined if `v` is not array, object, nor string.
+    #
+    # Examples:
+    #
+    #     dahelpers.empty({});       // true
+    #     dahelpers.empty([]);       // true
+    #     dahelpers.empty(1);        // true
+    #     dahelpers.empty([1,2,3]);  // false
+    #
+    empty: (v) ->
+      if h.type(v, 'array') or h.type(v, 'string')
+        not v.length
+      else if h.type(v, 'object')
+        not (k for k of v).length
+
   # ### Tag aliases
   #
   # For convenience we include a few aliases for HTML tags that will call

@@ -1032,6 +1032,38 @@ describe('#toArray()', function() {
   });
 });
 
+describe('#empty()', function() {
+  it('should tell us if array is empty', function() {
+    var a1, a2;
+    a1 = [1, 2, 3];
+    a2 = [];
+    assert.notOk(dahelpers.empty(a1));
+    return assert.ok(dahelpers.empty(a2));
+  });
+  it('should tell us if object is empty', function() {
+    var o1, o2;
+    o1 = {
+      foo: 'bar'
+    };
+    o2 = {};
+    assert.notOk(dahelpers.empty(o1));
+    return assert.ok(dahelpers.empty(o2));
+  });
+  it('should tell us if string is empty', function() {
+    var s1, s2;
+    s1 = 'foo bar';
+    s2 = '';
+    assert.notOk(dahelpers.empty(s1));
+    return assert.ok(dahelpers.empty(s2));
+  });
+  return it('should treat anything else as empty', function() {
+    assert.equal(dahelpers.empty(1), void 0);
+    assert.equal(dahelpers.empty(null), void 0);
+    assert.equal(dahelpers.empty(void 0), void 0);
+    return assert.equal(dahelpers.empty(true), void 0);
+  });
+});
+
 describe('tag aliases', function() {
   it('will render appropriate tags', function() {
     var s, tag, tags, _i, _len;

@@ -534,6 +534,21 @@ define(function() {
       } else {
         return [v];
       }
+    },
+    empty: function(v) {
+      var k;
+      if (h.type(v, 'array') || h.type(v, 'string')) {
+        return !v.length;
+      } else if (h.type(v, 'object')) {
+        return !((function() {
+          var _results;
+          _results = [];
+          for (k in v) {
+            _results.push(k);
+          }
+          return _results;
+        })()).length;
+      }
     }
   };
   (function(tags) {

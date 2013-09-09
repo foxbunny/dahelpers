@@ -890,7 +890,7 @@ define () ->
     sweep: (obj, cb) ->
       ((o) ->
         h.walk obj, (v, k) ->
-          isObj = v is Object(v) and v.constructor is Object
+          isObj = v is Object(v) and h.klass(v, Object)
           v1 = cb(v, k, isObj)
           h.propset o, k, v1 if not h.type(v1, 'undefined')
         o
@@ -915,14 +915,14 @@ define () ->
     extend: (obj, mixins...) ->
       for mixin in mixins
         @walk mixin, (v, k) ->
-          return if typeof v is 'undefined'
+          return if h.type(v, 'undefined')
 
-          if typeof v isnt 'object' or v is null
+          if h.klass(v) is false
             h.propset obj, k, v
 
           else
             h.propset obj, k, (() ->
-              switch v.constructor
+              switch h.klass(v)
                 when Object then {}
                 when Date then new Date v.getTime()
                 when RegExp then new RegExp v
@@ -947,7 +947,7 @@ define () ->
     #     // Should be `false`
     #
     clone: (obj) ->
-      return obj if typeof obj isnt 'object' or obj is null
+      return obj if not h.klass(obj, Object)
       h.extend {}, obj
 
     # ### `#rekey(obj, map)`
@@ -987,8 +987,8 @@ define () ->
     #
     rekey: (obj, map) ->
       return if not obj
-      return obj if typeof obj isnt 'object'
-      return h.clone(obj) if typeof map isnt 'object'
+      return obj if h.klass(obj) is false
+      return h.clone(obj) if not h.type(map, 'object')
       newObj = {}
       for source, target of map
         h.propset newObj, target, h.props obj, source
@@ -1006,10 +1006,7 @@ define () ->
     #
     toArray: (v) ->
       return [] if not v?
-      if typeof v is 'object' and v.constructor is Array
-        return v
-      else
-        [v]
+      if h.type(v, 'array') then v else [v]
 
   # ### Tag aliases
   #

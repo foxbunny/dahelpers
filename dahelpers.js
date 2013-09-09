@@ -461,7 +461,7 @@ define(function() {
       return (function(o) {
         h.walk(obj, function(v, k) {
           var isObj, v1;
-          isObj = v === Object(v) && v.constructor === Object;
+          isObj = v === Object(v) && h.klass(v, Object);
           v1 = cb(v, k, isObj);
           if (!h.type(v1, 'undefined')) {
             return h.propset(o, k, v1);
@@ -476,14 +476,14 @@ define(function() {
       for (_i = 0, _len = mixins.length; _i < _len; _i++) {
         mixin = mixins[_i];
         this.walk(mixin, function(v, k) {
-          if (typeof v === 'undefined') {
+          if (h.type(v, 'undefined')) {
             return;
           }
-          if (typeof v !== 'object' || v === null) {
+          if (h.klass(v) === false) {
             return h.propset(obj, k, v);
           } else {
             return h.propset(obj, k, (function() {
-              switch (v.constructor) {
+              switch (h.klass(v)) {
                 case Object:
                   return {};
                 case Date:
@@ -502,7 +502,7 @@ define(function() {
       return obj;
     },
     clone: function(obj) {
-      if (typeof obj !== 'object' || obj === null) {
+      if (!h.klass(obj, Object)) {
         return obj;
       }
       return h.extend({}, obj);
@@ -512,10 +512,10 @@ define(function() {
       if (!obj) {
         return;
       }
-      if (typeof obj !== 'object') {
+      if (h.klass(obj) === false) {
         return obj;
       }
-      if (typeof map !== 'object') {
+      if (!h.type(map, 'object')) {
         return h.clone(obj);
       }
       newObj = {};
@@ -529,7 +529,7 @@ define(function() {
       if (v == null) {
         return [];
       }
-      if (typeof v === 'object' && v.constructor === Array) {
+      if (h.type(v, 'array')) {
         return v;
       } else {
         return [v];

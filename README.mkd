@@ -48,6 +48,7 @@ NodeJS.
    - [`#propset(o, p, [v])`](#propset-o-p-v)
    - [`#walk(obj, cb)`](#walk-obj-cb)
    - [`#sweep(obj, cb)`](#sweep-obj-cb)
+   - [`#extend(obj, mixin, [mixin...])`](#extend-obj-mixin-mixin)
    - [`#clone(obj)`](#clone-obj)
    - [`#rekey(obj, map)`](#rekey-obj-map)
    - [Tag aliases](#tag-aliases)
@@ -622,6 +623,11 @@ Example:
     dahelpers.sweep(obj, function(v) { return v + 1; });
     // Returns {a: 2, b: 3, c: 4}
 
+
+### `#extend(obj, mixin, [mixin...])` <a name="extend-obj-mixin-mixin"></a>
+
+Deep-copies properties from `mixin`s into `obj`. Any properties that are
+already present in `obj` will be overwritten by properties in mixins.
 
 ### `#clone(obj)` <a name="clone-obj"></a>
 

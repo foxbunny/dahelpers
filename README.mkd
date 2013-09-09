@@ -629,12 +629,21 @@ Example:
 Deep-copies properties from `mixin`s into `obj`. Any properties that are
 already present in `obj` will be overwritten by properties in mixins.
 
+It currently does not clone items within arrays embedded in objects. It just
+crates a new array containing the same objects as the original one.
+
+Example:
+
+    obj = {foo: 1, bar: {baz: new Date(2013, 8, 1)}};
+    obj1 = {foo: 2, baz: 3};
+    dahelpers.extend(obj, obj1)
+    // `obj` should now be:
+    // {foo: 2, bar: {baz: Date(2013, 8, 1)}, baz: 3}
+
+
 ### `#clone(obj)` <a name="clone-obj"></a>
 
 Returns an exact clone of `obj`.
-
-This metood calls `#sweep()` internally, and special-cases values that use
-`Date`, `RegExp` and `Array` constructor. Other objects are return as is.
 
 It currently does not clone items within arrays embedded in objects. It just
 crates a new array containing the same objects as the original one.

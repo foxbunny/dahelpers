@@ -207,6 +207,9 @@ define(function() {
       if (decSep == null) {
         decSep = '.';
       }
+      if (num == null) {
+        return '';
+      }
       num = num.toString();
       num = num.replace(/[^\d\.-]/g, '');
       num = parseFloat(num);

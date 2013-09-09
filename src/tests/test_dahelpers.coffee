@@ -261,6 +261,10 @@ describe '#thousands()', () ->
     s = h.thousands -12000
     assert.equal s, '-12,000'
 
+  it 'should return an empty string if passed no argument', () ->
+    s = h.thousands()
+    assert.equal s, ''
+
 describe '#si()', () ->
   it 'will suffix k for thousands', () ->
     s = h.si 1000

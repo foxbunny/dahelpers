@@ -421,6 +421,7 @@ define () ->
     #     dahelpers.thousands(1200000.12, '.', ',');  // returns '1.200.000,00'
     #
     thousands: (num, sep=',', decSep='.') ->
+      return '' if not num?
       num = num.toString()
       num = num.replace /[^\d\.-]/g, ''
       num = parseFloat(num)

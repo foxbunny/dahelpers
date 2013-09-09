@@ -346,10 +346,15 @@ describe('#thousands()', function() {
     s = h.thousands(1000.123, '.', ',');
     return assert.equal(s, '1.000,123');
   });
-  return it('should play nice with negative numbers', function() {
+  it('should play nice with negative numbers', function() {
     var s;
     s = h.thousands(-12000);
     return assert.equal(s, '-12,000');
+  });
+  return it('should return an empty string if passed no argument', function() {
+    var s;
+    s = h.thousands();
+    return assert.equal(s, '');
   });
 });
 

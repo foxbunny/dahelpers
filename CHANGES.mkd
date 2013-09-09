@@ -7,6 +7,15 @@
 This method is a replacement for `typeOf` function. It is able to correctly
 tell the difference between array, object, date, regexp, and null.
 
+### Added `#klass()` method
+
+This method helps test and retrieve objects' constructors.
+
+## Use `#type()` and `#klass()` everywhere
+
+The old type-checking methods have been replaced by `#type()` and `#klass()`
+calls. It seems these methods have proven their usefulness already. :)
+
 ## 0.2.3
 
 ### Fixed `#thousands()` breaking on undefined or null

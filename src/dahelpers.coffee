@@ -889,6 +889,30 @@ define () ->
         h.propset newObj, target, h.props obj, source
       newObj
 
+    # ### `#extend(obj, mixin, [mixin...])`
+    #
+    # Deep-copies properties from `mixin`s into `obj`. Any properties that are
+    # already present in `obj` will be overwritten by properties in mixins.
+    #
+    extend: (obj, mixins...) ->
+      for mixin in mixins
+        @walk mixin, (v, k) ->
+          return if typeof v is 'undefined'
+
+          if typeof v isnt 'object'
+            h.propset obj, k, v
+
+          else
+            h.propset obj, k, (() ->
+              switch v.constructor
+                when Object then {}
+                when Date then new Date v.getTime()
+                when RegExp then new RegExp v
+                when Array then v[0..]
+                else v
+            )()
+      obj
+
   # ### Tag aliases
   #
   # For convenience we include a few aliases for HTML tags that will call

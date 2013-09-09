@@ -2,6 +2,10 @@
 
 ## Dev
 
+### Added `#truth()` method
+
+Gives a better truthy and falsy.
+
 ### Added `#type()` method
 
 This method is a replacement for `typeOf` function. It is able to correctly

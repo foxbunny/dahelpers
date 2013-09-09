@@ -21,6 +21,7 @@ NodeJS.
    - [`#PLURAL_RULES`](#plural_rules)
    - [`#HTML_ESCAPE_MAPPINGS`](#html_escape_mappings)
  + [Helper functions](#helper-functions)
+   - [`#type(v, type)`](#type-v-type)
    - [`#objAttrs(o)`](#objattrs-o)
    - [`#tag(name, content, [attrs, silence])`](#tag-name-content-attrs-silence)
    - [`#escape(s)`](#escape-s)
@@ -149,6 +150,34 @@ Although all the methods are exported as one object, they are completely
 decoupled (they call each other by using the reference to the module object
 `h`, instead of `this`), so you can assign individual methods to variables and
 pass them around.
+
+### `#type(v, type)` <a name="type-v-type"></a>
+
+Tests if `v` is of type `type`. The valid types are:
+
+ + 'null'
+ + 'undefined'
+ + 'string'
+ + 'number'
+ + 'date'
+ + 'regexp'
+ + 'array'
+ + 'function'
+ + 'object'
+
+
+Note that this method can be reliably used as a replacement for `typeOf`
+function and differentiates between more object types.
+
+If the `type` argument is not supplied, it will return the type of the value.
+
+Example:
+
+    dahelpers.type([], 'array');
+    // returns true
+    dahelpers.type([])
+    // returns 'array'
+
 
 ### `#objAttrs(o)` <a name="objattrs-o"></a>
 

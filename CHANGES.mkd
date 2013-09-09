@@ -1,5 +1,16 @@
 # DaHelpers Changelog
 
+## 0.2.3
+
+### Fixed `#thousands()` breaking on undefined or null
+
+The method will now gracefully return empty string if passed undefined or null.
+
+### Added `#toArray()` method
+
+This method it used to convert any non-array value into an array (forcing
+array).
+
 ## 0.2.2
 
 ### Added `#escape()` method

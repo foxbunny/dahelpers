@@ -793,26 +793,43 @@ describe '#empty()', () ->
   it 'should tell us if array is empty', () ->
     a1 = [1, 2, 3]
     a2 = []
-    assert.notOk dahelpers.empty a1
-    assert.ok dahelpers.empty a2
+    assert.equal dahelpers.empty(a1), false
+    assert.equal dahelpers.empty(a2), true
 
   it 'should tell us if object is empty', () ->
     o1 = foo: 'bar'
     o2 = {}
-    assert.notOk dahelpers.empty o1
-    assert.ok dahelpers.empty o2
+    assert.equal dahelpers.empty(o1), false
+    assert.equal dahelpers.empty(o2), true
 
   it 'should tell us if string is empty', () ->
     s1 = 'foo bar'
     s2 = ''
-    assert.notOk dahelpers.empty s1
-    assert.ok dahelpers.empty s2
+    assert.equal dahelpers.empty(s1), false
+    assert.equal dahelpers.empty(s2), true
 
   it 'should treat anything else as empty', () ->
     assert.equal dahelpers.empty(1), undefined
     assert.equal dahelpers.empty(null), undefined
     assert.equal dahelpers.empty(undefined), undefined
     assert.equal dahelpers.empty(true), undefined
+    assert.equal dahelpers.empty(false), undefined
+
+describe '#truth()', () ->
+  it 'should return true for values that we consider true', () ->
+    assertTrue = (v) ->
+      assert.equal dahelpers.truth(v), true, "#{v}, #{h.type(v)}"
+    ((v) ->
+      assertTrue v
+    ) v for v in [1, 'foo', [1,2,3], {foo: 'bar'}, true, new Date(), (() ->)]
+
+  it 'should return false for values that we consider false', () ->
+    assertFalse = (v) ->
+      assert.equal dahelpers.truth(v), false, "#{v}, #{h.type(v)}"
+    ((v) ->
+      assertFalse v
+    ) v for v in [0, null, undefined, '', [], {}, false]
+
 
 describe 'tag aliases', () ->
   it 'will render appropriate tags', () ->

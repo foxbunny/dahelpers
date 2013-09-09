@@ -1037,8 +1037,8 @@ describe('#empty()', function() {
     var a1, a2;
     a1 = [1, 2, 3];
     a2 = [];
-    assert.notOk(dahelpers.empty(a1));
-    return assert.ok(dahelpers.empty(a2));
+    assert.equal(dahelpers.empty(a1), false);
+    return assert.equal(dahelpers.empty(a2), true);
   });
   it('should tell us if object is empty', function() {
     var o1, o2;
@@ -1046,21 +1046,59 @@ describe('#empty()', function() {
       foo: 'bar'
     };
     o2 = {};
-    assert.notOk(dahelpers.empty(o1));
-    return assert.ok(dahelpers.empty(o2));
+    assert.equal(dahelpers.empty(o1), false);
+    return assert.equal(dahelpers.empty(o2), true);
   });
   it('should tell us if string is empty', function() {
     var s1, s2;
     s1 = 'foo bar';
     s2 = '';
-    assert.notOk(dahelpers.empty(s1));
-    return assert.ok(dahelpers.empty(s2));
+    assert.equal(dahelpers.empty(s1), false);
+    return assert.equal(dahelpers.empty(s2), true);
   });
   return it('should treat anything else as empty', function() {
     assert.equal(dahelpers.empty(1), void 0);
     assert.equal(dahelpers.empty(null), void 0);
     assert.equal(dahelpers.empty(void 0), void 0);
-    return assert.equal(dahelpers.empty(true), void 0);
+    assert.equal(dahelpers.empty(true), void 0);
+    return assert.equal(dahelpers.empty(false), void 0);
+  });
+});
+
+describe('#truth()', function() {
+  it('should return true for values that we consider true', function() {
+    var assertTrue, v, _i, _len, _ref, _results;
+    assertTrue = function(v) {
+      return assert.equal(dahelpers.truth(v), true, "" + v + ", " + (h.type(v)));
+    };
+    _ref = [
+      1, 'foo', [1, 2, 3], {
+        foo: 'bar'
+      }, true, new Date(), (function() {})
+    ];
+    _results = [];
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      v = _ref[_i];
+      _results.push((function(v) {
+        return assertTrue(v);
+      })(v));
+    }
+    return _results;
+  });
+  return it('should return false for values that we consider false', function() {
+    var assertFalse, v, _i, _len, _ref, _results;
+    assertFalse = function(v) {
+      return assert.equal(dahelpers.truth(v), false, "" + v + ", " + (h.type(v)));
+    };
+    _ref = [0, null, void 0, '', [], {}, false];
+    _results = [];
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      v = _ref[_i];
+      _results.push((function(v) {
+        return assertFalse(v);
+      })(v));
+    }
+    return _results;
   });
 });
 

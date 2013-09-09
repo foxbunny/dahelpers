@@ -549,6 +549,25 @@ define(function() {
           return _results;
         })()).length;
       }
+    },
+    truth: function(v) {
+      if (h.type(v, 'undefined') || h.type(v, 'null')) {
+        return false;
+      }
+      if (v === 0) {
+        return false;
+      }
+      if (v === '') {
+        return false;
+      }
+      if (v === false) {
+        return false;
+      }
+      if (h.type(v, 'object') || h.type(v, 'array')) {
+        return !h.empty(v);
+      } else {
+        return true;
+      }
     }
   };
   (function(tags) {

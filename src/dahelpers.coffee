@@ -1016,16 +1016,44 @@ define () ->
     #
     # Examples:
     #
-    #     dahelpers.empty({});       // true
-    #     dahelpers.empty([]);       // true
-    #     dahelpers.empty(1);        // true
-    #     dahelpers.empty([1,2,3]);  // false
+    #     dahelpers.empty({});         // true
+    #     dahelpers.empty([]);         // true
+    #     dahelpers.empty(1);          // undefined
+    #     dahelpers.empty([1,2,3]);    // false
+    #     dahelpers.empty('');         // true
+    #     dahelpers.empty('foo bar');  // false
     #
     empty: (v) ->
       if h.type(v, 'array') or h.type(v, 'string')
         not v.length
       else if h.type(v, 'object')
         not (k for k of v).length
+
+    # ### `#truth(v)`
+    #
+    # A more pragmatic truthy and falsy.
+    #
+    # This method returns `false` for the following values:
+    #
+    #  + `undefined`
+    #  + `null`
+    #  + `0`
+    #  + `''`
+    #  + `false`
+    #  + `{}`
+    #  + `[]`
+    #
+    # For all other values, it will return `true`.
+    #
+    truth: (v) ->
+      return false if h.type(v, 'undefined') or h.type(v, 'null')
+      return false if v is 0
+      return false if v is ''
+      return false if v is false
+      if h.type(v, 'object') or h.type(v, 'array')
+        not h.empty v
+      else
+        true
 
   # ### Tag aliases
   #

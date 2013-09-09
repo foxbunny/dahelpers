@@ -753,6 +753,62 @@ describe('#sweep()', function() {
   });
 });
 
+describe('#extend()', function() {
+  it('copies properties from other objects', function() {
+    var obj, obj2;
+    obj = {
+      a: 1
+    };
+    obj2 = {
+      b: 2
+    };
+    dahelpers.extend(obj, obj2);
+    return assert.equal(obj.b, 2);
+  });
+  it('overwrites existing properties', function() {
+    var obj, obj1;
+    obj = {
+      a: 1
+    };
+    obj1 = {
+      a: 2
+    };
+    dahelpers.extend(obj, obj1);
+    return assert.equal(obj.a, 2);
+  });
+  it('should really clone the mixin properties', function() {
+    var obj, obj1;
+    obj = {
+      a: 1
+    };
+    obj1 = {
+      b: new Date(2013, 8, 1)
+    };
+    dahelpers.extend(obj, obj1);
+    obj.b.setFullYear(2020);
+    return assert.notEqual(obj.b.getTime(), obj1.b.getTime());
+  });
+  return it('shold be fine with deep-nested properties', function() {
+    var obj, obj1;
+    obj = {
+      a: 1
+    };
+    obj1 = {
+      a: {
+        b: {
+          c: {
+            d: {
+              e: 2
+            }
+          }
+        }
+      }
+    };
+    dahelpers.extend(obj, obj1);
+    return assert.deepEqual(obj, obj1);
+  });
+});
+
 describe('#clone()', function() {
   it('should clone objects', function() {
     var obj, obj1;
@@ -848,62 +904,6 @@ describe('#rekey()', function() {
     return assert.deepEqual(dahelpers.rekey({
       a: 1
     }, {}), {});
-  });
-});
-
-describe('#extend()', function() {
-  it('copies properties from other objects', function() {
-    var obj, obj2;
-    obj = {
-      a: 1
-    };
-    obj2 = {
-      b: 2
-    };
-    dahelpers.extend(obj, obj2);
-    return assert.equal(obj.b, 2);
-  });
-  it('overwrites existing properties', function() {
-    var obj, obj1;
-    obj = {
-      a: 1
-    };
-    obj1 = {
-      a: 2
-    };
-    dahelpers.extend(obj, obj1);
-    return assert.equal(obj.a, 2);
-  });
-  it('should really clone the mixin properties', function() {
-    var obj, obj1;
-    obj = {
-      a: 1
-    };
-    obj1 = {
-      b: new Date(2013, 8, 1)
-    };
-    dahelpers.extend(obj, obj1);
-    obj.b.setFullYear(2020);
-    return assert.notEqual(obj.b.getTime(), obj1.b.getTime());
-  });
-  return it('shold be fine with deep-nested properties', function() {
-    var obj, obj1;
-    obj = {
-      a: 1
-    };
-    obj1 = {
-      a: {
-        b: {
-          c: {
-            d: {
-              e: 2
-            }
-          }
-        }
-      }
-    };
-    dahelpers.extend(obj, obj1);
-    return assert.deepEqual(obj, obj1);
   });
 });
 

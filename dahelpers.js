@@ -428,52 +428,6 @@ define(function() {
         return o;
       })({});
     },
-    clone: function(obj) {
-      if (typeof obj !== 'object' || obj === null) {
-        return obj;
-      }
-      return h.sweep(obj, function(v) {
-        if (typeof v === 'undefined') {
-          return;
-        }
-        if (v === null) {
-          return null;
-        }
-        if (typeof v !== 'object' || (v.constructor == null)) {
-          return v;
-        }
-        switch (v.constructor) {
-          case Object:
-            return {};
-          case Date:
-            return new Date(v.getTime());
-          case RegExp:
-            return new RegExp(v);
-          case Array:
-            return v.slice(0);
-          default:
-            return v;
-        }
-      });
-    },
-    rekey: function(obj, map) {
-      var newObj, source, target;
-      if (!obj) {
-        return;
-      }
-      if (typeof obj !== 'object') {
-        return obj;
-      }
-      if (typeof map !== 'object') {
-        return h.clone(obj);
-      }
-      newObj = {};
-      for (source in map) {
-        target = map[source];
-        h.propset(newObj, target, h.props(obj, source));
-      }
-      return newObj;
-    },
     extend: function() {
       var mixin, mixins, obj, _i, _len;
       obj = arguments[0], mixins = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
@@ -483,7 +437,7 @@ define(function() {
           if (typeof v === 'undefined') {
             return;
           }
-          if (typeof v !== 'object') {
+          if (typeof v !== 'object' || v === null) {
             return h.propset(obj, k, v);
           } else {
             return h.propset(obj, k, (function() {
@@ -504,6 +458,30 @@ define(function() {
         });
       }
       return obj;
+    },
+    clone: function(obj) {
+      if (typeof obj !== 'object' || obj === null) {
+        return obj;
+      }
+      return h.extend({}, obj);
+    },
+    rekey: function(obj, map) {
+      var newObj, source, target;
+      if (!obj) {
+        return;
+      }
+      if (typeof obj !== 'object') {
+        return obj;
+      }
+      if (typeof map !== 'object') {
+        return h.clone(obj);
+      }
+      newObj = {};
+      for (source in map) {
+        target = map[source];
+        h.propset(newObj, target, h.props(obj, source));
+      }
+      return newObj;
     }
   };
   (function(tags) {

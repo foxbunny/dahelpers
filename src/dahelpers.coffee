@@ -812,6 +812,30 @@ define () ->
         o
       ) {}
 
+    # ### `#extend(obj, mixin, [mixin...])`
+    #
+    # Deep-copies properties from `mixin`s into `obj`. Any properties that are
+    # already present in `obj` will be overwritten by properties in mixins.
+    #
+    extend: (obj, mixins...) ->
+      for mixin in mixins
+        @walk mixin, (v, k) ->
+          return if typeof v is 'undefined'
+
+          if typeof v isnt 'object' or v is null
+            h.propset obj, k, v
+
+          else
+            h.propset obj, k, (() ->
+              switch v.constructor
+                when Object then {}
+                when Date then new Date v.getTime()
+                when RegExp then new RegExp v
+                when Array then v[0..]
+                else v
+            )()
+      obj
+
     # ### `#clone(obj)`
     #
     # Returns an exact clone of `obj`.
@@ -833,17 +857,7 @@ define () ->
     #
     clone: (obj) ->
       return obj if typeof obj isnt 'object' or obj is null
-      h.sweep obj, (v) ->
-        return if typeof v is 'undefined'
-        return null if v is null
-        return v if typeof v isnt 'object' or not v.constructor?
-
-        switch v.constructor
-          when Object then {}  # Empty because props will be recursed into
-          when Date then new Date v.getTime()
-          when RegExp then new RegExp v
-          when Array then v[0..]
-          else v
+      h.extend {}, obj
 
     # ### `#rekey(obj, map)`
     #
@@ -888,30 +902,6 @@ define () ->
       for source, target of map
         h.propset newObj, target, h.props obj, source
       newObj
-
-    # ### `#extend(obj, mixin, [mixin...])`
-    #
-    # Deep-copies properties from `mixin`s into `obj`. Any properties that are
-    # already present in `obj` will be overwritten by properties in mixins.
-    #
-    extend: (obj, mixins...) ->
-      for mixin in mixins
-        @walk mixin, (v, k) ->
-          return if typeof v is 'undefined'
-
-          if typeof v isnt 'object'
-            h.propset obj, k, v
-
-          else
-            h.propset obj, k, (() ->
-              switch v.constructor
-                when Object then {}
-                when Date then new Date v.getTime()
-                when RegExp then new RegExp v
-                when Array then v[0..]
-                else v
-            )()
-      obj
 
   # ### Tag aliases
   #

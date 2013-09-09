@@ -7,8 +7,8 @@
 #
 # These are da helpers to help you out.
 #
-# Miscellaneous general-purpose helper methods for JavaScript in browsers and
-# on NodeJS.
+# A growing collection of miscellaneous general-purpose helper methods for
+# JavaScript in browsers and on NodeJS.
 #
 # ::TOC::
 #

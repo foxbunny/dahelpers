@@ -19,9 +19,11 @@ NodeJS.
    - [`#WRAP_WIDTH`](#wrap_width)
    - [`#FORMAT_CHARACTER`](#format_character)
    - [`#PLURAL_RULES`](#plural_rules)
+   - [`#HTML_ESCAPE_MAPPINGS`](#html_escape_mappings)
  + [Helper functions](#helper-functions)
    - [`#objAttrs(o)`](#objattrs-o)
    - [`#tag(name, content, [attrs, silence])`](#tag-name-content-attrs-silence)
+   - [`#escape(s)`](#escape-s)
    - [`#plural(singular, plural, [plural2...] count)`](#plural-singular-plural-plural2-count)
    - [`#capitalize(s)`](#capitalize-s)
    - [`#titleCase(s, [lowerFirst])`](#titlecase-s-lowerfirst)
@@ -136,6 +138,10 @@ singular is used when n==1, and a single plural form for all other cases.
 You can see different rules for different langauges at [Unicode
 R](http://www.unicode.org/cldr/charts/supplemental/language_plural_rules.html).
 
+### `#HTML_ESCAPE_MAPPINGS` <a name="html_escape_mappings"></a>
+
+Mapping used to escape HTML.
+
 ## Helper functions <a name="helper-functions"></a>
 
 Although all the methods are exported as one object, they are completely
@@ -175,6 +181,18 @@ Example:
 
     dahelpers.tag('a', 'click here', {href: '#'});
     // returns '<a href="#">click here</a>'
+
+
+### `#escape(s)` <a name="escape-s"></a>
+
+Escapes special characters in string `s` as a measure for preventing XSS
+attacks.
+
+Exampple:
+
+    dahelpers.escape('<a href="#">not so malicious HTML</a>')
+    // returns:
+    // '&lt;a href=&quot;#&quot;&gt;not so malicious HTML&lt;&#x2F;a&gt;'
 
 
 ### `#plural(singular, plural, [plural2...] count)` <a name="plural-singular-plural-plural2-count"></a>

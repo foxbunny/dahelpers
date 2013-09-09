@@ -56,6 +56,52 @@ describe('#type()', function() {
   });
 });
 
+describe('#klass()', function() {
+  it('reveals the object constructor', function() {
+    var Foo, assertKlass;
+    assertKlass = function(v, k) {
+      return assert.equal(dahelpers.klass(v), k);
+    };
+    Foo = (function() {
+      function Foo() {}
+
+      return Foo;
+
+    })();
+    assertKlass({}, Object);
+    assertKlass(new Date(), Date);
+    assertKlass(new RegExp(), RegExp);
+    assertKlass(new String(), String);
+    assertKlass(new Foo(), Foo);
+    assertKlass(new Array, Array);
+    assertKlass([], Array);
+    assertKlass(null, false);
+    assertKlass(void 0, false);
+    assertKlass(1, false);
+    assertKlass('foo', false);
+    return assertKlass(true, false);
+  });
+  return it('returns boolean result of klass check if second arg is supplied', function() {
+    var Foo, assertKlass;
+    assertKlass = function(v, k) {
+      return assert.ok(dahelpers.klass(v, k));
+    };
+    Foo = (function() {
+      function Foo() {}
+
+      return Foo;
+
+    })();
+    assertKlass({}, Object);
+    assertKlass(new Date(), Date);
+    assertKlass(new RegExp(), RegExp);
+    assertKlass(new String(), String);
+    assertKlass(new Foo(), Foo);
+    assertKlass(new Array, Array);
+    return assertKlass([], Array);
+  });
+});
+
 describe('#objAttrs()', function() {
   it('converts objects to HTML attributes', function() {
     var s;

@@ -57,6 +57,16 @@ define(function() {
       }
       return t === type.toLowerCase();
     },
+    klass: function(v, klass) {
+      if (typeof v !== 'object' || v === null) {
+        return false;
+      }
+      if (klass != null) {
+        return v.constructor === klass;
+      } else {
+        return v.constructor;
+      }
+    },
     objAttrs: function(o) {
       var attrs, key;
       attrs = [];
@@ -453,7 +463,7 @@ define(function() {
           var isObj, v1;
           isObj = v === Object(v) && v.constructor === Object;
           v1 = cb(v, k, isObj);
-          if (typeof v1 !== 'undefined') {
+          if (!h.type(v1, 'undefined')) {
             return h.propset(o, k, v1);
           }
         });

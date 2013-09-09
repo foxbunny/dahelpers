@@ -177,6 +177,27 @@ define () ->
       return t if not type?
       t is type.toLowerCase()
 
+    # ### `#klass(v, klass)`
+    #
+    # Tests if `v` has constructor of `klass`. If `v` is not an object, it
+    # returns `false`.
+    #
+    # If the `klass` argument is missing, returns the constructor.
+    #
+    # Example:
+    #
+    #     dahelpers.klass({});
+    #     // returns `Object` (function)
+    #     dahelpers.klass([], Array);
+    #     // returns `true`
+    #
+    klass: (v, klass) ->
+      return false if typeof v isnt 'object' or v is null
+      if klass?
+        v.constructor is klass
+      else
+        v.constructor
+
     # ### `#objAttrs(o)`
     #
     # Converts a JavaScript object `o` into a set of HTML attributes where a
@@ -871,7 +892,7 @@ define () ->
         h.walk obj, (v, k) ->
           isObj = v is Object(v) and v.constructor is Object
           v1 = cb(v, k, isObj)
-          h.propset o, k, v1 if typeof v1 isnt 'undefined'
+          h.propset o, k, v1 if not h.type(v1, 'undefined')
         o
       ) {}
 

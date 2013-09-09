@@ -44,6 +44,42 @@ describe '#type()', () ->
       assertType somethingUndefined, 'undefined'
     )()
 
+describe '#klass()', () ->
+  it 'reveals the object constructor', () ->
+    assertKlass = (v, k) ->
+      assert.equal dahelpers.klass(v), k
+
+    class Foo
+      constructor: () ->
+
+    assertKlass {}, Object
+    assertKlass new Date(), Date
+    assertKlass new RegExp(), RegExp
+    assertKlass new String(), String
+    assertKlass new Foo(), Foo
+    assertKlass new Array, Array
+    assertKlass [], Array
+    assertKlass null, false
+    assertKlass undefined, false
+    assertKlass 1, false
+    assertKlass 'foo', false
+    assertKlass true, false
+
+  it 'returns boolean result of klass check if second arg is supplied', () ->
+    assertKlass = (v, k) ->
+      assert.ok dahelpers.klass v, k
+
+    class Foo
+      constructor: () ->
+
+    assertKlass {}, Object
+    assertKlass new Date(), Date
+    assertKlass new RegExp(), RegExp
+    assertKlass new String(), String
+    assertKlass new Foo(), Foo
+    assertKlass new Array, Array
+    assertKlass [], Array
+
 describe '#objAttrs()', () ->
   it 'converts objects to HTML attributes', () ->
     s = h.objAttrs

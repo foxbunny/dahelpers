@@ -639,6 +639,18 @@ describe('#propset()', function() {
       }
     });
   });
+  it('should overwrite existing properties', function() {
+    var obj;
+    obj = {
+      foo: {
+        bar: {
+          baz: 1
+        }
+      }
+    };
+    h.propset(obj, 'foo.bar.baz', 2);
+    return assert.equal(obj.foo.bar.baz, 2);
+  });
   return it('should be chainable', function() {
     var obj;
     obj = {};

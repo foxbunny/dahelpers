@@ -391,8 +391,10 @@ define(function() {
         return o;
       }
       _ref = p.split('.'), f = _ref[0], r = 2 <= _ref.length ? __slice.call(_ref, 1) : [];
-      if (o[f] == null) {
-        o[f] = !r.length ? v : {};
+      if (!r.length) {
+        o[f] = v;
+      } else {
+        o[f] || (o[f] = {});
       }
       h.propset(o[f], r.join('.'), v);
       return o;

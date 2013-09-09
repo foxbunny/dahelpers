@@ -489,6 +489,11 @@ describe '#propset()', () ->
         'This is totally funky!':
           bar: 1
 
+  it 'should overwrite existing properties', () ->
+    obj = foo: bar: baz: 1
+    h.propset obj, 'foo.bar.baz', 2
+    assert.equal obj.foo.bar.baz, 2
+
   it 'should be chainable', () ->
     obj = {}
     h.propset h.propset(obj, 'foo.bar', 2), 'foo.baz', 3

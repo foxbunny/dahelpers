@@ -734,8 +734,10 @@ define () ->
       return if not o?
       return o if (not p?) or (p is '')
       [f, r...] = p.split('.')
-      if not o[f]?
-        o[f] = if not r.length then v else {}
+      if not r.length
+        o[f] = v
+      else
+        o[f] or= {}
       h.propset o[f], (r.join '.'), v
       o
 

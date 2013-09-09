@@ -145,6 +145,38 @@ define () ->
     # variables and pass them around.
     #
 
+    # ### `#type(v, type)`
+    #
+    # Tests if `v` is of type `type`. The valid types are:
+    #
+    #  + 'null'
+    #  + 'undefined'
+    #  + 'string'
+    #  + 'number'
+    #  + 'date'
+    #  + 'regexp'
+    #  + 'array'
+    #  + 'function'
+    #  + 'object'
+    #
+    # Note that this method can be reliably used as a replacement for `typeOf`
+    # function and differentiates between more object types.
+    #
+    # If the `type` argument is not supplied, it will return the type of the
+    # value.
+    #
+    # Example:
+    #
+    #     dahelpers.type([], 'array');
+    #     // returns true
+    #     dahelpers.type([])
+    #     // returns 'array'
+    #
+    type: (v, type) ->
+      t = Object::toString.call(v).toLowerCase()[8..-2]
+      return t if not type?
+      t is type.toLowerCase()
+
     # ### `#objAttrs(o)`
     #
     # Converts a JavaScript object `o` into a set of HTML attributes where a

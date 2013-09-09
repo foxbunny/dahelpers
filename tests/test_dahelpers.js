@@ -11,6 +11,51 @@ assert = chai.assert;
 
 h = dahelpers;
 
+describe('#type()', function() {
+  it('reveals types of things', function() {
+    var assertType;
+    assertType = function(v, t) {
+      return assert.equal(dahelpers.type(v), t);
+    };
+    assertType(null, 'null');
+    assertType(void 0, 'undefined');
+    assertType(1, 'number');
+    assertType('foo', 'string');
+    assertType(new Date(), 'date');
+    assertType(/\d+/g, 'regexp');
+    assertType(true, 'boolean');
+    assertType([1, 2, 3], 'array');
+    assertType({
+      foo: 'bar'
+    }, 'object');
+    assertType((function() {}), 'function');
+    return (function(somethingUndefined) {
+      return assertType(somethingUndefined, 'undefined');
+    })();
+  });
+  return it('returns boolean result of type test if second arg is supplied', function() {
+    var assertType;
+    assertType = function(v, t) {
+      return assert.ok(dahelpers.type(v, t));
+    };
+    assertType(null, 'null');
+    assertType(void 0, 'undefined');
+    assertType(1, 'number');
+    assertType('foo', 'string');
+    assertType(new Date(), 'date');
+    assertType(/\d+/g, 'regexp');
+    assertType(true, 'boolean');
+    assertType([1, 2, 3], 'array');
+    assertType({
+      foo: 'bar'
+    }, 'object');
+    assertType((function() {}), 'function');
+    return (function(somethingUndefined) {
+      return assertType(somethingUndefined, 'undefined');
+    })();
+  });
+});
+
 describe('#objAttrs()', function() {
   it('converts objects to HTML attributes', function() {
     var s;

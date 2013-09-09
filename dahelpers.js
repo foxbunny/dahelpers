@@ -49,6 +49,14 @@ define(function() {
       "'": '&#x27;',
       '/': '&#x2F;'
     },
+    type: function(v, type) {
+      var t;
+      t = Object.prototype.toString.call(v).toLowerCase().slice(8, -1);
+      if (type == null) {
+        return t;
+      }
+      return t === type.toLowerCase();
+    },
     objAttrs: function(o) {
       var attrs, key;
       attrs = [];

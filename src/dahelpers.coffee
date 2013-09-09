@@ -940,6 +940,23 @@ define () ->
         h.propset newObj, target, h.props obj, source
       newObj
 
+    # ### `#toArray(v)`
+    #
+    # Converts `v` to an array if it's not an array.
+    #
+    # Example:
+    #
+    #     a = 'foo'
+    #     dahelpers.toArray(a);
+    #     // returns ['foo']
+    #
+    toArray: (v) ->
+      return [] if not v?
+      if typeof v is 'object' and v.constructor is Array
+        return v
+      else
+        [v]
+
   # ### Tag aliases
   #
   # For convenience we include a few aliases for HTML tags that will call

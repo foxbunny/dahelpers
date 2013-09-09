@@ -698,6 +698,20 @@ describe '#rekey()', () ->
   it 'returns an empty object if map is an empty object', () ->
     assert.deepEqual dahelpers.rekey({a: 1}, {}), {}
 
+describe '#toArray()', () ->
+  it 'should convert to array the non-array values', () ->
+    assert.deepEqual dahelpers.toArray('foo'), ['foo']
+    assert.deepEqual dahelpers.toArray(1), [1]
+    assert.deepEqual dahelpers.toArray(true), [true]
+
+  it 'should return empty value for undefined or null', () ->
+    assert.deepEqual dahelpers.toArray(), []
+    assert.deepEqual dahelpers.toArray(null), []
+
+  it 'should return original if already an array', () ->
+    a = [1, 2, 3]
+    assert.deepEqual dahelpers.toArray(a), a
+
 describe 'tag aliases', () ->
   it 'will render appropriate tags', () ->
     tags = 'a p strong em ul ol li div span'.split ' '

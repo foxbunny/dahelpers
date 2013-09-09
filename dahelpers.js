@@ -503,6 +503,16 @@ define(function() {
         h.propset(newObj, target, h.props(obj, source));
       }
       return newObj;
+    },
+    toArray: function(v) {
+      if (v == null) {
+        return [];
+      }
+      if (typeof v === 'object' && v.constructor === Array) {
+        return v;
+      } else {
+        return [v];
+      }
     }
   };
   (function(tags) {

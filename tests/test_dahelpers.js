@@ -919,6 +919,23 @@ describe('#rekey()', function() {
   });
 });
 
+describe('#toArray()', function() {
+  it('should convert to array the non-array values', function() {
+    assert.deepEqual(dahelpers.toArray('foo'), ['foo']);
+    assert.deepEqual(dahelpers.toArray(1), [1]);
+    return assert.deepEqual(dahelpers.toArray(true), [true]);
+  });
+  it('should return empty value for undefined or null', function() {
+    assert.deepEqual(dahelpers.toArray(), []);
+    return assert.deepEqual(dahelpers.toArray(null), []);
+  });
+  return it('should return original if already an array', function() {
+    var a;
+    a = [1, 2, 3];
+    return assert.deepEqual(dahelpers.toArray(a), a);
+  });
+});
+
 describe('tag aliases', function() {
   it('will render appropriate tags', function() {
     var s, tag, tags, _i, _len;

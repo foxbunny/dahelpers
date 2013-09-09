@@ -125,6 +125,18 @@ define () ->
     PLURAL_RULES: (n) ->
       if n is 1 then 0 else 1
 
+    # ### `#HTML_ESCAPE_MAPPINGS`
+    #
+    # Mapping used to escape HTML.
+    #
+    HTML_ESCAPE_MAPPINGS:
+      '&': '&amp;'
+      '<': '&lt;'
+      '>': '&gt;'
+      '"': '&quot;'
+      "'": '&#x27;'
+      '/': '&#x2F;'
+
     # ## Helper functions
     #
     # Although all the methods are exported as one object, they are completely
@@ -178,6 +190,24 @@ define () ->
       s = "<#{name}"
       s += " #{h.objAttrs(attrs)}" if attrs
       s += ">#{content}</#{name}>"
+      s
+
+    # ### `#escape(s)`
+    #
+    # Escapes special characters in string `s` as a measure for preventing XSS
+    # attacks.
+    #
+    # Exampple:
+    #
+    #     dahelpers.escape('<a href="#">not so malicious HTML</a>')
+    #     // returns:
+    #     // '&lt;a href=&quot;#&quot;&gt;not so malicious HTML&lt;&#x2F;a&gt;'
+    #
+    escape: (s) ->
+      return '' if not s?
+      s = s.toString()
+      for chr, esc of h.HTML_ESCAPE_MAPPINGS
+        s = s.replace new RegExp(chr, 'g'), esc
       s
 
     # ### `#plural(singular, plural, [plural2...] count)`

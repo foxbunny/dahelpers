@@ -43,6 +43,15 @@ describe '#tag()', () ->
     s = h.tag()
     assert.equal s, ''
 
+describe '#escape()', () ->
+  it 'should escape special HTML chars', () ->
+    assert.equal dahelpers.escape('<&"\'/>'), '&lt;&amp;&quot;&#x27;&#x2F;&gt;'
+
+  it 'should leave all other chars intact', () ->
+    input = '<a href="#">not so malicious HTML</a>'
+    out = '&lt;a href=&quot;#&quot;&gt;not so malicious HTML&lt;&#x2F;a&gt;'
+    assert.equal dahelpers.escape(input), out
+
 describe '#plural()', () ->
   it 'will return plural with number greater than 1', () ->
     s = h.plural 'foo', 'foos', 2

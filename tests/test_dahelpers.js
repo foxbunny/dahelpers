@@ -64,6 +64,18 @@ describe('#tag()', function() {
   });
 });
 
+describe('#escape()', function() {
+  it('should escape special HTML chars', function() {
+    return assert.equal(dahelpers.escape('<&"\'/>'), '&lt;&amp;&quot;&#x27;&#x2F;&gt;');
+  });
+  return it('should leave all other chars intact', function() {
+    var input, out;
+    input = '<a href="#">not so malicious HTML</a>';
+    out = '&lt;a href=&quot;#&quot;&gt;not so malicious HTML&lt;&#x2F;a&gt;';
+    return assert.equal(dahelpers.escape(input), out);
+  });
+});
+
 describe('#plural()', function() {
   it('will return plural with number greater than 1', function() {
     var s;

@@ -41,6 +41,14 @@ define(function() {
         return 1;
       }
     },
+    HTML_ESCAPE_MAPPINGS: {
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      '"': '&quot;',
+      "'": '&#x27;',
+      '/': '&#x2F;'
+    },
     objAttrs: function(o) {
       var attrs, key;
       attrs = [];
@@ -73,6 +81,19 @@ define(function() {
         s += " " + (h.objAttrs(attrs));
       }
       s += ">" + content + "</" + name + ">";
+      return s;
+    },
+    escape: function(s) {
+      var chr, esc, _ref;
+      if (s == null) {
+        return '';
+      }
+      s = s.toString();
+      _ref = h.HTML_ESCAPE_MAPPINGS;
+      for (chr in _ref) {
+        esc = _ref[chr];
+        s = s.replace(new RegExp(chr, 'g'), esc);
+      }
       return s;
     },
     plural: function() {

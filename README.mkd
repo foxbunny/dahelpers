@@ -2,8 +2,8 @@
 
 These are da helpers to help you out.
 
-Miscellaneous general-purpose helper methods for JavaScript in browsers and on
-NodeJS.
+A growing collection of miscellaneous general-purpose helper methods for
+JavaScript in browsers and on NodeJS.
 
  + [Installation](#installation)
    - [NodeJS](#nodejs)
@@ -22,6 +22,7 @@ NodeJS.
    - [`#HTML_ESCAPE_MAPPINGS`](#html_escape_mappings)
  + [Helper functions](#helper-functions)
    - [`#type(v, type)`](#type-v-type)
+   - [`#klass(v, klass)`](#klass-v-klass)
    - [`#objAttrs(o)`](#objattrs-o)
    - [`#tag(name, content, [attrs, silence])`](#tag-name-content-attrs-silence)
    - [`#escape(s)`](#escape-s)
@@ -177,6 +178,21 @@ Example:
     // returns true
     dahelpers.type([])
     // returns 'array'
+
+
+### `#klass(v, klass)` <a name="klass-v-klass"></a>
+
+Tests if `v` has constructor of `klass`. If `v` is not an object, it returns
+`false`.
+
+If the `klass` argument is missing, returns the constructor.
+
+Example:
+
+    dahelpers.klass({});
+    // returns `Object` (function)
+    dahelpers.klass([], Array);
+    // returns `true`
 
 
 ### `#objAttrs(o)` <a name="objattrs-o"></a>

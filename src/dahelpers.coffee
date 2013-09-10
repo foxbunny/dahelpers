@@ -958,7 +958,7 @@ define () ->
     #
     extend: (obj, mixins...) ->
       for mixin in mixins
-        @walk mixin, (v, k) ->
+        h.walk mixin, (v, k) ->
           return if h.type(v, 'undefined')
 
           if h.klass(v) is false

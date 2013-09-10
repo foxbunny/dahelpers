@@ -46,6 +46,50 @@ define = ((root) ->
 
 define () ->
 
+  # ## Usage tips
+  #
+  # Here are some usage tips that can make using DaHelpers easier.
+  #
+  # ### Using methods stand-alone
+  #
+  # All methods can be decoupled from the `dahelpers` module/global and used
+  # stand-alone. For example:
+  #
+  #     var type = dahelpers.type;
+  #     var thousands = dahelpers.thousands;
+  #     type('foo');
+  #     thousands(3000);
+  #
+  # If you are using CoffeeScript, this can be even easier:
+  #
+  #     {type, thousands} = dahelpers;
+  #     type 'foo'
+  #     thousands 3000
+  #
+  # ### Modifying Underscore `#template()` to add DaHelpers
+  #
+  # Here is a pattern for including DaHelpers in uderscore templates.
+  #
+  #     var type = dahelpers.type;
+  #     var extend = dahelpers.extend;
+  #     var origTemplate = _.template;
+  #     _.template = function(src, data, settings) {
+  #       if (type(data, 'undefined') {
+  #         var precompiled = origTemplate(src, data, settings);
+  #         return function(data) {
+  #           return precompiled(extend({d: dahelpers}, data));
+  #         }
+  #       } else {
+  #         return origTemplate(src, extend({d: dahelpers}, data), settings);
+  #       }
+  #     };
+  #
+  # This makes DaHelpers available as `d` within the templates. Now you can:
+  #
+  #     _.template("Here's <%= d.currency(money) %>", {money: 200})
+  #     // returns "Here's $200.00"
+  #
+
   h =
 
     # ## Variables

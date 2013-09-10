@@ -9,6 +9,9 @@ JavaScript in browsers and on NodeJS.
    - [NodeJS](#nodejs)
    - [volo](#volo)
    - [Browser](#browser)
+ + [Usage tips](#usage-tips)
+   - [Using methods stand-alone](#using-methods-stand-alone)
+   - [Modifying Underscore `#template()` to add DaHelpers](#modifying-underscore-template-to-add-dahelpers)
  + [Variables](#variables)
    - [`#USD`](#usd)
    - [`#EUR`](#eur)
@@ -86,6 +89,53 @@ Install with:
 
 Either `require()` it if using RequireJS, or add a `<script>` tag. When using
 with the `<script>` tag, the module will create a `dahelpers` global.
+
+## Usage tips <a name="usage-tips"></a>
+
+Here are some usage tips that can make using DaHelpers easier.
+
+### Using methods stand-alone <a name="using-methods-stand-alone"></a>
+
+All methods can be decoupled from the `dahelpers` module/global and used
+stand-alone. For example:
+
+    var type = dahelpers.type;
+    var thousands = dahelpers.thousands;
+    type('foo');
+    thousands(3000);
+
+
+If you are using CoffeeScript, this can be even easier:
+
+    {type, thousands} = dahelpers;
+    type 'foo'
+    thousands 3000
+
+
+### Modifying Underscore `#template()` to add DaHelpers <a name="modifying-underscore-template-to-add-dahelpers"></a>
+
+Here is a pattern for including DaHelpers in uderscore templates.
+
+    var type = dahelpers.type;
+    var extend = dahelpers.extend;
+    var origTemplate = _.template;
+    _.template = function(src, data, settings) {
+      if (type(data, 'undefined') {
+        var precompiled = origTemplate(src, data, settings);
+        return function(data) {
+          return precompiled(extend({d: dahelpers}, data));
+        }
+      } else {
+        return origTemplate(src, extend({d: dahelpers}, data), settings);
+      }
+    };
+
+
+This makes DaHelpers available as `d` within the templates. Now you can:
+
+    _.template("Here's <%= d.currency(money) %>", {money: 200})
+    // returns "Here's $200.00"
+
 
 ## Variables <a name="variables"></a>
 

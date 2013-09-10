@@ -1,5 +1,12 @@
 # DaHelpers Changelog
 
+## 0.2.5
+
+### Fixed `#extend()` not being decoulpled from module
+
+The `#extend()` was calling the `#walk()` method using reference to `this`.
+This was fixed (no pun intended).
+
 ## 0.2.4
 
 ### Added `#truth()` method

@@ -74,7 +74,7 @@ define () ->
   #     var extend = dahelpers.extend;
   #     var origTemplate = _.template;
   #     _.template = function(src, data, settings) {
-  #       if (type(data, 'undefined') {
+  #       if (type(data, 'undefined')) {
   #         var precompiled = origTemplate(src, data, settings);
   #         return function(data) {
   #           return precompiled(extend({d: dahelpers}, data));

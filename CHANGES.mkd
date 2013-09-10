@@ -1,6 +1,6 @@
 # DaHelpers Changelog
 
-## Dev
+## 0.2.4
 
 ### Added `#truth()` method
 

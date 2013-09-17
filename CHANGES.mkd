@@ -1,5 +1,12 @@
 # DaHelpers Changelog
 
+## Dev
+
+### `#pad()` will remove the tail if it's 0
+
+This handles the case where we want to 'round' the number. This is not
+mathematical rounding, since tail is simply removed.
+
 ## 0.2.5
 
 ### Fixed `#extend()` not being decoulpled from module

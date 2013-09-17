@@ -366,6 +366,11 @@ describe('#pad()', function() {
     s = h.pad('foo-bar', 6, '!', 6, '-');
     return assert.equal(s, '!!!foo-bar!!!');
   });
+  it('should remove tail if tail is 0', function() {
+    var s;
+    s = h.pad('123.12', 4, null, 0);
+    return assert.equal(s, '0123');
+  });
   return it('shold return an empty string if no arguments are passed', function() {
     var s;
     s = h.pad();

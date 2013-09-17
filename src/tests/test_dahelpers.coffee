@@ -276,6 +276,10 @@ describe '#pad()', () ->
     s = h.pad 'foo-bar', 6, '!', 6, '-'
     assert.equal s, '!!!foo-bar!!!'
 
+  it 'should remove tail if tail is 0', () ->
+    s = h.pad '123.12', 4, null, 0
+    assert.equal s, '0123'
+
   it 'shold return an empty string if no arguments are passed', () ->
     s = h.pad()
     assert.equal s, ''

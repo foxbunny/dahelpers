@@ -210,6 +210,9 @@ define(function() {
           return h.pad(s, len, char);
         } else {
           s = h.pad(s, len, char);
+          if (tail === 0) {
+            return s;
+          }
           t || (t = char);
           t = h.pad(h.reverse(t), tail, char);
           t = h.reverse(t);

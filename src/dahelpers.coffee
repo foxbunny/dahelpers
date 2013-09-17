@@ -490,6 +490,9 @@ define () ->
           ## Pad the head-end
           s = h.pad s, len, char
 
+          ## Return just the head end if tail is 0
+          return s if tail is 0
+
           ## Pad the tail end
           t or= char
           t = h.pad h.reverse(t), tail, char

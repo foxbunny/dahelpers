@@ -480,6 +480,10 @@ describe '#currency()', () ->
     s = h.currency 1200, null, null, null, null, null, true
     assert.equal s, '1,200.00 $'
 
+  it 'should only use the integer part if decimal digits is 0', () ->
+    s = h.currency 123.12, null, 0
+    assert.equal s, '$123'
+
   it 'should return 0 if no input', () ->
     s = h.currency()
     assert.equal s, '$0.00'

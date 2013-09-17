@@ -621,6 +621,11 @@ describe('#currency()', function() {
     s = h.currency(1200, null, null, null, null, null, true);
     return assert.equal(s, '1,200.00 $');
   });
+  it('should only use the integer part if decimal digits is 0', function() {
+    var s;
+    s = h.currency(123.12, null, 0);
+    return assert.equal(s, '$123');
+  });
   return it('should return 0 if no input', function() {
     var s;
     s = h.currency();

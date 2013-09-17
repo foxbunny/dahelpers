@@ -416,7 +416,9 @@ original string is left intact.
 
 Tail has the same meaning as `len` but from the tail end of the string. The
 `sep` character is used to split the string into head and tail, and they are
-padded separately and re-merged using the same separator character.
+padded separately and re-merged using the same separator character. The `tail`
+of 0 will omit the part after the `sep` separator. For numbers, this may be
+similar to coercing into integer without rounding.
 
 The only case where `tail` behaves differently than `len` is when it is set to
 `false`. This has a special meaning internally, where it disables any
@@ -527,7 +529,8 @@ Formats `num` as currency  with thousands separator or SI suffix. Default
 currency is '$', and thousands separators are used by default.
 
 The `dec` argument specifies the number of decimal places (default is 2). This
-number is also used when converting to SI suffix.
+number is also used when converting to SI suffix. The value of 0 will
+completely omit the decimal places (this is not the same as rounding, though).
 
 The `sep` argument specifies the thousands separator (default is ',').
 

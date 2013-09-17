@@ -1,6 +1,6 @@
 # DaHelpers Changelog
 
-## Dev
+## 0.2.6
 
 ### `#pad()` will remove the tail if it's 0
 

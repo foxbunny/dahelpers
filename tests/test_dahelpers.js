@@ -800,7 +800,7 @@ describe('#walk()', function() {
       args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
       return walkArgs.push(args);
     });
-    return assert.deepEqual(walkArgs, [[1, 'a'], [2, 'b'], [3, 'c'], [obj.d, 'd'], [4, 'd.e'], [5, 'd.f']]);
+    return assert.deepEqual(walkArgs, [[1, 'a', ['a']], [2, 'b', ['b']], [3, 'c', ['c']], [obj.d, 'd', ['d']], [4, 'd.e', ['d', 'e']], [5, 'd.f', ['d', 'f']]]);
   });
   return it('should treat arrays as simple values', function() {
     var obj, walkArgs;
@@ -815,7 +815,7 @@ describe('#walk()', function() {
       args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
       return walkArgs.push(args);
     });
-    return assert.deepEqual(walkArgs, [[1, 'a'], [[1, 2, 3], 'b'], [null, 'c']]);
+    return assert.deepEqual(walkArgs, [[1, 'a', ['a']], [[1, 2, 3], 'b', ['b']], [null, 'c', ['c']]]);
   });
 });
 

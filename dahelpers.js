@@ -444,20 +444,23 @@ define(function() {
       h.propset(o[f], r.join('.'), v);
       return o;
     },
-    walk: function(obj, cb, key) {
+    walk: function(obj, cb, key, comps) {
       var k;
       if (key == null) {
         key = null;
       }
+      if (comps == null) {
+        comps = [];
+      }
       if (obj === Object(obj) && obj.constructor === Object) {
         if (key !== null) {
-          cb(obj, key);
+          cb(obj, key, comps);
         }
         for (k in obj) {
-          h.walk(obj[k], cb, (key ? [key, k].join('.') : k));
+          h.walk(obj[k], cb, (key ? [key, k].join('.') : k), comps.concat([k]));
         }
       } else {
-        cb(obj, key);
+        cb(obj, key, comps);
       }
     },
     sweep: function(obj, cb) {

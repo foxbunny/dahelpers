@@ -881,13 +881,16 @@ define () ->
     # Recursively walks down `obj`'s properties and invokes the callback on
     # each one.
     #
-    # The callback function takes two arguments. The first argument is the
+    # The callback function takes three arguments. The first argument is the
     # property currently being iterated, and the second argument is the name of
     # the key. The key name will be a full property path. For example a key
-    # name for `obj.foo.bar.baz` would be 'foo.bar.baz' (see example).
+    # name for `obj.foo.bar.baz` would be 'foo.bar.baz' (see example). Third
+    # argument is an array of key components that make up the second parameter.
+    # The key components array is generally more precise since it correctly
+    # handles cases where a period may be part of the key.
     #
-    # The undocumented `key` argument is an internal implementation detail, and
-    # should not be be passed under normal circumstances.
+    # The undocumented `key` and `comps` argument is an internal implementation
+    # detail, and should not be be passed under normal circumstances.
     #
     # Example:
     #
@@ -900,14 +903,14 @@ define () ->
     #     // 1 c.a
     #     // 2 c.b
     #
-    walk: (obj, cb, key=null) ->
+    walk: (obj, cb, key=null, comps=[]) ->
       if obj is Object(obj) and obj.constructor is Object
-        cb(obj, key) if key isnt null  # Do once for the entire subtree
+        cb(obj, key, comps) if key isnt null  # Do once for the entire subtree
         for k of obj
-          h.walk obj[k], cb, (if key then [key, k].join('.') else k)
+          h.walk obj[k], cb, (if key then [key, k].join('.') else k), comps.concat [k]
         return
       else
-        cb obj, key
+        cb obj, key, comps
         return
 
     # ### `#sweep(obj, cb)`

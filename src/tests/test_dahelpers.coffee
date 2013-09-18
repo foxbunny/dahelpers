@@ -612,12 +612,12 @@ describe '#walk()', () ->
       walkArgs.push args
 
     assert.deepEqual walkArgs, [
-      [1, 'a']
-      [2, 'b']
-      [3, 'c']
-      [obj.d, 'd']
-      [4, 'd.e']
-      [5, 'd.f']
+      [1, 'a', ['a']]
+      [2, 'b', ['b']]
+      [3, 'c', ['c']]
+      [obj.d, 'd', ['d']]
+      [4, 'd.e', ['d', 'e']]
+      [5, 'd.f', ['d', 'f']]
     ]
 
   it 'should treat arrays as simple values', () ->
@@ -632,9 +632,9 @@ describe '#walk()', () ->
       walkArgs.push args
 
     assert.deepEqual walkArgs, [
-      [1, 'a']
-      [[1, 2, 3], 'b']
-      [null, 'c']
+      [1, 'a', ['a']]
+      [[1, 2, 3], 'b', ['b']]
+      [null, 'c', ['c']]
     ]
 
 describe '#sweep()', () ->

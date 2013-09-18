@@ -484,14 +484,14 @@ define(function() {
       obj = arguments[0], mixins = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
       for (_i = 0, _len = mixins.length; _i < _len; _i++) {
         mixin = mixins[_i];
-        h.walk(mixin, function(v, k) {
+        h.walk(mixin, function(v, k, c) {
           if (h.type(v, 'undefined')) {
             return;
           }
           if (h.klass(v) === false) {
-            return h.propset(obj, k, v);
+            return h.propset(obj, c, v);
           } else {
-            return h.propset(obj, k, (function() {
+            return h.propset(obj, c, (function() {
               switch (h.klass(v)) {
                 case Object:
                   return {};

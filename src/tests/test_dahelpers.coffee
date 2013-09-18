@@ -704,6 +704,12 @@ describe '#extend()', () ->
     obj.b.setFullYear 2020
     assert.notEqual obj.b.getTime(), obj1.b.getTime()
 
+  it 'should be fine with properties with spaces', () ->
+    obj =
+      'foo .bar baz': 1
+    assert.deepEqual dahelpers.extend({}, obj),
+      'foo .bar baz': 1
+
   it 'shold be fine with deep-nested properties', () ->
     obj = a: 1
     obj1 = a: b: c: d: e: 2

@@ -975,14 +975,14 @@ define () ->
     #
     extend: (obj, mixins...) ->
       for mixin in mixins
-        h.walk mixin, (v, k) ->
+        h.walk mixin, (v, k, c) ->
           return if h.type(v, 'undefined')
 
           if h.klass(v) is false
-            h.propset obj, k, v
+            h.propset obj, c, v
 
           else
-            h.propset obj, k, (() ->
+            h.propset obj, c, (() ->
               switch h.klass(v)
                 when Object then {}
                 when Date then new Date v.getTime()

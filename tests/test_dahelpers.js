@@ -918,6 +918,15 @@ describe('#extend()', function() {
     obj.b.setFullYear(2020);
     return assert.notEqual(obj.b.getTime(), obj1.b.getTime());
   });
+  it('should be fine with properties with spaces', function() {
+    var obj;
+    obj = {
+      'foo .bar baz': 1
+    };
+    return assert.deepEqual(dahelpers.extend({}, obj), {
+      'foo .bar baz': 1
+    });
+  });
   return it('shold be fine with deep-nested properties', function() {
     var obj, obj1;
     obj = {

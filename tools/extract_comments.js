@@ -54,7 +54,7 @@ paragraphs = paragraphs.map(function(paragraph) {
     if (tocLevel > 1) {
       toc += tocIndent + tocSymbol + ' [' + title + '](#' + hash + ')\n';
     }
-    return paragraph + ' ' + dahelpers.a('', {
+    return m[1] + ' ' + dahelpers.a(title, {
       name: hash
     });
   } else {

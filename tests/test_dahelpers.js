@@ -769,7 +769,7 @@ describe('#propset()', function() {
     h.propset(obj, 'foo.bar.baz', 2);
     return assert.equal(obj.foo.bar.baz, 2);
   });
-  return it('should be chainable', function() {
+  it('should be chainable', function() {
     var obj;
     obj = {};
     h.propset(h.propset(obj, 'foo.bar', 2), 'foo.baz', 3);
@@ -777,6 +777,18 @@ describe('#propset()', function() {
       foo: {
         bar: 2,
         baz: 3
+      }
+    });
+  });
+  return it('should work with an array as well', function() {
+    var obj;
+    obj = {};
+    h.propset(obj, ['foo', 'bar.baz', 'fam'], 3);
+    return assert.deepEqual(obj, {
+      foo: {
+        'bar.baz': {
+          fam: 3
+        }
       }
     });
   });

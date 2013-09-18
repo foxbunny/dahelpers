@@ -859,21 +859,28 @@ define () ->
     # Sets the value of the property tree `p`'s last leaf to `v` creating all
     # intermediate segments as necessary.
     #
+    # The `p` argument can also be an array.
+    #
     # Example:
     #
     #     var obj = {}
     #     dahelpers.propset(obj, 'a.b.c.d.e.f', 1);
     #     // obj is now {a: {b: {c: {d: {e: {f: 1}}}}}}
     #
+    #     var obj = {}
+    #     dahelpers.propset(obj, ['a', 'b', 'c', 'd', 'e', 'f'], 1);
+    #     // obj is now {a: {b: {c: {d: {e: {f: 1}}}}}}
+    #
     propset: (o, p, v) ->
       return if not o?
-      return o if (not p?) or (p is '')
-      [f, r...] = p.split('.')
+      return o if (not p?) or not p.length
+      p = p.split('.') if h.type p, 'string'
+      [f, r...] = p
       if not r.length
         o[f] = v
       else
         o[f] or= {}
-      h.propset o[f], (r.join '.'), v
+      h.propset o[f], r, v
       o
 
     # ### `#walk(obj, cb)`

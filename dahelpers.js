@@ -428,20 +428,23 @@ define(function() {
       }
     },
     propset: function(o, p, v) {
-      var f, r, _ref;
+      var f, r;
       if (o == null) {
         return;
       }
-      if ((p == null) || (p === '')) {
+      if ((p == null) || !p.length) {
         return o;
       }
-      _ref = p.split('.'), f = _ref[0], r = 2 <= _ref.length ? __slice.call(_ref, 1) : [];
+      if (h.type(p, 'string')) {
+        p = p.split('.');
+      }
+      f = p[0], r = 2 <= p.length ? __slice.call(p, 1) : [];
       if (!r.length) {
         o[f] = v;
       } else {
         o[f] || (o[f] = {});
       }
-      h.propset(o[f], r.join('.'), v);
+      h.propset(o[f], r, v);
       return o;
     },
     walk: function(obj, cb, key, comps) {

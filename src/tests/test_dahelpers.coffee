@@ -596,6 +596,14 @@ describe '#propset()', () ->
         bar: 2
         baz: 3
 
+  it 'should work with an array as well', () ->
+    obj = {}
+    h.propset obj, ['foo', 'bar.baz', 'fam'], 3
+    assert.deepEqual obj,
+      foo:
+        'bar.baz':
+          fam: 3
+
 describe '#walk()', () ->
   it 'should access all properties of an object exactly once', () ->
     obj =

@@ -1,6 +1,6 @@
 {
   "name" : "dahelpers",
-  "description" : "Library of miscellaneous formatting functions",
+  "description" : "Library of miscellaneous formatting and helper functions",
   "homepage" : "https://github.com/foxbunny/dahelpers/",
   "keywords" : ["server", "browser", "helpers", "formatting", "number", "string"],
   "author" : "Branko Vukelic <branko@brankovukelic.com>",

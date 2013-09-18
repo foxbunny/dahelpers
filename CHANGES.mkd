@@ -1,5 +1,13 @@
 # DaHelpers Changelog
 
+## 0.2.7
+
+### `#walk()`, `#propset()`, and `#extend()` fixes
+
+The `#walk()` now passes, and `#propset()` takes keys broken down into array of
+components. This is now used by `#extend()` and, by... err... extension, the
+`#clone()` method to provide more robust cloning of keys that contain a period.
+
 ## 0.2.6
 
 ### `#pad()` will remove the tail if it's 0

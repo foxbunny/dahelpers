@@ -1,4 +1,4 @@
-# DaHelpers <a name="dahelpers"></a>
+# <a name="dahelpers">DaHelpers</a>
 
 These are da helpers to help you out.
 
@@ -66,35 +66,35 @@ JavaScript in browsers and on NodeJS.
  + [Reporting bugs](#reporting-bugs)
 
 
-## Installation <a name="installation"></a>
+## <a name="installation">Installation</a>
 
 This module is in UMD format. It can be used with an AMD loader such as
 RequireJS, on NodeJS, or in browsers using `<script>` tag.
 
-### NodeJS <a name="nodejs"></a>
+### <a name="nodejs">NodeJS</a>
 
 Install with NPM:
 
     npm install dahelpers
 
 
-### volo <a name="volo"></a>
+### <a name="volo">volo</a>
 
 Install with:
 
     volo add foxbunny/dahelpers
 
 
-### Browser <a name="browser"></a>
+### <a name="browser">Browser</a>
 
 Either `require()` it if using RequireJS, or add a `<script>` tag. When using
 with the `<script>` tag, the module will create a `dahelpers` global.
 
-## Usage tips <a name="usage-tips"></a>
+## <a name="usage-tips">Usage tips</a>
 
 Here are some usage tips that can make using DaHelpers easier.
 
-### Using methods stand-alone <a name="using-methods-stand-alone"></a>
+### <a name="using-methods-stand-alone">Using methods stand-alone</a>
 
 All methods can be decoupled from the `dahelpers` module/global and used
 stand-alone. For example:
@@ -112,7 +112,7 @@ If you are using CoffeeScript, this can be even easier:
     thousands 3000
 
 
-### Modifying Underscore `#template()` to add DaHelpers <a name="modifying-underscore-template-to-add-dahelpers"></a>
+### <a name="modifying-underscore-template-to-add-dahelpers">Modifying Underscore `#template()` to add DaHelpers</a>
 
 Here is a pattern for including DaHelpers in uderscore templates.
 
@@ -137,48 +137,48 @@ This makes DaHelpers available as `d` within the templates. Now you can:
     // returns "Here's $200.00"
 
 
-## Variables <a name="variables"></a>
+## <a name="variables">Variables</a>
 
 Although some of the properties of this module are all-caps, they are by no
 means constants. They are, in fact, variables that configure various aspects of
 DaHelpers. You are free to modify them any way you need.
 
-### `#USD` <a name="usd"></a>
+### <a name="usd">`#USD`</a>
 
 Symbol for US currency. Default is '$'.
 
-### `#EUR` <a name="eur"></a>
+### <a name="eur">`#EUR`</a>
 
 Symbol for EU currency. Default is '€'.
 
-### `#YN` <a name="yn"></a>
+### <a name="yn">`#YN`</a>
 
 Symbol for Japanese and Chinese currencies. Default is '¥'.
 
-### `#GBP` <a name="gbp"></a>
+### <a name="gbp">`#GBP`</a>
 
 Symbol for UK currency. Default is '£'.
 
-### `#DEFAULT_CURRENCY` <a name="default_currency"></a>
+### <a name="default_currency">`#DEFAULT_CURRENCY`</a>
 
 Default curency used by `#currency()` method. Default is '$'.
 
-### `#FIRST_CHAR` <a name="first_char"></a>
+### <a name="first_char">`#FIRST_CHAR`</a>
 
 Regular expression for capturing the first character of a word. Default is
 `/\b[a-z]/gi`. Please see documentation for the
 [`#titleCase()`](#titlecase-s-lowerfirst] for information on how this variable
 is used.
 
-### `#WRAP_WIDTH` <a name="wrap_width"></a>
+### <a name="wrap_width">`#WRAP_WIDTH`</a>
 
 Default text wrap width.
 
-### `#FORMAT_CHARACTER` <a name="format_character"></a>
+### <a name="format_character">`#FORMAT_CHARACTER`</a>
 
 Character used by default in [`#format()`](#format-s-format-formatchar) method.
 
-### `#PLURAL_RULES` <a name="plural_rules"></a>
+### <a name="plural_rules">`#PLURAL_RULES`</a>
 
 Returns the form to use based on number `n`. The form is 0 for singular, and 1
 or more for plural forms.
@@ -193,18 +193,18 @@ singular is used when n==1, and a single plural form for all other cases.
 You can see different rules for different langauges at [Unicode
 R](http://www.unicode.org/cldr/charts/supplemental/language_plural_rules.html).
 
-### `#HTML_ESCAPE_MAPPINGS` <a name="html_escape_mappings"></a>
+### <a name="html_escape_mappings">`#HTML_ESCAPE_MAPPINGS`</a>
 
 Mapping used to escape HTML.
 
-## Helper functions <a name="helper-functions"></a>
+## <a name="helper-functions">Helper functions</a>
 
 Although all the methods are exported as one object, they are completely
 decoupled (they call each other by using the reference to the module object
 `h`, instead of `this`), so you can assign individual methods to variables and
 pass them around.
 
-### `#type(v, type)` <a name="type-v-type"></a>
+### <a name="type-v-type">`#type(v, type)`</a>
 
 Tests if `v` is of type `type`. The valid types are:
 
@@ -232,7 +232,7 @@ Example:
     // returns 'array'
 
 
-### `#klass(v, klass)` <a name="klass-v-klass"></a>
+### <a name="klass-v-klass">`#klass(v, klass)`</a>
 
 Tests if `v` has constructor of `klass`. If `v` is not an object, it returns
 `false`.
@@ -247,7 +247,7 @@ Example:
     // returns `true`
 
 
-### `#objAttrs(o)` <a name="objattrs-o"></a>
+### <a name="objattrs-o">`#objAttrs(o)`</a>
 
 Converts a JavaScript object `o` into a set of HTML attributes where a key is
 the attribute name, and value is the attribute value.
@@ -264,7 +264,7 @@ Example:
     // returns 'foo="1" bar="foo"'
 
 
-### `#tag(name, content, [attrs, silence])` <a name="tag-name-content-attrs-silence"></a>
+### <a name="tag-name-content-attrs-silence">`#tag(name, content, [attrs, silence])`</a>
 
 Wraps optional content into a HTML tag with optional attributes hash.
 
@@ -281,7 +281,7 @@ Example:
     // returns '<a href="#">click here</a>'
 
 
-### `#escape(s)` <a name="escape-s"></a>
+### <a name="escape-s">`#escape(s)`</a>
 
 Escapes special characters in string `s` as a measure for preventing XSS
 attacks.
@@ -293,7 +293,7 @@ Exampple:
     // '&lt;a href=&quot;#&quot;&gt;not so malicious HTML&lt;&#x2F;a&gt;'
 
 
-### `#plural(singular, plural, [plural2...] count)` <a name="plural-singular-plural-plural2-count"></a>
+### <a name="plural-singular-plural-plural2-count">`#plural(singular, plural, [plural2...] count)`</a>
 
 Provides support for pluralization. All but the last argument are plural forms,
 starting with singular, which is the first argument, followed by 0 or more
@@ -312,7 +312,7 @@ Example:
     dahelpers.plural('bear', 'bears', 3);  // returns 'bears'
 
 
-### `#capitalize(s)` <a name="capitalize-s"></a>
+### <a name="capitalize-s">`#capitalize(s)`</a>
 
 Capitalizes the first character of the string `s`. You can used this to build
 sentence case.
@@ -322,7 +322,7 @@ Example:
     dahelpers.capitalize('foo bar fam');  // returns 'Foo bar fam'
 
 
-### `#titleCase(s, [lowerFirst])` <a name="titlecase-s-lowerfirst"></a>
+### <a name="titlecase-s-lowerfirst">`#titleCase(s, [lowerFirst])`</a>
 
 Converts the string `s` to Title Case.
 
@@ -358,7 +358,7 @@ Examples:
     // returns 'This is the Title'
 
 
-### `#format(s, format, [formatChar])` <a name="format-s-format-formatchar"></a>
+### <a name="format-s-format-formatchar">`#format(s, format, [formatChar])`</a>
 
 Formats a string according to the `format`. The format is simply a series of
 hash character '#' that map the string's characters to appropriate places one
@@ -379,7 +379,7 @@ Examples:
     dahelpers.format('1234', '$$$-$', '$');  // returns '123-4'
 
 
-### `#reverse(s)` <a name="reverse-s"></a>
+### <a name="reverse-s">`#reverse(s)`</a>
 
 Reverses a string.
 
@@ -388,7 +388,7 @@ Example:
     dahelpers.reverse('esrever');  // returns 'reverse'
 
 
-### `#sgroup(s, n)` <a name="sgroup-s-n"></a>
+### <a name="sgroup-s-n">`#sgroup(s, n)`</a>
 
 Groups the string's characters into groups of `n` characters and returns the
 groups as an array.
@@ -404,7 +404,7 @@ Examples:
     dahelpers.sgroup('Grouping', 3);   // returns ['Gro', 'upi', 'ng']
 
 
-### `#pad(s, len, [char, tail, sep])` <a name="pad-s-len-char-tail-sep"></a>
+### <a name="pad-s-len-char-tail-sep">`#pad(s, len, [char, tail, sep])`</a>
 
 Pads a string `s` with `char` characters, so that the output is at least `len`
 long.
@@ -430,7 +430,7 @@ Examples:
     dahelpers.pad('2.5', 0, null, 3);  // returns '2.50'
 
 
-### `#thousands(num, [sep, decSep])` <a name="thousands-num-sep-decsep"></a>
+### <a name="thousands-num-sep-decsep">`#thousands(num, [sep, decSep])`</a>
 
 Adds the thousands separator to `num`.
 
@@ -451,7 +451,7 @@ Examples:
     dahelpers.thousands(1200000.12, '.', ',');  // returns '1.200.000,00'
 
 
-### `#si(num, [d, thousands, sep, decSep])` <a name="si-num-d-thousands-sep-decsep"></a>
+### <a name="si-num-d-thousands-sep-decsep">`#si(num, [d, thousands, sep, decSep])`</a>
 
 Converts the number to closes SI factor (Kilo, Mega, etc). Uses only factors of
 thousand (k, M, G, T, P, E, and Z) larger than 0.
@@ -482,7 +482,7 @@ Examples:
     dahelpers.si(1200, null, true);     // returns '1,200'
 
 
-### `#digits(s)` <a name="digits-s"></a>
+### <a name="digits-s">`#digits(s)`</a>
 
 Removes all non-digit characters from a string. This includes decimal points,
 minus sign, and anyting else that does not match the `\d` regular expression.
@@ -493,7 +493,7 @@ Examples:
     dahelpers.digits('Number of items is 12');  // returns '12'
 
 
-### `#prefix(num, prefix, sepLong)` <a name="prefix-num-prefix-seplong"></a>
+### <a name="prefix-num-prefix-seplong">`#prefix(num, prefix, sepLong)`</a>
 
 Adds a prefix to a number. The `prefix` argument can be any string of any
 length. `num` can be a real number, or just any string.
@@ -513,7 +513,7 @@ Examples:
     dahelpers.prefix(12, 'foo', true);  // returns 'foo 12'
 
 
-### `#round(num, [d])` <a name="round-num-d"></a>
+### <a name="round-num-d">`#round(num, [d])`</a>
 
 Round the number to `d` decimal places. `d` is 0 by default.
 
@@ -523,7 +523,7 @@ Examples:
     dahelpers.round(12.34, 1);  // returns 12.3
 
 
-### `#currency(num, [currency, dec, sep, decSep, si, suffix])` <a name="currency-num-currency-dec-sep-decsep-si-suffix"></a>
+### <a name="currency-num-currency-dec-sep-decsep-si-suffix">`#currency(num, [currency, dec, sep, decSep, si, suffix])`</a>
 
 Formats `num` as currency  with thousands separator or SI suffix. Default
 currency is '$', and thousands separators are used by default.
@@ -549,7 +549,7 @@ Example:
     dahelpers.currency(12, 'USD');     // returns 'USD 12.00'
 
 
-### `#makeCurrency(name, currency, dec, sep, decSep, si, suffix)` <a name="makecurrency-name-currency-dec-sep-decsep-si-suffix"></a>
+### <a name="makecurrency-name-currency-dec-sep-decsep-si-suffix">`#makeCurrency(name, currency, dec, sep, decSep, si, suffix)`</a>
 
 Because the `#currency()` method takes many arguments and you might not always
 use them all, this method will help you create a somewhat permanent alias for
@@ -578,7 +578,7 @@ Examples:
     delete dahelpers._din;  // removes 'din' currency
 
 
-### `#siCurrency(num, [currency, dec, sep, decSep])` <a name="sicurrency-num-currency-dec-sep-decsep"></a>
+### <a name="sicurrency-num-currency-dec-sep-decsep">`#siCurrency(num, [currency, dec, sep, decSep])`</a>
 
 This is a shortcut for
 [`#currency()`](#currency-num-currency-dec-sep-decsep-si-suffix) which passes
@@ -589,7 +589,7 @@ Example:
     dahelpers.siCurrency(1200, 'Fr');  // returns 'Fr 1.2k'
 
 
-### `dollars(num, dec, si)` <a name="dollars-num-dec-si"></a>
+### <a name="dollars-num-dec-si">`dollars(num, dec, si)`</a>
 
 Shortcut method for formatting US currency.
 
@@ -598,7 +598,7 @@ Example:
     dahelpers.dollars(100);  // returns '$100.00'
 
 
-### `#euros(num, dec, si)` <a name="euros-num-dec-si"></a>
+### <a name="euros-num-dec-si">`#euros(num, dec, si)`</a>
 
 Shortcut method for formatting EU currency.
 
@@ -607,7 +607,7 @@ Example:
     dahelpers.euros(100);  // returns '€100.00'
 
 
-### `#yen(num, dec, si)` <a name="yen-num-dec-si"></a>
+### <a name="yen-num-dec-si">`#yen(num, dec, si)`</a>
 
 Shortcut method for formatting Japanese currency.
 
@@ -616,7 +616,7 @@ Example:
     dahelpers.yen(100);  // returns '¥100.00'
 
 
-### `#yuan(num, dec, si)` <a name="yuan-num-dec-si"></a>
+### <a name="yuan-num-dec-si">`#yuan(num, dec, si)`</a>
 
 Shortcut method for formatting Chinese currency. Since both Chinese and
 Japanese currencies use the same symbol, this method is a simple alias for
@@ -627,7 +627,7 @@ Example:
     dahelpers.yuan(100);  // returns '¥100.00'
 
 
-### `#pounds(num, dec, si)` <a name="pounds-num-dec-si"></a>
+### <a name="pounds-num-dec-si">`#pounds(num, dec, si)`</a>
 
 Shortcut method for formatting UK currency.
 
@@ -636,7 +636,7 @@ Example:
     dahelpers.pounds(100); // returns '£100.00'
 
 
-### `#wrap(s, [len, sep])` <a name="wrap-s-len-sep"></a>
+### <a name="wrap-s-len-sep">`#wrap(s, [len, sep])`</a>
 
 Wraps the text to make lines of `len` length separated by `sep` separator. The
 `len` is 79 by default, and separator is a LF character ('\n').
@@ -656,7 +656,7 @@ Example:
     // lazy old fox.'
 
 
-### `#slug(s)` <a name="slug-s"></a>
+### <a name="slug-s">`#slug(s)`</a>
 
 Converts a string to a slug (URL-compatible string). This method is fairly
 basic, so don't depend on it for strings that contain non-ASCII letters.
@@ -667,7 +667,7 @@ Example:
     // returns 'this-is-some-text'
 
 
-### `#props(o, p)` <a name="props-o-p"></a>
+### <a name="props-o-p">`#props(o, p)`</a>
 
 Get a value of a property tree `p` on the object `o` or undefined if any of the
 segments is undefined without throwing an exception.
@@ -679,10 +679,12 @@ Example:
     dahelpers.props(obj, 'foo.foo.baz'); // returns undefined
 
 
-### `#propset(o, p, [v])` <a name="propset-o-p-v"></a>
+### <a name="propset-o-p-v">`#propset(o, p, [v])`</a>
 
 Sets the value of the property tree `p`'s last leaf to `v` creating all
 intermediate segments as necessary.
+
+The `p` argument can also be an array.
 
 Example:
 
@@ -691,17 +693,25 @@ Example:
     // obj is now {a: {b: {c: {d: {e: {f: 1}}}}}}
 
 
-### `#walk(obj, cb)` <a name="walk-obj-cb"></a>
+    var obj = {}
+    dahelpers.propset(obj, ['a', 'b', 'c', 'd', 'e', 'f'], 1);
+    // obj is now {a: {b: {c: {d: {e: {f: 1}}}}}}
+
+
+### <a name="walk-obj-cb">`#walk(obj, cb)`</a>
 
 Recursively walks down `obj`'s properties and invokes the callback on each one.
 
-The callback function takes two arguments. The first argument is the property
+The callback function takes three arguments. The first argument is the property
 currently being iterated, and the second argument is the name of the key. The
 key name will be a full property path. For example a key name for
-`obj.foo.bar.baz` would be 'foo.bar.baz' (see example).
+`obj.foo.bar.baz` would be 'foo.bar.baz' (see example). Third argument is an
+array of key components that make up the second parameter. The key components
+array is generally more precise since it correctly handles cases where a period
+may be part of the key.
 
-The undocumented `key` argument is an internal implementation detail, and
-should not be be passed under normal circumstances.
+The undocumented `key` and `comps` argument is an internal implementation
+detail, and should not be be passed under normal circumstances.
 
 Example:
 
@@ -715,7 +725,7 @@ Example:
     // 2 c.b
 
 
-### `#sweep(obj, cb)` <a name="sweep-obj-cb"></a>
+### <a name="sweep-obj-cb">`#sweep(obj, cb)`</a>
 
 Sweeps over the object attributes, and calls the callback on each key. The
 return value of the callback is used to build a new object with the same
@@ -743,7 +753,7 @@ Example:
     // Returns {a: 2, b: 3, c: 4}
 
 
-### `#extend(obj, mixin, [mixin...])` <a name="extend-obj-mixin-mixin"></a>
+### <a name="extend-obj-mixin-mixin">`#extend(obj, mixin, [mixin...])`</a>
 
 Deep-copies properties from `mixin`s into `obj`. Any properties that are
 already present in `obj` will be overwritten by properties in mixins.
@@ -760,7 +770,7 @@ Example:
     // {foo: 2, bar: {baz: Date(2013, 8, 1)}, baz: 3}
 
 
-### `#clone(obj)` <a name="clone-obj"></a>
+### <a name="clone-obj">`#clone(obj)`</a>
 
 Returns an exact clone of `obj`.
 
@@ -776,7 +786,7 @@ Example:
     // Should be `false`
 
 
-### `#rekey(obj, map)` <a name="rekey-obj-map"></a>
+### <a name="rekey-obj-map">`#rekey(obj, map)`</a>
 
 Creates a new object whose keys are translated to new names using `map`.
 
@@ -813,7 +823,7 @@ Example:
     // {aa: b: {{bb: 1, cc: 1}}}
 
 
-### `#toArray(v)` <a name="toarray-v"></a>
+### <a name="toarray-v">`#toArray(v)`</a>
 
 Converts `v` to an array if it's not an array.
 
@@ -824,7 +834,7 @@ Example:
     // returns ['foo']
 
 
-### `#empty(v)` <a name="empty-v"></a>
+### <a name="empty-v">`#empty(v)`</a>
 
 Tests if `v` is an empty object, array, or string.
 
@@ -840,7 +850,7 @@ Examples:
     dahelpers.empty('foo bar');  // false
 
 
-### `#truth(v)` <a name="truth-v"></a>
+### <a name="truth-v">`#truth(v)`</a>
 
 A more pragmatic truthy and falsy.
 
@@ -857,7 +867,7 @@ This method returns `false` for the following values:
 
 For all other values, it will return `true`.
 
-### Tag aliases <a name="tag-aliases"></a>
+### <a name="tag-aliases">Tag aliases</a>
 
 For convenience we include a few aliases for HTML tags that will call `#tag()`
 method with a specific HTML tag name. The tags that are aliased are:
@@ -871,11 +881,13 @@ method with a specific HTML tag name. The tags that are aliased are:
  + li
  + div
  + span
+ + button
+ + option
 
 
 They take the same arguments as the `#tag()` method except `name`.
 
-## Running tests <a name="running-tests"></a>
+## <a name="running-tests">Running tests</a>
 
 To run the tests you first need to install all development dependencies. In the
 source directory run:
@@ -891,7 +903,7 @@ Next run:
 To run tests in your browser, simply open `index.html` located in `tests`
 directory.
 
-## Reporting bugs <a name="reporting-bugs"></a>
+## <a name="reporting-bugs">Reporting bugs</a>
 
 Please report all bugs to the [GitHub issue
 tracker](https://github.com/foxbunny/dahelpers/issues). Please check if there

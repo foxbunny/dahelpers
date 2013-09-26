@@ -1,5 +1,16 @@
 # DaHelpers Changelog
 
+## 0.2.8
+
+### `#objAttrs()` fix
+
+The method now accepts `''`, `undefined`, and `null` as valid arguments and
+generates an attribute with no value.
+
+### Added `button` and `option` tag aliases
+
+Yup.
+
 ## 0.2.7
 
 ### `#walk()`, `#propset()`, and `#extend()` fixes

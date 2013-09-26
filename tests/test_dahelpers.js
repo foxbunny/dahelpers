@@ -1151,22 +1151,22 @@ describe('#truth()', function() {
 describe('tag aliases', function() {
   it('will render appropriate tags', function() {
     var s, tag, tags, _i, _len;
-    tags = 'a p strong em ul ol li div span'.split(' ');
+    tags = 'a p strong em ul ol li div span button option'.split(' ');
     for (_i = 0, _len = tags.length; _i < _len; _i++) {
       tag = tags[_i];
       s = h[tag]();
-      assert.equal(s, "<" + tag + "></" + tag + ">");
+      assert.equal(s, "<" + tag + "></" + tag + ">", tag);
     }
   });
   return it('accepts the same arguments as #tag()', function() {
     var s, tag, tags, _i, _len;
-    tags = 'a p strong em ul ol li div span'.split(' ');
+    tags = 'a p strong em ul ol li div span button option'.split(' ');
     for (_i = 0, _len = tags.length; _i < _len; _i++) {
       tag = tags[_i];
       s = h[tag]('foo', {
         foo: 'bar'
       });
-      assert.equal(s, "<" + tag + " foo=\"bar\">foo</" + tag + ">");
+      assert.equal(s, "<" + tag + " foo=\"bar\">foo</" + tag + ">", tag);
     }
   });
 });

@@ -865,17 +865,17 @@ describe '#truth()', () ->
 
 describe 'tag aliases', () ->
   it 'will render appropriate tags', () ->
-    tags = 'a p strong em ul ol li div span'.split ' '
+    tags = 'a p strong em ul ol li div span button option'.split ' '
 
     for tag in tags
       s = h[tag]()
-      assert.equal s, "<#{tag}></#{tag}>"
+      assert.equal s, "<#{tag}></#{tag}>", tag
     return
 
   it 'accepts the same arguments as #tag()', () ->
-    tags = 'a p strong em ul ol li div span'.split ' '
+    tags = 'a p strong em ul ol li div span button option'.split ' '
 
     for tag in tags
       s = h[tag]('foo', foo: 'bar')
-      assert.equal s, "<#{tag} foo=\"bar\">foo</#{tag}>"
+      assert.equal s, "<#{tag} foo=\"bar\">foo</#{tag}>", tag
     return

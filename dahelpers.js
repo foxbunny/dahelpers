@@ -591,6 +591,6 @@ define(function() {
         };
       })(tag);
     }
-  })('a p strong em ul ol li div span'.split(' '));
+  })('a p strong em ul ol li div span button option'.split(' '));
   return h;
 });

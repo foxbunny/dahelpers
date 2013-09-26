@@ -1132,6 +1132,8 @@ define () ->
   #  + li
   #  + div
   #  + span
+  #  + button
+  #  + option
   #
   # They take the same arguments as the `#tag()` method except `name`.
   #
@@ -1143,7 +1145,7 @@ define () ->
           h.tag.apply h, args
       ) tag
     return
-  ) 'a p strong em ul ol li div span'.split ' '
+  ) 'a p strong em ul ol li div span button option'.split ' '
 
   h # return the module
 

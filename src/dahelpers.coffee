@@ -261,7 +261,8 @@ define () ->
     objAttrs: (o) ->
       attrs = []
       for key of o
-        attrs.push "#{key}=\"#{o[key].replace(/"/g, '\\"')}\"" if o[key]
+        val = o[key] or ''
+        attrs.push "#{key}=\"#{val.replace(/"/g, '\\"')}\""
       attrs.join ' '
 
     # ### `#tag(name, content, [attrs, silence])`

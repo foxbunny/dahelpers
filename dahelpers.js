@@ -68,12 +68,11 @@ define(function() {
       }
     },
     objAttrs: function(o) {
-      var attrs, key;
+      var attrs, key, val;
       attrs = [];
       for (key in o) {
-        if (o[key]) {
-          attrs.push("" + key + "=\"" + (o[key].replace(/"/g, '\\"')) + "\"");
-        }
+        val = o[key] || '';
+        attrs.push("" + key + "=\"" + (val.replace(/"/g, '\\"')) + "\"");
       }
       return attrs.join(' ');
     },

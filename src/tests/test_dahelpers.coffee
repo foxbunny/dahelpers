@@ -116,6 +116,16 @@ describe '#tag()', () ->
     s = h.tag()
     assert.equal s, ''
 
+  it 'will correctly apply attribute with empty value', () ->
+    s = h.tag('foo', '', {value: ''})
+    assert.equal s, '<foo value=""></foo>', 'empty string'
+
+    s = h.tag('foo', '', {value: null})
+    assert.equal s, '<foo value=""></foo>', 'null'
+
+    s = h.tag('foo', '', {value: undefined})
+    assert.equal s, '<foo value=""></foo>', 'undefined'
+
 describe '#escape()', () ->
   it 'should escape special HTML chars', () ->
     assert.equal dahelpers.escape('<&"\'/>'), '&lt;&amp;&quot;&#x27;&#x2F;&gt;'

@@ -148,10 +148,25 @@ describe('#tag()', function() {
     }, true);
     return assert.equal(s, '');
   });
-  return it('will return empty string if no arguments', function() {
+  it('will return empty string if no arguments', function() {
     var s;
     s = h.tag();
     return assert.equal(s, '');
+  });
+  return it('will correctly apply attribute with empty value', function() {
+    var s;
+    s = h.tag('foo', '', {
+      value: ''
+    });
+    assert.equal(s, '<foo value=""></foo>', 'empty string');
+    s = h.tag('foo', '', {
+      value: null
+    });
+    assert.equal(s, '<foo value=""></foo>', 'null');
+    s = h.tag('foo', '', {
+      value: void 0
+    });
+    return assert.equal(s, '<foo value=""></foo>', 'undefined');
   });
 });
 

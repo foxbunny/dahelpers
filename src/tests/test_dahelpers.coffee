@@ -869,7 +869,7 @@ describe '#subset()', () ->
     isTrue h.subset small, big
 
   it 'returns false if small object has keys not in big one', () ->
-    small = {a: 1, b: 2, x: 'wrong!'}
+    small = {x: 'wrong!', a: 1, b: 2}
     big = {a: 1, b: 2, c: 3}
     isFalse h.subset small, big
 

@@ -1100,10 +1100,12 @@ define () ->
     # another.
     #
     subset: (small, big) ->
-      isSubset = true
-      h.walk small, (v, k, c) ->
-        isSubset = v is h.props big, c
-      return isSubset
+      try
+        h.walk small, (v, k, c) ->
+          throw new Error() if not (v is h.props big, c)
+      catch
+        return false
+      return true
 
     # ### `#truth(v)`
     #

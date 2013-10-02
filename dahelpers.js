@@ -562,12 +562,16 @@ define(function() {
       }
     },
     subset: function(small, big) {
-      var isSubset;
-      isSubset = true;
-      h.walk(small, function(v, k, c) {
-        return isSubset = v === h.props(big, c);
-      });
-      return isSubset;
+      try {
+        h.walk(small, function(v, k, c) {
+          if (!(v === h.props(big, c))) {
+            throw new Error();
+          }
+        });
+      } catch (_error) {
+        return false;
+      }
+      return true;
     },
     truth: function(v) {
       if (h.type(v, 'undefined') || h.type(v, 'null')) {

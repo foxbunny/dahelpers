@@ -1149,9 +1149,9 @@ describe('#subset()', function() {
   it('returns false if small object has keys not in big one', function() {
     var big, small;
     small = {
+      x: 'wrong!',
       a: 1,
-      b: 2,
-      x: 'wrong!'
+      b: 2
     };
     big = {
       a: 1,

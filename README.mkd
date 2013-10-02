@@ -60,6 +60,7 @@ JavaScript in browsers and on NodeJS.
    - [`#rekey(obj, map)`](#rekey-obj-map)
    - [`#toArray(v)`](#toarray-v)
    - [`#empty(v)`](#empty-v)
+   - [`#subset(small, big)`](#subset-small-big)
    - [`#truth(v)`](#truth-v)
    - [Tag aliases](#tag-aliases)
  + [Running tests](#running-tests)
@@ -849,6 +850,13 @@ Examples:
     dahelpers.empty('');         // true
     dahelpers.empty('foo bar');  // false
 
+
+### <a name="subset-small-big">`#subset(small, big)`</a>
+
+Returns true if `small` object is a subset of `big` object.
+
+Subset means that all key-value pairs of one object is contained within
+another.
 
 ### <a name="truth-v">`#truth(v)`</a>
 

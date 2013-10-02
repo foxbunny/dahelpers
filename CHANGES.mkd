@@ -1,5 +1,16 @@
 # DaHelpers Changelog
 
+## 0.2.9
+
+### Added `subset()` function
+
+This function tests whether some object is a subset of another
+
+### The `props()` now takes array just like `#propset()`
+
+Because of the behavior required for `subset()`, the `props()` has been
+modified to use arrays as second argument in conjunction with strings.
+
 ## 0.2.8
 
 ### `#objAttrs()` fix

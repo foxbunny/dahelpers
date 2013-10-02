@@ -62,6 +62,9 @@ JavaScript in browsers and on NodeJS.
    - [`#empty(v)`](#empty-v)
    - [`#subset(small, big)`](#subset-small-big)
    - [`#truth(v)`](#truth-v)
+   - [`#every(arr)`](#every-arr)
+   - [`#none(arr)`](#none-arr)
+   - [`#any(arr)`](#any-arr)
    - [Tag aliases](#tag-aliases)
  + [Running tests](#running-tests)
  + [Reporting bugs](#reporting-bugs)
@@ -874,6 +877,20 @@ This method returns `false` for the following values:
 
 
 For all other values, it will return `true`.
+
+### <a name="every-arr">`#every(arr)`</a>
+
+Return true if all elements in `arr` array are truthy.
+
+### <a name="none-arr">`#none(arr)`</a>
+
+Return true if none of the elements in `arr` array are truthy.
+
+### <a name="any-arr">`#any(arr)`</a>
+
+Return true if at least one item in array is truthy.
+
+This function is a reverse of `#none()`.
 
 ### <a name="tag-aliases">Tag aliases</a>
 

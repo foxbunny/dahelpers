@@ -67,6 +67,214 @@ define(function() {
         return v.constructor;
       }
     },
+    props: function(o, p) {
+      var f, r;
+      if (o == null) {
+        return;
+      }
+      if (p == null) {
+        return o;
+      }
+      if (h.type(p) !== 'array') {
+        p = p.split('.');
+      }
+      f = p[0], r = 2 <= p.length ? __slice.call(p, 1) : [];
+      if (!r.length) {
+        return o[f];
+      } else {
+        if (o[f] == null) {
+          return void 0;
+        } else {
+          return h.props(o[f], r.join('.'));
+        }
+      }
+    },
+    propset: function(o, p, v) {
+      var f, r;
+      if (o == null) {
+        return;
+      }
+      if ((p == null) || !p.length) {
+        return o;
+      }
+      if (h.type(p, 'string')) {
+        p = p.split('.');
+      }
+      f = p[0], r = 2 <= p.length ? __slice.call(p, 1) : [];
+      if (!r.length) {
+        o[f] = v;
+      } else {
+        o[f] || (o[f] = {});
+      }
+      h.propset(o[f], r, v);
+      return o;
+    },
+    walk: function(obj, cb, key, comps) {
+      var k;
+      if (key == null) {
+        key = null;
+      }
+      if (comps == null) {
+        comps = [];
+      }
+      if (obj === Object(obj) && obj.constructor === Object) {
+        if (key !== null) {
+          cb(obj, key, comps);
+        }
+        for (k in obj) {
+          h.walk(obj[k], cb, (key ? [key, k].join('.') : k), comps.concat([k]));
+        }
+      } else {
+        cb(obj, key, comps);
+      }
+    },
+    sweep: function(obj, cb) {
+      return (function(o) {
+        h.walk(obj, function(v, k) {
+          var isObj, v1;
+          isObj = v === Object(v) && h.klass(v, Object);
+          v1 = cb(v, k, isObj);
+          if (!h.type(v1, 'undefined')) {
+            return h.propset(o, k, v1);
+          }
+        });
+        return o;
+      })({});
+    },
+    extend: function() {
+      var mixin, mixins, obj, _i, _len;
+      obj = arguments[0], mixins = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
+      for (_i = 0, _len = mixins.length; _i < _len; _i++) {
+        mixin = mixins[_i];
+        h.walk(mixin, function(v, k, c) {
+          if (h.type(v, 'undefined')) {
+            return;
+          }
+          if (h.klass(v) === false) {
+            return h.propset(obj, c, v);
+          } else {
+            return h.propset(obj, c, (function() {
+              switch (h.klass(v)) {
+                case Object:
+                  return {};
+                case Date:
+                  return new Date(v.getTime());
+                case RegExp:
+                  return new RegExp(v);
+                case Array:
+                  return v.slice(0);
+                default:
+                  return v;
+              }
+            })());
+          }
+        });
+      }
+      return obj;
+    },
+    clone: function(obj) {
+      if (!h.klass(obj, Object)) {
+        return obj;
+      }
+      return h.extend({}, obj);
+    },
+    rekey: function(obj, map) {
+      var newObj, source, target;
+      if (!obj) {
+        return;
+      }
+      if (h.klass(obj) === false) {
+        return obj;
+      }
+      if (!h.type(map, 'object')) {
+        return h.clone(obj);
+      }
+      newObj = {};
+      for (source in map) {
+        target = map[source];
+        h.propset(newObj, target, h.props(obj, source));
+      }
+      return newObj;
+    },
+    toArray: function(v) {
+      if (v == null) {
+        return [];
+      }
+      if (h.type(v, 'array')) {
+        return v;
+      } else {
+        return [v];
+      }
+    },
+    empty: function(v) {
+      var k;
+      if (h.type(v, 'array') || h.type(v, 'string')) {
+        return !v.length;
+      } else if (h.type(v, 'object')) {
+        return !((function() {
+          var _results;
+          _results = [];
+          for (k in v) {
+            _results.push(k);
+          }
+          return _results;
+        })()).length;
+      }
+    },
+    subset: function(small, big) {
+      try {
+        h.walk(small, function(v, k, c) {
+          if (!(v === h.props(big, c))) {
+            throw new Error();
+          }
+        });
+      } catch (_error) {
+        return false;
+      }
+      return true;
+    },
+    truth: function(v) {
+      if (h.type(v, 'undefined') || h.type(v, 'null')) {
+        return false;
+      }
+      if (v === 0) {
+        return false;
+      }
+      if (v === '') {
+        return false;
+      }
+      if (v === false) {
+        return false;
+      }
+      if (h.type(v, 'object') || h.type(v, 'array')) {
+        return !h.empty(v);
+      } else {
+        return true;
+      }
+    },
+    every: function(arr) {
+      var item, _i, _len;
+      for (_i = 0, _len = arr.length; _i < _len; _i++) {
+        item = arr[_i];
+        if (!item) {
+          return false;
+        }
+      }
+      return true;
+    },
+    none: function(arr) {
+      var item, _i, _len;
+      for (_i = 0, _len = arr.length; _i < _len; _i++) {
+        item = arr[_i];
+        if (item) {
+          return false;
+        }
+      }
+      return true;
+    },
+    any: function(arr) {
+      return !h.none(arr);
+    },
     objAttrs: function(o) {
       var attrs, key, val;
       attrs = [];
@@ -406,214 +614,6 @@ define(function() {
       s = s.toString().toLowerCase().replace(/\W+/g, '-');
       s = s.replace(/[_-]+$/, '');
       return s.replace(/^[_-]+/, '');
-    },
-    props: function(o, p) {
-      var f, r;
-      if (o == null) {
-        return;
-      }
-      if (p == null) {
-        return o;
-      }
-      if (h.type(p) !== 'array') {
-        p = p.split('.');
-      }
-      f = p[0], r = 2 <= p.length ? __slice.call(p, 1) : [];
-      if (!r.length) {
-        return o[f];
-      } else {
-        if (o[f] == null) {
-          return void 0;
-        } else {
-          return h.props(o[f], r.join('.'));
-        }
-      }
-    },
-    propset: function(o, p, v) {
-      var f, r;
-      if (o == null) {
-        return;
-      }
-      if ((p == null) || !p.length) {
-        return o;
-      }
-      if (h.type(p, 'string')) {
-        p = p.split('.');
-      }
-      f = p[0], r = 2 <= p.length ? __slice.call(p, 1) : [];
-      if (!r.length) {
-        o[f] = v;
-      } else {
-        o[f] || (o[f] = {});
-      }
-      h.propset(o[f], r, v);
-      return o;
-    },
-    walk: function(obj, cb, key, comps) {
-      var k;
-      if (key == null) {
-        key = null;
-      }
-      if (comps == null) {
-        comps = [];
-      }
-      if (obj === Object(obj) && obj.constructor === Object) {
-        if (key !== null) {
-          cb(obj, key, comps);
-        }
-        for (k in obj) {
-          h.walk(obj[k], cb, (key ? [key, k].join('.') : k), comps.concat([k]));
-        }
-      } else {
-        cb(obj, key, comps);
-      }
-    },
-    sweep: function(obj, cb) {
-      return (function(o) {
-        h.walk(obj, function(v, k) {
-          var isObj, v1;
-          isObj = v === Object(v) && h.klass(v, Object);
-          v1 = cb(v, k, isObj);
-          if (!h.type(v1, 'undefined')) {
-            return h.propset(o, k, v1);
-          }
-        });
-        return o;
-      })({});
-    },
-    extend: function() {
-      var mixin, mixins, obj, _i, _len;
-      obj = arguments[0], mixins = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
-      for (_i = 0, _len = mixins.length; _i < _len; _i++) {
-        mixin = mixins[_i];
-        h.walk(mixin, function(v, k, c) {
-          if (h.type(v, 'undefined')) {
-            return;
-          }
-          if (h.klass(v) === false) {
-            return h.propset(obj, c, v);
-          } else {
-            return h.propset(obj, c, (function() {
-              switch (h.klass(v)) {
-                case Object:
-                  return {};
-                case Date:
-                  return new Date(v.getTime());
-                case RegExp:
-                  return new RegExp(v);
-                case Array:
-                  return v.slice(0);
-                default:
-                  return v;
-              }
-            })());
-          }
-        });
-      }
-      return obj;
-    },
-    clone: function(obj) {
-      if (!h.klass(obj, Object)) {
-        return obj;
-      }
-      return h.extend({}, obj);
-    },
-    rekey: function(obj, map) {
-      var newObj, source, target;
-      if (!obj) {
-        return;
-      }
-      if (h.klass(obj) === false) {
-        return obj;
-      }
-      if (!h.type(map, 'object')) {
-        return h.clone(obj);
-      }
-      newObj = {};
-      for (source in map) {
-        target = map[source];
-        h.propset(newObj, target, h.props(obj, source));
-      }
-      return newObj;
-    },
-    toArray: function(v) {
-      if (v == null) {
-        return [];
-      }
-      if (h.type(v, 'array')) {
-        return v;
-      } else {
-        return [v];
-      }
-    },
-    empty: function(v) {
-      var k;
-      if (h.type(v, 'array') || h.type(v, 'string')) {
-        return !v.length;
-      } else if (h.type(v, 'object')) {
-        return !((function() {
-          var _results;
-          _results = [];
-          for (k in v) {
-            _results.push(k);
-          }
-          return _results;
-        })()).length;
-      }
-    },
-    subset: function(small, big) {
-      try {
-        h.walk(small, function(v, k, c) {
-          if (!(v === h.props(big, c))) {
-            throw new Error();
-          }
-        });
-      } catch (_error) {
-        return false;
-      }
-      return true;
-    },
-    truth: function(v) {
-      if (h.type(v, 'undefined') || h.type(v, 'null')) {
-        return false;
-      }
-      if (v === 0) {
-        return false;
-      }
-      if (v === '') {
-        return false;
-      }
-      if (v === false) {
-        return false;
-      }
-      if (h.type(v, 'object') || h.type(v, 'array')) {
-        return !h.empty(v);
-      } else {
-        return true;
-      }
-    },
-    every: function(arr) {
-      var item, _i, _len;
-      for (_i = 0, _len = arr.length; _i < _len; _i++) {
-        item = arr[_i];
-        if (!item) {
-          return false;
-        }
-      }
-      return true;
-    },
-    none: function(arr) {
-      var item, _i, _len;
-      for (_i = 0, _len = arr.length; _i < _len; _i++) {
-        item = arr[_i];
-        if (item) {
-          return false;
-        }
-      }
-      return true;
-    },
-    any: function(arr) {
-      return !h.none(arr);
     }
   };
   (function(tags) {

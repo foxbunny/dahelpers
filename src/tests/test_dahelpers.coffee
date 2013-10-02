@@ -6,11 +6,14 @@ if require?
 
 assert = chai.assert
 h = dahelpers
+equal = assert.equal
+isTrue = assert.ok
+isFalse = assert.notOk
 
 describe '#type()', () ->
   it 'reveals types of things', () ->
     assertType = (v, t) ->
-      assert.equal dahelpers.type(v), t
+      assert.equal h.type(v), t
 
     assertType null, 'null'
     assertType undefined, 'undefined'
@@ -28,7 +31,7 @@ describe '#type()', () ->
 
   it 'returns boolean result of type test if second arg is supplied', () ->
     assertType = (v, t) ->
-      assert.ok dahelpers.type v, t
+      isTrue h.type v, t
 
     assertType null, 'null'
     assertType undefined, 'undefined'
@@ -47,7 +50,7 @@ describe '#type()', () ->
 describe '#klass()', () ->
   it 'reveals the object constructor', () ->
     assertKlass = (v, k) ->
-      assert.equal dahelpers.klass(v), k
+      assert.equal h.klass(v), k
 
     class Foo
       constructor: () ->
@@ -67,7 +70,7 @@ describe '#klass()', () ->
 
   it 'returns boolean result of klass check if second arg is supplied', () ->
     assertKlass = (v, k) ->
-      assert.ok dahelpers.klass v, k
+      isTrue h.klass v, k
 
     class Foo
       constructor: () ->
@@ -128,12 +131,12 @@ describe '#tag()', () ->
 
 describe '#escape()', () ->
   it 'should escape special HTML chars', () ->
-    assert.equal dahelpers.escape('<&"\'/>'), '&lt;&amp;&quot;&#x27;&#x2F;&gt;'
+    assert.equal h.escape('<&"\'/>'), '&lt;&amp;&quot;&#x27;&#x2F;&gt;'
 
   it 'should leave all other chars intact', () ->
     input = '<a href="#">not so malicious HTML</a>'
     out = '&lt;a href=&quot;#&quot;&gt;not so malicious HTML&lt;&#x2F;a&gt;'
-    assert.equal dahelpers.escape(input), out
+    assert.equal h.escape(input), out
 
 describe '#plural()', () ->
   it 'will return plural with number greater than 1', () ->
@@ -638,7 +641,7 @@ describe '#walk()', () ->
 
     walkArgs = []
 
-    dahelpers.walk obj, (args...) ->
+    h.walk obj, (args...) ->
       walkArgs.push args
 
     assert.deepEqual walkArgs, [
@@ -658,7 +661,7 @@ describe '#walk()', () ->
 
     walkArgs = []
 
-    dahelpers.walk obj, (args...) ->
+    h.walk obj, (args...) ->
       walkArgs.push args
 
     assert.deepEqual walkArgs, [
@@ -678,7 +681,7 @@ describe '#sweep()', () ->
         d: null
         e: d
 
-    obj1 = dahelpers.sweep obj, (args...) ->
+    obj1 = h.sweep obj, (args...) ->
       args[0]
 
     assert.deepEqual obj, obj1
@@ -691,7 +694,7 @@ describe '#sweep()', () ->
           d: 2
           e: 3
 
-    obj1 = dahelpers.sweep obj, (v) -> v
+    obj1 = h.sweep obj, (v) -> v
     obj1.b = 2
 
     assert.deepEqual obj1, {a: 1, b: 2}
@@ -703,39 +706,39 @@ describe '#sweep()', () ->
       b: 2
       c: 3
 
-    obj1 = dahelpers.sweep obj, () -> return
+    obj1 = h.sweep obj, () -> return
     assert.deepEqual obj1, {}
 
 describe '#extend()', () ->
   it 'copies properties from other objects', () ->
     obj = a: 1
     obj2 = b: 2
-    dahelpers.extend obj, obj2
+    h.extend obj, obj2
     assert.equal obj.b, 2
 
   it 'overwrites existing properties', () ->
     obj = a: 1
     obj1 = a: 2
-    dahelpers.extend obj, obj1
+    h.extend obj, obj1
     assert.equal obj.a, 2
 
   it 'should really clone the mixin properties', () ->
     obj = a: 1
     obj1 = b: new Date(2013, 8, 1)
-    dahelpers.extend obj, obj1
+    h.extend obj, obj1
     obj.b.setFullYear 2020
     assert.notEqual obj.b.getTime(), obj1.b.getTime()
 
   it 'should be fine with properties with spaces', () ->
     obj =
       'foo .bar baz': 1
-    assert.deepEqual dahelpers.extend({}, obj),
+    assert.deepEqual h.extend({}, obj),
       'foo .bar baz': 1
 
   it 'shold be fine with deep-nested properties', () ->
     obj = a: 1
     obj1 = a: b: c: d: e: 2
-    dahelpers.extend obj, obj1
+    h.extend obj, obj1
     assert.deepEqual obj, obj1
 
 describe '#clone()', () ->
@@ -749,7 +752,7 @@ describe '#clone()', () ->
         f: /\d+/g
         g: [1, 2, 3]
 
-    obj1 = dahelpers.clone obj
+    obj1 = h.clone obj
 
     assert.equal obj.a, obj1.a
     assert.equal obj.b, obj1.b
@@ -766,14 +769,14 @@ describe '#clone()', () ->
   it 'should make real clones, not just two identical copies', () ->
     obj =
       a: new Date(2013, 8, 15)
-    obj1 = dahelpers.clone obj
+    obj1 = h.clone obj
     obj1.a.setFullYear 2020
     assert.notEqual obj.a.getTime(), obj1.a.getTime()
 
   it 'should return simple types as is', () ->
     vals = [1, 12.4, true, false, null, 'a', undefined]
     for v in vals
-      assert.equal v, dahelpers.clone v
+      assert.equal v, h.clone v
 
 describe '#rekey()', () ->
   it 'should translate object keys', () ->
@@ -790,7 +793,7 @@ describe '#rekey()', () ->
       'c.d': 'b.a'
       'c.e': 'b.b'
 
-    obj1 = dahelpers.rekey obj, map
+    obj1 = h.rekey obj, map
 
     assert.deepEqual obj1,
       a:
@@ -801,96 +804,116 @@ describe '#rekey()', () ->
         b: 4
 
   it 'returns undefined if no arguments are passed', () ->
-    assert.equal dahelpers.rekey(), undefined
+    assert.equal h.rekey(), undefined
 
   it 'returns simple types as is', () ->
-    assert.equal dahelpers.rekey(1, a: 'b'), 1
+    assert.equal h.rekey(1, a: 'b'), 1
 
   it 'returns object clones if no map is specified', () ->
     obj =
       a: new Date(2013, 7, 10)
 
-    obj1 = dahelpers.rekey(obj)
+    obj1 = h.rekey(obj)
 
     assert.equal obj1.a.getTime(), obj.a.getTime()
     obj1.a.setFullYear 2020
     assert.notEqual obj1.a.getFullYear(), obj.a.getFullYear()
 
   it 'returns an empty object if map is an empty object', () ->
-    assert.deepEqual dahelpers.rekey({a: 1}, {}), {}
+    assert.deepEqual h.rekey({a: 1}, {}), {}
 
 describe '#toArray()', () ->
   it 'should convert to array the non-array values', () ->
-    assert.deepEqual dahelpers.toArray('foo'), ['foo']
-    assert.deepEqual dahelpers.toArray(1), [1]
-    assert.deepEqual dahelpers.toArray(true), [true]
+    assert.deepEqual h.toArray('foo'), ['foo']
+    assert.deepEqual h.toArray(1), [1]
+    assert.deepEqual h.toArray(true), [true]
 
   it 'should return empty value for undefined or null', () ->
-    assert.deepEqual dahelpers.toArray(), []
-    assert.deepEqual dahelpers.toArray(null), []
+    assert.deepEqual h.toArray(), []
+    assert.deepEqual h.toArray(null), []
 
   it 'should return original if already an array', () ->
     a = [1, 2, 3]
-    assert.deepEqual dahelpers.toArray(a), a
+    assert.deepEqual h.toArray(a), a
 
 describe '#empty()', () ->
   it 'should tell us if array is empty', () ->
     a1 = [1, 2, 3]
     a2 = []
-    assert.equal dahelpers.empty(a1), false
-    assert.equal dahelpers.empty(a2), true
+    assert.equal h.empty(a1), false
+    assert.equal h.empty(a2), true
 
   it 'should tell us if object is empty', () ->
     o1 = foo: 'bar'
     o2 = {}
-    assert.equal dahelpers.empty(o1), false
-    assert.equal dahelpers.empty(o2), true
+    assert.equal h.empty(o1), false
+    assert.equal h.empty(o2), true
 
   it 'should tell us if string is empty', () ->
     s1 = 'foo bar'
     s2 = ''
-    assert.equal dahelpers.empty(s1), false
-    assert.equal dahelpers.empty(s2), true
+    assert.equal h.empty(s1), false
+    assert.equal h.empty(s2), true
 
   it 'should treat anything else as empty', () ->
-    assert.equal dahelpers.empty(1), undefined
-    assert.equal dahelpers.empty(null), undefined
-    assert.equal dahelpers.empty(undefined), undefined
-    assert.equal dahelpers.empty(true), undefined
-    assert.equal dahelpers.empty(false), undefined
+    assert.equal h.empty(1), undefined
+    assert.equal h.empty(null), undefined
+    assert.equal h.empty(undefined), undefined
+    assert.equal h.empty(true), undefined
+    assert.equal h.empty(false), undefined
 
 describe '#subset()', () ->
   it 'returns true if small object is subset of big', () ->
     small = {a: 1, b: 2}
     big = {a: 1, b: 2, c: 3}
-    assert.ok dahelpers.subset small, big
+    isTrue h.subset small, big
 
   it 'returns false if small object has keys not in big one', () ->
     small = {a: 1, b: 2, x: 'wrong!'}
     big = {a: 1, b: 2, c: 3}
-    assert.notOk dahelpers.subset small, big
+    isFalse h.subset small, big
 
   it 'returns true if small object is empty', () ->
     ## Because empty object is always a subset of any object
     small = {}
     big = {a: 1, b: 2, c: 3}
-    assert.ok dahelpers.subset small, big
+    isTrue h.subset small, big
 
 describe '#truth()', () ->
   it 'should return true for values that we consider true', () ->
     assertTrue = (v) ->
-      assert.equal dahelpers.truth(v), true, "#{v}, #{h.type(v)}"
+      assert.equal h.truth(v), true, "#{v}, #{h.type(v)}"
     ((v) ->
       assertTrue v
     ) v for v in [1, 'foo', [1,2,3], {foo: 'bar'}, true, new Date(), (() ->)]
 
   it 'should return false for values that we consider false', () ->
     assertFalse = (v) ->
-      assert.equal dahelpers.truth(v), false, "#{v}, #{h.type(v)}"
+      assert.equal h.truth(v), false, "#{v}, #{h.type(v)}"
     ((v) ->
       assertFalse v
     ) v for v in [0, null, undefined, '', [], {}, false]
 
+describe '#every()', () ->
+  it 'should return true if all expressions in array are truthy', () ->
+    isTrue h.every [true, 'foo', 1]
+
+  it 'should return false if at least one is falsy', () ->
+    isFalse h.every [true, 'foo', false]
+
+describe '#none()', () ->
+  it 'should return true if all expressions in array are falsy', () ->
+    isTrue h.none [false, null, undefined, 0]
+
+  it 'should return false if at least one expression is truthy', () ->
+    isFalse h.none [true, null, undefined, 0]
+
+describe '#any()', () ->
+  it 'should return true if any expression in array is truthy', () ->
+    isTrue h.any [true, false, undefined]
+
+  it 'should return false if all expressions are falsy', () ->
+    isFalse h.any [false, null, undefined]
 
 describe 'tag aliases', () ->
   it 'will render appropriate tags', () ->

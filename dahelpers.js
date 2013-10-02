@@ -587,6 +587,29 @@ define(function() {
       } else {
         return true;
       }
+    },
+    every: function(arr) {
+      var item, _i, _len;
+      for (_i = 0, _len = arr.length; _i < _len; _i++) {
+        item = arr[_i];
+        if (!item) {
+          return false;
+        }
+      }
+      return true;
+    },
+    none: function(arr) {
+      var item, _i, _len;
+      for (_i = 0, _len = arr.length; _i < _len; _i++) {
+        item = arr[_i];
+        if (item) {
+          return false;
+        }
+      }
+      return true;
+    },
+    any: function(arr) {
+      return !h.none(arr);
     }
   };
   (function(tags) {

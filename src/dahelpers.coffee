@@ -1131,6 +1131,33 @@ define () ->
       else
         true
 
+    # ### `#every(arr)`
+    #
+    # Return true if all elements in `arr` array are truthy.
+    #
+    every: (arr) ->
+      for item in arr
+        return false if not item
+      true
+
+    # ### `#none(arr)`
+    #
+    # Return true if none of the elements in `arr` array are truthy.
+    #
+    none: (arr) ->
+      for item in arr
+        return false if item
+      true
+
+    # ### `#any(arr)`
+    #
+    # Return true if at least one item in array is truthy.
+    #
+    # This function is a reverse of `#none()`.
+    #
+    any: (arr) ->
+      not h.none(arr)
+
   # ### Tag aliases
   #
   # For convenience we include a few aliases for HTML tags that will call

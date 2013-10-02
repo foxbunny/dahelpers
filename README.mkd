@@ -145,10 +145,9 @@ This makes DaHelpers available as `d` within the templates. Now you can:
 
 ## <a name="using-functions-in-this-module">Using functions in this module</a>
 
-The functions in the DaHelpers module are actually all functions. They
-reference each other by referring to the module object directly instead of
-using `this`, so they can be safely decoupled from the module and used
-stand-alone.
+The methods in the DaHelpers module are actually all functions. They reference
+each other by referring to the module object directly instead of using `this`,
+so they can be safely decoupled from the module and used stand-alone.
 
 For example:
 

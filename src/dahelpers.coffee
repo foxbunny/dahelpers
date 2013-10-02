@@ -94,7 +94,7 @@ define () ->
 
     # ## Using functions in this module
     #
-    # The functions in the DaHelpers module are actually all functions. They
+    # The methods in the DaHelpers module are actually all functions. They
     # reference each other by referring to the module object directly instead
     # of using `this`, so they can be safely decoupled from the module and used
     # stand-alone.

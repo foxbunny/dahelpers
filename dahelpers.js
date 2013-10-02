@@ -408,14 +408,17 @@ define(function() {
       return s.replace(/^[_-]+/, '');
     },
     props: function(o, p) {
-      var f, r, _ref;
+      var f, r;
       if (o == null) {
         return;
       }
       if (p == null) {
         return o;
       }
-      _ref = p.split('.'), f = _ref[0], r = 2 <= _ref.length ? __slice.call(_ref, 1) : [];
+      if (h.type(p) !== 'array') {
+        p = p.split('.');
+      }
+      f = p[0], r = 2 <= p.length ? __slice.call(p, 1) : [];
       if (!r.length) {
         return o[f];
       } else {
@@ -557,6 +560,14 @@ define(function() {
           return _results;
         })()).length;
       }
+    },
+    subset: function(small, big) {
+      var isSubset;
+      isSubset = true;
+      h.walk(small, function(v, k, c) {
+        return isSubset = v === h.props(big, c);
+      });
+      return isSubset;
     },
     truth: function(v) {
       if (h.type(v, 'undefined') || h.type(v, 'null')) {

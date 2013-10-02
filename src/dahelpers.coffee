@@ -849,7 +849,8 @@ define () ->
     props: (o, p) ->
       return if not o?
       return o if not p?
-      [f, r...] = p.split('.')
+      p = p.split('.') if h.type(p) isnt 'array'
+      [f, r...] = p
       if not r.length
         return o[f]
       else
@@ -1090,6 +1091,19 @@ define () ->
         not v.length
       else if h.type(v, 'object')
         not (k for k of v).length
+
+    # ### `#subset(small, big)`
+    #
+    # Returns true if `small` object is a subset of `big` object.
+    #
+    # Subset means that all key-value pairs of one object is contained within
+    # another.
+    #
+    subset: (small, big) ->
+      isSubset = true
+      h.walk small, (v, k, c) ->
+        isSubset = v is h.props big, c
+      return isSubset
 
     # ### `#truth(v)`
     #

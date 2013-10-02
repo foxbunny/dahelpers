@@ -740,10 +740,25 @@ describe('#props()', function() {
     v = h.props(obj);
     return assert.equal(v, obj);
   });
-  return it('should return undefined if object is not passed', function() {
+  it('should return undefined if object is not passed', function() {
     var v;
     v = h.props();
     return assert.equal(v, void 0);
+  });
+  return it('should take arrays as valid properties', function() {
+    var obj, v, v1;
+    obj = {
+      a: {
+        b: {
+          c: {
+            d: 1
+          }
+        }
+      }
+    };
+    v = h.props(obj, 'a.b.c.d');
+    v1 = h.props(obj, ['a', 'b', 'c', 'd']);
+    return assert.equal(v, v1);
   });
 });
 
@@ -1108,6 +1123,46 @@ describe('#empty()', function() {
     assert.equal(dahelpers.empty(void 0), void 0);
     assert.equal(dahelpers.empty(true), void 0);
     return assert.equal(dahelpers.empty(false), void 0);
+  });
+});
+
+describe('#subset()', function() {
+  it('returns true if small object is subset of big', function() {
+    var big, small;
+    small = {
+      a: 1,
+      b: 2
+    };
+    big = {
+      a: 1,
+      b: 2,
+      c: 3
+    };
+    return assert.ok(dahelpers.subset(small, big));
+  });
+  it('returns false if small object has keys not in big one', function() {
+    var big, small;
+    small = {
+      a: 1,
+      b: 2,
+      x: 'wrong!'
+    };
+    big = {
+      a: 1,
+      b: 2,
+      c: 3
+    };
+    return assert.notOk(dahelpers.subset(small, big));
+  });
+  return it('returns true if small object is empty', function() {
+    var big, small;
+    small = {};
+    big = {
+      a: 1,
+      b: 2,
+      c: 3
+    };
+    return assert.ok(dahelpers.subset(small, big));
   });
 });
 

@@ -576,6 +576,18 @@ describe '#props()', () ->
     v = h.props()
     assert.equal v, undefined
 
+  it 'should take arrays as valid properties', () ->
+    obj =
+      a:
+        b:
+          c:
+            d: 1
+
+    v = h.props obj, 'a.b.c.d'
+    v1 = h.props obj, ['a', 'b', 'c', 'd']
+    assert.equal v, v1
+
+
 describe '#propset()', () ->
   it 'should set a property tree and assign a value to the leaf', () ->
     obj = {}
@@ -846,6 +858,23 @@ describe '#empty()', () ->
     assert.equal dahelpers.empty(undefined), undefined
     assert.equal dahelpers.empty(true), undefined
     assert.equal dahelpers.empty(false), undefined
+
+describe '#subset()', () ->
+  it 'returns true if small object is subset of big', () ->
+    small = {a: 1, b: 2}
+    big = {a: 1, b: 2, c: 3}
+    assert.ok dahelpers.subset small, big
+
+  it 'returns false if small object has keys not in big one', () ->
+    small = {a: 1, b: 2, x: 'wrong!'}
+    big = {a: 1, b: 2, c: 3}
+    assert.notOk dahelpers.subset small, big
+
+  it 'returns true if small object is empty', () ->
+    ## Because empty object is always a subset of any object
+    small = {}
+    big = {a: 1, b: 2, c: 3}
+    assert.ok dahelpers.subset small, big
 
 describe '#truth()', () ->
   it 'should return true for values that we consider true', () ->

@@ -1,5 +1,12 @@
 # DaHelpers Changelog
 
+## 0.2.10
+
+### Added `#every()`, `#none()` and `#any()` functions
+
+Tests if an array contains only truthy values, no truthy values, and at least
+one truthy value, respectively.
+
 ## 0.2.9
 
 ### Added `subset()` function

@@ -1,5 +1,12 @@
 # DaHelpers Changelog
 
+## 0.2.11
+
+### Fixed bug in `subset()` function
+
+The subset would always return the test performed on last key rather than all
+keys. This is now fixed and subset works as expected.
+
 ## 0.2.10
 
 ### Added `#every()`, `#none()` and `#any()` functions

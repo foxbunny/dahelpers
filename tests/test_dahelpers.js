@@ -21,7 +21,7 @@ describe('#type()', function() {
   it('reveals types of things', function() {
     var assertType;
     assertType = function(v, t) {
-      return assert.equal(h.type(v), t);
+      return equal(h.type(v), t);
     };
     assertType(null, 'null');
     assertType(void 0, 'undefined');
@@ -66,7 +66,7 @@ describe('#klass()', function() {
   it('reveals the object constructor', function() {
     var Foo, assertKlass;
     assertKlass = function(v, k) {
-      return assert.equal(h.klass(v), k);
+      return equal(h.klass(v), k);
     };
     Foo = (function() {
       function Foo() {}
@@ -115,17 +115,17 @@ describe('#objAttrs()', function() {
       'class': 'active',
       href: 'http://www.example.com/'
     });
-    return assert.equal(s, 'class="active" href="http://www.example.com/"');
+    return equal(s, 'class="active" href="http://www.example.com/"');
   });
   it('returns empty string if object is empty', function() {
     var s;
     s = h.objAttrs({});
-    return assert.equal(s, '');
+    return equal(s, '');
   });
   return it('returns empty string if there are no arguments', function() {
     var s;
     s = h.objAttrs();
-    return assert.equal(s, '');
+    return equal(s, '');
   });
 });
 
@@ -133,58 +133,58 @@ describe('#tag()', function() {
   it('returns HTML for a tag', function() {
     var s;
     s = h.tag('a');
-    return assert.equal(s, '<a></a>');
+    return equal(s, '<a></a>');
   });
   it('returns a tag with content if we specify it', function() {
     var s;
     s = h.tag('a', 'click here');
-    return assert.equal(s, '<a>click here</a>');
+    return equal(s, '<a>click here</a>');
   });
   it('returns a tag with attributes if specified', function() {
     var s;
     s = h.tag('a', null, {
       href: 'http://example.com/'
     });
-    return assert.equal(s, '<a href="http://example.com/"></a>');
+    return equal(s, '<a href="http://example.com/"></a>');
   });
   it('will suppress output if `silent` argument is passed', function() {
     var s;
     s = h.tag('a', null, {
       href: 'http://example.com/'
     }, true);
-    return assert.equal(s, '');
+    return equal(s, '');
   });
   it('will return empty string if no arguments', function() {
     var s;
     s = h.tag();
-    return assert.equal(s, '');
+    return equal(s, '');
   });
   return it('will correctly apply attribute with empty value', function() {
     var s;
     s = h.tag('foo', '', {
       value: ''
     });
-    assert.equal(s, '<foo value=""></foo>', 'empty string');
+    equal(s, '<foo value=""></foo>', 'empty string');
     s = h.tag('foo', '', {
       value: null
     });
-    assert.equal(s, '<foo value=""></foo>', 'null');
+    equal(s, '<foo value=""></foo>', 'null');
     s = h.tag('foo', '', {
       value: void 0
     });
-    return assert.equal(s, '<foo value=""></foo>', 'undefined');
+    return equal(s, '<foo value=""></foo>', 'undefined');
   });
 });
 
 describe('#escape()', function() {
   it('should escape special HTML chars', function() {
-    return assert.equal(h.escape('<&"\'/>'), '&lt;&amp;&quot;&#x27;&#x2F;&gt;');
+    return equal(h.escape('<&"\'/>'), '&lt;&amp;&quot;&#x27;&#x2F;&gt;');
   });
   return it('should leave all other chars intact', function() {
     var input, out;
     input = '<a href="#">not so malicious HTML</a>';
     out = '&lt;a href=&quot;#&quot;&gt;not so malicious HTML&lt;&#x2F;a&gt;';
-    return assert.equal(h.escape(input), out);
+    return equal(h.escape(input), out);
   });
 });
 
@@ -192,27 +192,27 @@ describe('#plural()', function() {
   it('will return plural with number greater than 1', function() {
     var s;
     s = h.plural('foo', 'foos', 2);
-    return assert.equal(s, 'foos');
+    return equal(s, 'foos');
   });
   it('will return a singular when count 1', function() {
     var s;
     s = h.plural('foo', 'foos', 1);
-    return assert.equal(s, 'foo');
+    return equal(s, 'foo');
   });
   it('will return different plural if specified', function() {
     var s;
     s = h.plural('foo', 'bar', 2);
-    return assert.equal(s, 'bar');
+    return equal(s, 'bar');
   });
   it('will not return the plural form if count is 1', function() {
     var s;
     s = h.plural('foo', 'bar', 1);
-    return assert.equal(s, 'foo');
+    return equal(s, 'foo');
   });
   return it('will return an empty string if there are no arguments', function() {
     var s;
     s = h.plural();
-    return assert.equal(s, '');
+    return equal(s, '');
   });
 });
 
@@ -220,17 +220,17 @@ describe('#capitalize()', function() {
   it('will capitalize the first letter', function() {
     var s;
     s = h.capitalize('foo');
-    return assert.equal(s, 'Foo');
+    return equal(s, 'Foo');
   });
   it('will do nothing when text is all caps', function() {
     var s;
     s = h.capitalize('FOO');
-    return assert.equal(s, 'FOO');
+    return equal(s, 'FOO');
   });
   return it('will return an empty string if no arguments are passed', function() {
     var s;
     s = h.capitalize();
-    return assert.equal(s, '');
+    return equal(s, '');
   });
 });
 
@@ -238,27 +238,27 @@ describe('#titleCase()', function() {
   it('will Title Case a string', function() {
     var s;
     s = h.titleCase('foo bar');
-    return assert.equal(s, 'Foo Bar');
+    return equal(s, 'Foo Bar');
   });
   it('will do nothing if all-caps', function() {
     var s;
     s = h.titleCase('FOO BAR');
-    return assert.equal(s, 'FOO BAR');
+    return equal(s, 'FOO BAR');
   });
   it('will capitalize words even if mixed case', function() {
     var s;
     s = h.titleCase('fOO bAR');
-    return assert.equal(s, 'FOO BAR');
+    return equal(s, 'FOO BAR');
   });
   it('will lower-case everything if told to', function() {
     var s;
     s = h.titleCase('FOO BAR', true);
-    return assert.equal(s, 'Foo Bar');
+    return equal(s, 'Foo Bar');
   });
   return it('will return an empty string if no arguments are passed', function() {
     var s;
     s = h.titleCase();
-    return assert.equal(s, '');
+    return equal(s, '');
   });
 });
 
@@ -266,32 +266,32 @@ describe('#format()', function() {
   it('will reformat a string or number using format string', function() {
     var s;
     s = h.format(123456, '## ## ##');
-    return assert.equal(s, '12 34 56');
+    return equal(s, '12 34 56');
   });
   it("will retain pound characters if source hasn't enough characters", function() {
     var s;
     s = h.format(12, '###');
-    return assert.equal(s, '12#');
+    return equal(s, '12#');
   });
   it('will omit characters if not enough pound characters', function() {
     var s;
     s = h.format(123, '##');
-    return assert.equal(s, '12');
+    return equal(s, '12');
   });
   it('will return original value if no format is specified', function() {
     var s;
     s = h.format(123);
-    return assert.equal(s, '123');
+    return equal(s, '123');
   });
   it('can use a different format character', function() {
     var s;
     s = h.format(123, '$$/$', '$');
-    return assert.equal(s, '12/3');
+    return equal(s, '12/3');
   });
   return it('will output an empty string if there are no arguments', function() {
     var s;
     s = h.format();
-    return assert.equal(s, '');
+    return equal(s, '');
   });
 });
 
@@ -299,12 +299,12 @@ describe('#reverse()', function() {
   it('will reverse a string', function() {
     var s;
     s = h.reverse('esrever');
-    return assert.equal(s, 'reverse');
+    return equal(s, 'reverse');
   });
   return it('will return an empty string if no arguments', function() {
     var s;
     s = h.reverse();
-    return assert.equal(s, '');
+    return equal(s, '');
   });
 });
 
@@ -350,52 +350,52 @@ describe('#pad()', function() {
   it('should pad a number with leading characters', function() {
     var s;
     s = h.pad(123, 4);
-    return assert.equal(s, '0123');
+    return equal(s, '0123');
   });
   it('should not pad if length is 0', function() {
     var s;
     s = h.pad(123, 0);
-    return assert.equal(s, '123');
+    return equal(s, '123');
   });
   it('should pad a number with different character if told to', function() {
     var s;
     s = h.pad(123, 5, '%');
-    return assert.equal(s, '%%123');
+    return equal(s, '%%123');
   });
   it('should keep the original string if given length is shorter', function() {
     var s;
     s = h.pad(123, 1);
-    return assert.equal(s, '123');
+    return equal(s, '123');
   });
   it('should pad the tail if tail is specified', function() {
     var s;
     s = h.pad(123.12, 5, null, 4);
-    return assert.equal(s, '00123.1200');
+    return equal(s, '00123.1200');
   });
   it('should use a different separator for tail if specified', function() {
     var s;
     s = h.pad('123,12', 5, null, 4, ',');
-    return assert.equal(s, '00123,1200');
+    return equal(s, '00123,1200');
   });
   it('should pad the tail even if head length is 0', function() {
     var s;
     s = h.pad(123.12, 0, null, 4);
-    return assert.equal(s, '123.1200');
+    return equal(s, '123.1200');
   });
   it('should be able to pad anything really', function() {
     var s;
     s = h.pad('foo-bar', 6, '!', 6, '-');
-    return assert.equal(s, '!!!foo-bar!!!');
+    return equal(s, '!!!foo-bar!!!');
   });
   it('should remove tail if tail is 0', function() {
     var s;
     s = h.pad('123.12', 4, null, 0);
-    return assert.equal(s, '0123');
+    return equal(s, '0123');
   });
   return it('shold return an empty string if no arguments are passed', function() {
     var s;
     s = h.pad();
-    return assert.equal(s, '');
+    return equal(s, '');
   });
 });
 
@@ -403,22 +403,22 @@ describe('#round()', function() {
   it('should round numbers', function() {
     var n;
     n = h.round(1.2345, 3);
-    return assert.equal(n, 1.235);
+    return equal(n, 1.235);
   });
   it('should round to 0 digits by default', function() {
     var n;
     n = h.round(1.2345);
-    return assert.equal(n, 1);
+    return equal(n, 1);
   });
   it('should parse numbers from strings', function() {
     var n;
     n = h.round('1.234', 2);
-    return assert.equal(n, 1.23);
+    return equal(n, 1.23);
   });
   return it('should return 0 if input is not numeric', function() {
     var n;
     n = h.round('foo');
-    return assert.equal(n, 0);
+    return equal(n, 0);
   });
 });
 
@@ -426,52 +426,52 @@ describe('#thousands()', function() {
   it('will add thousands separator to a number', function() {
     var s;
     s = h.thousands(1000);
-    return assert.equal(s, '1,000');
+    return equal(s, '1,000');
   });
   it('should handle situation where first digit is on thousand boundary', function() {
     var s;
     s = h.thousands(100000);
-    return assert.equal(s, '100,000');
+    return equal(s, '100,000');
   });
   it('should work with many zeros', function() {
     var s;
     s = h.thousands(100000000000);
-    return assert.equal(s, '100,000,000,000');
+    return equal(s, '100,000,000,000');
   });
   it('should handle floats', function() {
     var s;
     s = h.thousands(100000.12);
-    return assert.equal(s, '100,000.12');
+    return equal(s, '100,000.12');
   });
   it('should handle floats with many digits', function() {
     var s;
     s = h.thousands(100000.123456);
-    return assert.equal(s, '100,000.123456');
+    return equal(s, '100,000.123456');
   });
   it('strips non-digit charracters', function() {
     var s;
     s = h.thousands('A hundred thousands is 100000');
-    return assert.equal(s, '100,000');
+    return equal(s, '100,000');
   });
   it('will use a different separator if one is given', function() {
     var s;
     s = h.thousands(1000, "'");
-    return assert.equal(s, "1'000");
+    return equal(s, "1'000");
   });
   it('will use a different decimal separator if one is given', function() {
     var s;
     s = h.thousands(1000.123, '.', ',');
-    return assert.equal(s, '1.000,123');
+    return equal(s, '1.000,123');
   });
   it('should play nice with negative numbers', function() {
     var s;
     s = h.thousands(-12000);
-    return assert.equal(s, '-12,000');
+    return equal(s, '-12,000');
   });
   return it('should return an empty string if passed no argument', function() {
     var s;
     s = h.thousands();
-    return assert.equal(s, '');
+    return equal(s, '');
   });
 });
 
@@ -479,90 +479,90 @@ describe('#si()', function() {
   it('will suffix k for thousands', function() {
     var s;
     s = h.si(1000);
-    return assert.equal(s, '1k');
+    return equal(s, '1k');
   });
   it('will suffix M for millions', function() {
     var s;
     s = h.si(1000000);
-    return assert.equal(s, '1M');
+    return equal(s, '1M');
   });
   it('will suffix G for billions', function() {
     var s;
     s = h.si(1000000000);
-    return assert.equal(s, '1G');
+    return equal(s, '1G');
   });
   it('will suffix T for trillions', function() {
     var s;
     s = h.si(1000000000000);
-    return assert.equal(s, '1T');
+    return equal(s, '1T');
   });
   it('will suffix P for quadrillions', function() {
     var s;
     s = h.si(1000000000000000);
-    return assert.equal(s, '1P');
+    return equal(s, '1P');
   });
   it('will suffix E for quintillions', function() {
     var s;
     s = h.si(1000000000000000000);
-    return assert.equal(s, '1E');
+    return equal(s, '1E');
   });
   it('will suffix Z for sextillions', function() {
     var s;
     s = h.si(1000000000000000000000);
-    return assert.equal(s, '1Z');
+    return equal(s, '1Z');
   });
   it('will degrade to lower thousand if not a whole thousand', function() {
     var s;
     s = h.si(1100);
-    assert.equal(s, '1100');
+    equal(s, '1100');
     s = h.si(1100000);
-    assert.equal(s, '1100k');
+    equal(s, '1100k');
     s = h.si(1100000000);
-    return assert.equal(s, '1100M');
+    return equal(s, '1100M');
   });
   it('will provide a float if number of decimal places are specified', function() {
     var s;
     s = h.si(1100, 1);
-    return assert.equal(s, '1.1k');
+    return equal(s, '1.1k');
   });
   it('will still go down a thousand if not enough decimal places', function() {
     var s;
     s = h.si(1110, 1);
-    assert.equal(s, '1110');
+    equal(s, '1110');
     s = h.si(1110, 2);
-    return assert.equal(s, '1.11k');
+    return equal(s, '1.11k');
   });
   it('supports unlimited decimal places', function() {
     var s;
     s = h.si(1234560000);
-    assert.equal(s, '1234560k');
+    equal(s, '1234560k');
     s = h.si(1234560000, 5);
-    return assert.equal(s, '1.23456G');
+    return equal(s, '1.23456G');
   });
   it('should play nice with negative numbers', function() {
     var s;
     s = h.si(-1200000, 1);
-    return assert.equal(s, '-1.2M');
+    return equal(s, '-1.2M');
   });
   it('should add thousands separators if told to', function() {
     var s;
     s = h.si(12401000, 1, true);
-    return assert.equal(s, '12,401k');
+    return equal(s, '12,401k');
   });
   it('should use a thousands separator specified', function() {
     var s;
     s = h.si(12401000, 1, true, "'");
-    return assert.equal(s, "12'401k");
+    return equal(s, "12'401k");
   });
   it('should use a different decimal separator if told to', function() {
     var s;
     s = h.si(12401200, 1, true, '.', ',');
-    return assert.equal(s, '12.401,2k');
+    return equal(s, '12.401,2k');
   });
   return it('will return an empty string if provided no arguments', function() {
     var s;
     s = h.si();
-    return assert.equal(s, '');
+    return equal(s, '');
   });
 });
 
@@ -570,29 +570,29 @@ describe('#digits()', function() {
   it('will return only the digits from a string', function() {
     var s;
     s = h.digits('a1b2c3d4 5-6#7');
-    return assert.equal(s, '1234567');
+    return equal(s, '1234567');
   });
   return it('will return an empty string if given no arguments', function() {
     var s;
     s = h.digits();
-    return assert.equal(s, '');
+    return equal(s, '');
   });
 });
 
 describe('#prefix()', function() {
   it('should add specified prefix to a number', function() {
-    return assert.equal(h.prefix(12, '$'), '$12');
+    return equal(h.prefix(12, '$'), '$12');
   });
   it('should add minus in front of prefix if number is negative', function() {
-    return assert.equal(h.prefix(-12, '$'), '-$12');
+    return equal(h.prefix(-12, '$'), '-$12');
   });
   it('should separate long prefix from number', function() {
-    assert.equal(h.prefix(12, 'USD', true), 'USD 12');
-    return assert.equal(h.prefix(-12, 'USD', true), 'USD -12');
+    equal(h.prefix(12, 'USD', true), 'USD 12');
+    return equal(h.prefix(-12, 'USD', true), 'USD -12');
   });
   return it('should not care if number is a number or not', function() {
-    assert.equal(h.prefix('abc', '$'), '$abc');
-    return assert.equal(h.prefix('-abc', '$'), '-$abc');
+    equal(h.prefix('abc', '$'), '$abc');
+    return equal(h.prefix('-abc', '$'), '-$abc');
   });
 });
 
@@ -600,57 +600,57 @@ describe('#currency()', function() {
   it('should work fine with defaults', function() {
     var s;
     s = h.currency(12);
-    return assert.equal(s, '$12.00');
+    return equal(s, '$12.00');
   });
   it('should add thousands separators', function() {
     var s;
     s = h.currency(1200);
-    return assert.equal(s, '$1,200.00');
+    return equal(s, '$1,200.00');
   });
   it('should use any currency we tell it to', function() {
     var s;
     s = h.currency(1200, 'USD');
-    return assert.equal(s, 'USD 1,200.00');
+    return equal(s, 'USD 1,200.00');
   });
   it('should round to number of decimals', function() {
     var s;
     s = h.currency(1200.55, null, 1);
-    return assert.equal(s, '$1,200.6');
+    return equal(s, '$1,200.6');
   });
   it('should play nice with negative numbers', function() {
     var s;
     s = h.currency(-1200);
-    return assert.equal(s, '-$1,200.00');
+    return equal(s, '-$1,200.00');
   });
   it('should use different separators if told to', function() {
     var s;
     s = h.currency(1200, null, null, "'", ';');
-    return assert.equal(s, "$1'200;00");
+    return equal(s, "$1'200;00");
   });
   it('should use SI suffixes if told to', function() {
     var s;
     s = h.currency(1200, null, null, null, null, true);
-    return assert.equal(s, "$1.2k");
+    return equal(s, "$1.2k");
   });
   it('should play nice with string input', function() {
     var s;
     s = h.currency('1200');
-    return assert.equal(s, '$1,200.00');
+    return equal(s, '$1,200.00');
   });
   it('should suffix the currency if we tell it to', function() {
     var s;
     s = h.currency(1200, null, null, null, null, null, true);
-    return assert.equal(s, '1,200.00 $');
+    return equal(s, '1,200.00 $');
   });
   it('should only use the integer part if decimal digits is 0', function() {
     var s;
     s = h.currency(123.12, null, 0);
-    return assert.equal(s, '$123');
+    return equal(s, '$123');
   });
   return it('should return 0 if no input', function() {
     var s;
     s = h.currency();
-    return assert.equal(s, '$0.00');
+    return equal(s, '$0.00');
   });
 });
 
@@ -677,12 +677,12 @@ describe('#wrap()', function() {
     text = "This is a longer piece of text that needs to be wrapped. It\ncontains no linebreaks, though.".replace('\n', ' ');
     output = "This is a longer\npiece of text that\nneeds to be wrapped.\nIt contains no\nlinebreaks, though.";
     s = h.wrap(text, 20);
-    return assert.equal(s, output);
+    return equal(s, output);
   });
   return it('returns empty string if no output is given', function() {
     var s;
     s = h.wrap();
-    return assert.equal(s, '');
+    return equal(s, '');
   });
 });
 
@@ -690,24 +690,24 @@ describe('#slug()', function() {
   it('should convert text to slug', function() {
     var s;
     s = h.slug("This is some text, and it's got some non-word characters");
-    return assert.equal(s, 'this-is-some-text-and-it-s-got-some-non-word-characters');
+    return equal(s, 'this-is-some-text-and-it-s-got-some-non-word-characters');
   });
   it('should keep numbers and underscores', function() {
     var s;
     s = h.slug("This is text containing numbers 1, 2, and 3, and _ character");
-    return assert.equal(s, 'this-is-text-containing-numbers-1-2-and-3-and-_-character');
+    return equal(s, 'this-is-text-containing-numbers-1-2-and-3-and-_-character');
   });
   it('strips leading and trailing underscores and dashes', function() {
     var s;
     s = h.slug('### boo ###');
-    assert.equal(s, 'boo');
+    equal(s, 'boo');
     s = h.slug('___ boo ___');
-    return assert.equal(s, 'boo');
+    return equal(s, 'boo');
   });
   return it('returns empty string if no argument is given', function() {
     var s;
     s = h.slug();
-    return assert.equal(s, '');
+    return equal(s, '');
   });
 });
 
@@ -724,7 +724,7 @@ describe('#props()', function() {
       }
     };
     v = h.props(obj, 'a.b.c.d');
-    return assert.equal(v, 1);
+    return equal(v, 1);
   });
   it('should return undefined if at least one segment is undefined', function() {
     var obj, v;
@@ -738,18 +738,18 @@ describe('#props()', function() {
       }
     };
     v = h.props(obj, 'a.b.foo.d');
-    return assert.equal(v, void 0);
+    return equal(v, void 0);
   });
   it('should return original object if `p` is not passed', function() {
     var obj, v;
     obj = 'foo';
     v = h.props(obj);
-    return assert.equal(v, obj);
+    return equal(v, obj);
   });
   it('should return undefined if object is not passed', function() {
     var v;
     v = h.props();
-    return assert.equal(v, void 0);
+    return equal(v, void 0);
   });
   return it('should take arrays as valid properties', function() {
     var obj, v, v1;
@@ -764,7 +764,7 @@ describe('#props()', function() {
     };
     v = h.props(obj, 'a.b.c.d');
     v1 = h.props(obj, ['a', 'b', 'c', 'd']);
-    return assert.equal(v, v1);
+    return equal(v, v1);
   });
 });
 
@@ -803,7 +803,7 @@ describe('#propset()', function() {
       }
     };
     h.propset(obj, 'foo.bar.baz', 2);
-    return assert.equal(obj.foo.bar.baz, 2);
+    return equal(obj.foo.bar.baz, 2);
   });
   it('should be chainable', function() {
     var obj;
@@ -929,7 +929,7 @@ describe('#extend()', function() {
       b: 2
     };
     h.extend(obj, obj2);
-    return assert.equal(obj.b, 2);
+    return equal(obj.b, 2);
   });
   it('overwrites existing properties', function() {
     var obj, obj1;
@@ -940,7 +940,7 @@ describe('#extend()', function() {
       a: 2
     };
     h.extend(obj, obj1);
-    return assert.equal(obj.a, 2);
+    return equal(obj.a, 2);
   });
   it('should really clone the mixin properties', function() {
     var obj, obj1;
@@ -998,13 +998,13 @@ describe('#clone()', function() {
       }
     };
     obj1 = h.clone(obj);
-    assert.equal(obj.a, obj1.a);
-    assert.equal(obj.b, obj1.b);
-    assert.equal(obj.c, obj1.c);
+    equal(obj.a, obj1.a);
+    equal(obj.b, obj1.b);
+    equal(obj.c, obj1.c);
     assert.notEqual(obj.d.e, obj1.d.e);
-    assert.equal(obj.d.e.getTime(), obj1.d.e.getTime());
+    equal(obj.d.e.getTime(), obj1.d.e.getTime());
     assert.notEqual(obj.d.f, obj1.d.f);
-    assert.equal(obj.d.f.toString(), obj1.d.f.toString());
+    equal(obj.d.f.toString(), obj1.d.f.toString());
     return assert.deepEqual(obj.d.g, obj1.d.g);
   });
   it('should make real clones, not just two identical copies', function() {
@@ -1022,7 +1022,7 @@ describe('#clone()', function() {
     _results = [];
     for (_i = 0, _len = vals.length; _i < _len; _i++) {
       v = vals[_i];
-      _results.push(assert.equal(v, h.clone(v)));
+      _results.push(equal(v, h.clone(v)));
     }
     return _results;
   });
@@ -1058,10 +1058,10 @@ describe('#rekey()', function() {
     });
   });
   it('returns undefined if no arguments are passed', function() {
-    return assert.equal(h.rekey(), void 0);
+    return equal(h.rekey(), void 0);
   });
   it('returns simple types as is', function() {
-    return assert.equal(h.rekey(1, {
+    return equal(h.rekey(1, {
       a: 'b'
     }), 1);
   });
@@ -1071,7 +1071,7 @@ describe('#rekey()', function() {
       a: new Date(2013, 7, 10)
     };
     obj1 = h.rekey(obj);
-    assert.equal(obj1.a.getTime(), obj.a.getTime());
+    equal(obj1.a.getTime(), obj.a.getTime());
     obj1.a.setFullYear(2020);
     return assert.notEqual(obj1.a.getFullYear(), obj.a.getFullYear());
   });
@@ -1104,8 +1104,8 @@ describe('#empty()', function() {
     var a1, a2;
     a1 = [1, 2, 3];
     a2 = [];
-    assert.equal(h.empty(a1), false);
-    return assert.equal(h.empty(a2), true);
+    equal(h.empty(a1), false);
+    return equal(h.empty(a2), true);
   });
   it('should tell us if object is empty', function() {
     var o1, o2;
@@ -1113,22 +1113,22 @@ describe('#empty()', function() {
       foo: 'bar'
     };
     o2 = {};
-    assert.equal(h.empty(o1), false);
-    return assert.equal(h.empty(o2), true);
+    equal(h.empty(o1), false);
+    return equal(h.empty(o2), true);
   });
   it('should tell us if string is empty', function() {
     var s1, s2;
     s1 = 'foo bar';
     s2 = '';
-    assert.equal(h.empty(s1), false);
-    return assert.equal(h.empty(s2), true);
+    equal(h.empty(s1), false);
+    return equal(h.empty(s2), true);
   });
   return it('should treat anything else as empty', function() {
-    assert.equal(h.empty(1), void 0);
-    assert.equal(h.empty(null), void 0);
-    assert.equal(h.empty(void 0), void 0);
-    assert.equal(h.empty(true), void 0);
-    return assert.equal(h.empty(false), void 0);
+    equal(h.empty(1), void 0);
+    equal(h.empty(null), void 0);
+    equal(h.empty(void 0), void 0);
+    equal(h.empty(true), void 0);
+    return equal(h.empty(false), void 0);
   });
 });
 
@@ -1176,7 +1176,7 @@ describe('#truth()', function() {
   it('should return true for values that we consider true', function() {
     var assertTrue, v, _i, _len, _ref, _results;
     assertTrue = function(v) {
-      return assert.equal(h.truth(v), true, "" + v + ", " + (h.type(v)));
+      return equal(h.truth(v), true, "" + v + ", " + (h.type(v)));
     };
     _ref = [
       1, 'foo', [1, 2, 3], {
@@ -1195,7 +1195,7 @@ describe('#truth()', function() {
   return it('should return false for values that we consider false', function() {
     var assertFalse, v, _i, _len, _ref, _results;
     assertFalse = function(v) {
-      return assert.equal(h.truth(v), false, "" + v + ", " + (h.type(v)));
+      return equal(h.truth(v), false, "" + v + ", " + (h.type(v)));
     };
     _ref = [0, null, void 0, '', [], {}, false];
     _results = [];
@@ -1243,7 +1243,7 @@ describe('tag aliases', function() {
     for (_i = 0, _len = tags.length; _i < _len; _i++) {
       tag = tags[_i];
       s = h[tag]();
-      assert.equal(s, "<" + tag + "></" + tag + ">", tag);
+      equal(s, "<" + tag + "></" + tag + ">", tag);
     }
   });
   return it('accepts the same arguments as #tag()', function() {
@@ -1254,7 +1254,7 @@ describe('tag aliases', function() {
       s = h[tag]('foo', {
         foo: 'bar'
       });
-      assert.equal(s, "<" + tag + " foo=\"bar\">foo</" + tag + ">", tag);
+      equal(s, "<" + tag + " foo=\"bar\">foo</" + tag + ">", tag);
     }
   });
 });

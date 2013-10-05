@@ -277,6 +277,7 @@ define(function() {
     },
     arrayIter: function(a) {
       var length, nextIndex;
+      a = [].concat(a);
       nextIndex = 0;
       length = a.length;
       return {
@@ -369,6 +370,7 @@ define(function() {
     },
     objIter: function(o) {
       var k, keys, length, nextIndex;
+      o = h.clone(o);
       keys = (function() {
         var _results;
         _results = [];

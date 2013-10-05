@@ -579,6 +579,7 @@ define () ->
     # Returns an [iterator object](#iterator-object) for the given array.
     #
     arrayIter: (a) ->
+      a = [].concat a
       nextIndex = 0
       length = a.length
 
@@ -628,6 +629,7 @@ define () ->
     # Returns an [iterator object](#iterator-object) for the given object.
     #
     objIter: (o) ->
+      o = h.clone o
       keys = (k for k of o when Object::hasOwnProperty.call o, k)
       nextIndex = 0
       length = keys.length

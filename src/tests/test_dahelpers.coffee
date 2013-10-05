@@ -915,6 +915,376 @@ describe '#any()', () ->
   it 'should return false if all expressions are falsy', () ->
     isFalse h.any [false, null, undefined]
 
+describe '#iter(array)', () ->
+  it 'should return an iterator object', () ->
+    i = h.iter []
+    isTrue typeof i is 'object'
+
+  describe 'iterator.len()', () ->
+
+    it 'returns length', () ->
+      i = h.iter [1, 2, 3]
+      equal i.len(), 3
+
+  describe 'iterator.remaining()', () ->
+
+    it 'returns the number of remaining members', () ->
+      i = h.iter [1, 2, 3, 4]
+      equal i.remaining(), 4
+      i.next()
+      equal i.remaining(), 3
+      i.next()
+      equal i.remaining(), 2
+      i.next()
+      equal i.remaining(), 1
+      i.next()
+      equal i.remaining(), 0
+
+  describe 'iterator.next()', () ->
+
+    it 'returns the next member', () ->
+      i = h.iter [1, 2, 3, 4]
+      equal i.next(), 1
+      equal i.next(), 2
+      equal i.next(), 3
+      equal i.next(), 4
+
+    it 'throws an error when members are exhausted', () ->
+      i = h.iter [1, 2]
+      i.next()
+      i.next()
+      assert.throws i.next, Error, 'Iterator stopped'
+
+  describe 'iterator.each()', () ->
+
+    it 'calls a function on each member of the array', () ->
+      a = ['a', 'b', 'c']
+      i = h.iter a
+      res = []
+      i.each (item, idx) ->
+        res.push [this, item, idx]
+      assert.deepEqual res, [
+        [a, 'a', 0]
+        [a, 'b', 1]
+        [a, 'c', 2]
+      ]
+
+  describe 'iterator.map()', () ->
+
+    it 'calls a function on each member, and returns new array', () ->
+      a = ['a', 'b', 'c']
+      i = h.iter a
+      res = []
+
+      a1 = i.map (item, idx) ->
+        res.push [this, item, idx]
+        item + 'foo'
+
+      assert.deepEqual res, [
+        [a, 'a', 0]
+        [a, 'b', 1]
+        [a, 'c', 2]
+      ]
+      assert.deepEqual a1, ['afoo', 'bfoo', 'cfoo']
+
+  describe 'iterator.reduce()', () ->
+
+    it 'reduces the array members to single value using callback', () ->
+      a = [1, 2, 3, 4]
+      i = h.iter a
+      res = []
+      n = i.reduce (val, item, idx) ->
+        res.push [this, val, item, idx]
+        val + item
+      , 0
+      assert.deepEqual res, [
+        [a, 0, 1, 0]
+        [a, 1, 2, 1]
+        [a, 3, 3, 2]
+        [a, 6, 4, 3]
+      ]
+      equal n, 10
+
+  describe 'iterator.filter()', () ->
+
+    it 'returns only items for which callback returns true', () ->
+      a = [1, 2, 3, 4]
+      i = h.iter a
+      res = []
+      n = i.filter (item, idx) ->
+        res.push [this, item, idx]
+        item % 2 is 0
+
+      assert.deepEqual res, [
+        [a, 1, 0]
+        [a, 2, 1]
+        [a, 3, 2]
+        [a, 4, 3]
+      ]
+      assert.deepEqual n, [2, 4]
+
+    it 'returns no items if callback always returns false', () ->
+      a = h.iter([1, 2, 3, 4]).filter () -> false
+      assert.deepEqual a, []
+
+    it 'returns all items if callback always returns true', () ->
+      a = h.iter([1, 2, 3, 4]).filter () -> true
+      assert.deepEqual a, [1, 2, 3, 4]
+
+  describe 'iterator.every()', () ->
+
+    it 'returns true if at callback returns true for all items', () ->
+      a = [1, 2, 3, 4]
+      res = []
+      r = h.iter(a).every (item, idx) ->
+        res.push [this, item, idx]
+        item > 0
+      assert.deepEqual res, [
+        [a, 1, 0]
+        [a, 2, 1]
+        [a, 3, 2]
+        [a, 4, 3]
+      ]
+      isTrue r
+
+    it 'returns false if at callback returns false at least once', () ->
+      a = [1, 2, 3, 4]
+      r = h.iter(a).every (item) -> item < 2
+      isFalse r
+
+  describe 'iterator.none()', () ->
+
+    it 'returns true if callback returns false for all members', () ->
+      a = [1, 2, 3, 4]
+      res = []
+      r = h.iter(a).none (item, idx) ->
+        res.push [this, item, idx]
+        item < 0
+      assert.deepEqual res, [
+        [a, 1, 0]
+        [a, 2, 1]
+        [a, 3, 2]
+        [a, 4, 3]
+      ]
+      isTrue r
+
+    it 'returns false if callback returns true at least once', () ->
+      a = [1, 2, 'a', 4]
+      r = h.iter(a).none (item) -> typeof item is 'string'
+      isFalse r
+
+  describe 'iterator.any()', () ->
+
+    it 'returns true if callback returns true for at least one member', () ->
+      a = [1, 2, 3, 4]
+      res = []
+      r = h.iter(a).any (item, idx) ->
+        res.push [this, item, idx]
+        item is 3
+      assert.deepEqual res, [
+        [a, 1, 0]
+        [a, 2, 1]
+        [a, 3, 2]
+        # Never reaches [a, 4, 3]
+      ]
+      isTrue r
+
+    it 'returns false if callback never returns true', () ->
+      r = h.iter([1, 2, 3, ]).any () -> false
+      isFalse r
+
+describe '#iter(object)', () ->
+
+  it 'should return an iterator object', () ->
+    o = a: 1, b: 2, c: 3, d: 4
+    i = h.iter o
+    equal typeof i, 'object'
+
+  describe 'iterator.len()', () ->
+
+    it 'returns length', () ->
+      i = h.iter a: 1, b: 2, c: 3, d: 4
+      equal i.len(), 4
+
+  describe 'iterators.remaining()', () ->
+
+    it 'returns the number of remainig members', () ->
+      i = h.iter a: 1, b: 2, c: 3, d: 4
+      equal i.remaining(), 4
+      i.next()
+      equal i.remaining(), 3
+      i.next()
+      equal i.remaining(), 2
+      i.next()
+      equal i.remaining(), 1
+      i.next()
+      equal i.remaining(), 0
+
+  describe 'iterator.next()', () ->
+
+    it 'returns next member', () ->
+      i = h.iter a: 1, b: 2, c: 3, d: 4
+      assert.deepEqual i.next(), ['a', 1]
+      assert.deepEqual i.next(), ['b', 2]
+      assert.deepEqual i.next(), ['c', 3]
+      assert.deepEqual i.next(), ['d', 4]
+
+    it 'throws an exception when all members are exhausted', () ->
+      i = h.iter a: 1, b: 2, c: 3, d: 4
+      i.next()
+      i.next()
+      i.next()
+      i.next()
+      assert.throws i.next, Error, 'Iterator stopped'
+
+  describe 'iterator.each()', () ->
+
+    it 'should invoke the callback oneach member', () ->
+      o = a: 1, b: 2, c: 3, d: 4
+      i = h.iter o
+      res = []
+      i.each (value, key) ->
+        res.push [this, value, key]
+      assert.deepEqual res, [
+        [o, 1, 'a']
+        [o, 2, 'b']
+        [o, 3, 'c']
+        [o, 4, 'd']
+      ]
+
+  describe 'iterator.map()', () ->
+
+    it 'calls a function on eachmember,and returns new object', () ->
+      o = a: 1, b: 2, c: 3, d: 4
+      i = h.iter o
+      res = []
+      o1 = i.map (value, key) ->
+        res.push [this, value, key]
+        value + 2
+      assert.deepEqual res, [
+        [o, 1, 'a']
+        [o, 2, 'b']
+        [o, 3, 'c']
+        [o, 4, 'd']
+      ]
+      assert.deepEqual o1,
+        a: 3
+        b: 4
+        c: 5
+        d: 6
+      assert.notEqual o, o1
+
+  describe 'iterator.reduce()', () ->
+
+    it 'reduces the object members to single value using callback', () ->
+      o = a: 1, b: 2, c: 3, d: 4
+      i = h.iter o
+      res = []
+      n = i.reduce (val, value, key) ->
+        res.push [this, val, value, key]
+        val + value
+      , 0
+      assert.deepEqual res, [
+        [o, 0, 1, 'a']
+        [o, 1, 2, 'b']
+        [o, 3, 3, 'c']
+        [o, 6, 4, 'd']
+      ]
+      equal n, 10
+
+  describe 'iterator.filter()', () ->
+
+    it 'returns only members for which callback returns true', () ->
+      o = a: 1, b: 2, c: 3, d: 4
+      i = h.iter o
+      res = []
+      r = i.filter (value, key) ->
+        res.push [this, value, key]
+        value % 2 is 0
+      , 0
+      assert.deepEqual res, [
+        [o, 1, 'a']
+        [o, 2, 'b']
+        [o, 3, 'c']
+        [o, 4, 'd']
+      ]
+      assert.deepEqual r,
+        b: 2
+        d: 4
+
+    it 'shallow-copies object if callback always returns true', () ->
+      o = a: 1, b: 2, c: 3, d: 4
+      o1 = h.iter(o).filter () -> true
+      assert.deepEqual o1, o
+
+    it 'returns an empty object if callback always returns false', () ->
+      o = a: 1, b: 2, c: 3, d: 4
+      o1 = h.iter(o).filter () -> false
+      assert.deepEqual o1, {}
+
+  describe 'iterator.every()', () ->
+
+    it 'should return true if callback returns true for all members', () ->
+      o = a: 1, b: 2, c: 3, d: 4
+      res = []
+      r = h.iter(o).every (value, key) ->
+        res.push [this, value, key]
+        value > 0
+      assert.deepEqual res, [
+        [o, 1, 'a']
+        [o, 2, 'b']
+        [o, 3, 'c']
+        [o, 4, 'd']
+      ]
+      isTrue r
+
+    it 'should return false if callback returns false at least once', () ->
+      o = a: 1, b: 2, c: 3, d: 4
+      r = h.iter(o).every (value, key) -> value < 4
+      isFalse r
+
+  describe 'iterator.none()', () ->
+
+    it 'should return true if callback returns false for all members', () ->
+      o = a: 1, b: 2, c: 3, d: 4
+      res = []
+      r = h.iter(o).none (value, key) ->
+        res.push [this, value, key]
+        value < 0
+      assert.deepEqual res, [
+        [o, 1, 'a']
+        [o, 2, 'b']
+        [o, 3, 'c']
+        [o, 4, 'd']
+      ]
+      isTrue r
+
+    it 'should return false if callback returns true at least once', () ->
+      o = a: 1, b: 2, c: 3, d: 4
+      r = h.iter(o).none (value, key) -> value is 3
+      isFalse r
+
+  describe 'iterator.any()', () ->
+
+    it 'returns true if callback returns true for at least one member', () ->
+      o = a: 1, b: 2, c: 3, d: 4
+      res = []
+      r = h.iter(o).any (value, key) ->
+        res.push [this, value, key]
+        value is 3
+      assert.deepEqual res, [
+        [o, 1, 'a']
+        [o, 2, 'b']
+        [o, 3, 'c']
+        # Never reaches [o, 4, 'd']
+      ]
+      isTrue r
+
+    it 'returns false if callback never returns true', () ->
+      o = a: 1, b: 2, c: 3, d: 4
+      r = h.iter(o).any () -> false
+      isFalse r
+
 describe 'tag aliases', () ->
   it 'will render appropriate tags', () ->
     tags = 'a p strong em ul ol li div span button option'.split ' '

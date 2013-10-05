@@ -574,6 +574,221 @@ define () ->
     any: (arr) ->
       not h.none(arr)
 
+    # ### `#arrayIter(a)`
+    #
+    # Returns an [iterator object](#iterator-object) for the given array.
+    #
+    arrayIter: (a) ->
+      nextIndex = 0
+      length = a.length
+
+      len: () ->
+        length
+
+      remaining: () ->
+        if nextIndex isnt null then length - nextIndex else 0
+
+      next: () ->
+        throw new Error('Iterator stopped') if nextIndex is null
+        item = a[nextIndex]
+        nextIndex += 1
+        nextIndex = null if nextIndex is length
+        item
+
+      each: (callback) ->
+        for item, idx in a
+          callback.call a, item, idx
+
+      map: (callback) ->
+        callback.call(a, item, idx) for item, idx in a
+
+      reduce: (callback, initial=0) ->
+        for item, idx in a
+          initial = callback.call a, initial, item, idx
+        initial
+
+      filter: (callback) ->
+        item for item, idx in a when callback.call a, item, idx
+
+      every: (callback) ->
+        for item, idx in a
+          return false if not callback.call a, item, idx
+        true
+
+      none: (callback) ->
+        for item, idx in a
+          return false if callback.call a, item, idx
+        true
+
+      any: (callback) ->
+        not @none(callback)
+
+    # ### `#objIter(o)`
+    #
+    # Returns an [iterator object](#iterator-object) for the given object.
+    #
+    objIter: (o) ->
+      keys = (k for k of o when Object::hasOwnProperty.call o, k)
+      nextIndex = 0
+      length = keys.length
+
+      len: () ->
+        length
+
+      remaining: () ->
+        if nextIndex isnt null then length - nextIndex else 0
+
+      next: () ->
+        throw new Error('Iterator stopped') if nextIndex is null
+        k = keys[nextIndex]
+        nextIndex += 1
+        nextIndex = null if nextIndex is length
+        [k, o[k]]
+
+      each: (callback) ->
+        for key, val of o
+          callback.call o, val, key
+
+      map: (callback) ->
+        o1 = {}
+        for key, val of o
+          o1[key] = callback.call o, val, key
+        o1
+
+      reduce: (callback, initial=0) ->
+        for key, val of o
+          initial = callback.call o, initial, val, key
+        initial
+
+      filter: (callback) ->
+        o1 = {}
+        for key, val of o
+          o1[key] = val if callback.call o, val, key
+        o1
+
+      every: (callback) ->
+        for key, val of o
+          return false if not callback.call o, val, key
+        true
+
+      none: (callback) ->
+        for key, val of o
+          return false if callback.call o, val, key
+        true
+
+      any: (callback) ->
+        not @none(callback)
+
+    # ### `#iter(v)`
+    #
+    # Returns an [iterator object](#iterator-object) for arrays and objects. If
+    # the argument is neither array nor object, it returns `undefined`.
+    #
+    iter: (v) ->
+      switch h.type v
+        when 'array' then h.arrayIter v
+        when 'object' then h.objIter v
+        else undefined
+
+    # ### Iterator object
+    #
+    # Object returned from `#iter()`, `#objIter()` and `#arrayIter()`
+    # functions. This object contains methods for working with sequences such
+    # as arrays and objects.
+    #
+    # Objects are not strictly sequences. However, we can still apply all of
+    # the functions of the iterator objects to plain objects as well by
+    # treating their key-value pairs as sequence members. The main difference
+    # is that we cannot (always) predict the order of the properties.
+    #
+    # #### `iterator.len()`
+    #
+    # Returns the length of a sequence.
+    #
+    # #### `iterator.remaining()`
+    #
+    # Returns the number of remaining members that haven't been returned by
+    # `iterator.next()`.
+    #
+    # #### `iterator.next()`
+    #
+    # Returns the next member of a sequence that comes after the member
+    # returned in the previous call. When called for the first time, it returns
+    # the first item. Once all members have been returned, it throws an
+    # exception.
+    #
+    # #### `iterator.each(callback)`
+    #
+    # Invokes a callback on each member of the sequence.
+    #
+    # The callback function is bound to the sequence itself, and has the
+    # following signature:
+    #
+    #     callback(item, index)
+    #
+    #  + `item`: the member of the sequence.
+    #  + `index`: the index or key of the member within the sequence.
+    #
+    # #### `iterator.map(callback)`
+    #
+    # Invokes a callback on each member of the sequence and returns a new
+    # sequence that consists of callback's return values.
+    #
+    # The callback function is bound to the sequence itself, and has the
+    # following signature:
+    #
+    #     callback(item, index)
+    #
+    #  + `item`: the member of the sequence.
+    #  + `index`: the index or key of the member within the sequence.
+    #
+    # #### `iterator.reduce(callback, initial=0)`
+    #
+    # Reduces a sequence to a single value by invoking a callback on each
+    # member.
+    #
+    # The callback function is bound to the sequence itself, and has the
+    # following signature:
+    #
+    #     callback(value, item, index)
+    #
+    #  + `value`: current value in reduction (this is the `initial` value when
+    #    reduction starts).
+    #  + `item`: the member of the sequence.
+    #  + `index`: the index or key of the member within the sequence.
+    #
+    # #### `iterator.every(callback)`
+    #
+    # Invokes a callback on each member of the sequence and returns `true` if
+    # the callback returns `true` for each member.
+    #
+    # The callback function is bound to the sequence itself, and has the
+    # following signature:
+    #
+    #     callback(item, index)
+    #
+    #  + `item`: the member of the sequence.
+    #  + `index`: the index or key of the member within the sequence.
+    #
+    # #### `iterator.none(callback)`
+    #
+    # Invokes a callback on each member of the sequence and returns `true` if
+    # the callback returns `false` for each member.
+    #
+    # The callback function is bound to the sequence itself, and has the
+    # following signature:
+    #
+    #     callback(item, index)
+    #
+    #  + `item`: the member of the sequence.
+    #  + `index`: the index or key of the member within the sequence.
+    #
+    # #### `iterator.any(callback)`
+    #
+    # Invokes a callback on each member of the sequence and returns `true` if
+    # the callback returns `true` for at least one member. This is the opposite
+    # of `iterator.none()`.
+    #
 
     # ## Formatting
     #

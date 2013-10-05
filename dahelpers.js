@@ -275,6 +275,209 @@ define(function() {
     any: function(arr) {
       return !h.none(arr);
     },
+    arrayIter: function(a) {
+      var length, nextIndex;
+      nextIndex = 0;
+      length = a.length;
+      return {
+        len: function() {
+          return length;
+        },
+        remaining: function() {
+          if (nextIndex !== null) {
+            return length - nextIndex;
+          } else {
+            return 0;
+          }
+        },
+        next: function() {
+          var item;
+          if (nextIndex === null) {
+            throw new Error('Iterator stopped');
+          }
+          item = a[nextIndex];
+          nextIndex += 1;
+          if (nextIndex === length) {
+            nextIndex = null;
+          }
+          return item;
+        },
+        each: function(callback) {
+          var idx, item, _i, _len, _results;
+          _results = [];
+          for (idx = _i = 0, _len = a.length; _i < _len; idx = ++_i) {
+            item = a[idx];
+            _results.push(callback.call(a, item, idx));
+          }
+          return _results;
+        },
+        map: function(callback) {
+          var idx, item, _i, _len, _results;
+          _results = [];
+          for (idx = _i = 0, _len = a.length; _i < _len; idx = ++_i) {
+            item = a[idx];
+            _results.push(callback.call(a, item, idx));
+          }
+          return _results;
+        },
+        reduce: function(callback, initial) {
+          var idx, item, _i, _len;
+          if (initial == null) {
+            initial = 0;
+          }
+          for (idx = _i = 0, _len = a.length; _i < _len; idx = ++_i) {
+            item = a[idx];
+            initial = callback.call(a, initial, item, idx);
+          }
+          return initial;
+        },
+        filter: function(callback) {
+          var idx, item, _i, _len, _results;
+          _results = [];
+          for (idx = _i = 0, _len = a.length; _i < _len; idx = ++_i) {
+            item = a[idx];
+            if (callback.call(a, item, idx)) {
+              _results.push(item);
+            }
+          }
+          return _results;
+        },
+        every: function(callback) {
+          var idx, item, _i, _len;
+          for (idx = _i = 0, _len = a.length; _i < _len; idx = ++_i) {
+            item = a[idx];
+            if (!callback.call(a, item, idx)) {
+              return false;
+            }
+          }
+          return true;
+        },
+        none: function(callback) {
+          var idx, item, _i, _len;
+          for (idx = _i = 0, _len = a.length; _i < _len; idx = ++_i) {
+            item = a[idx];
+            if (callback.call(a, item, idx)) {
+              return false;
+            }
+          }
+          return true;
+        },
+        any: function(callback) {
+          return !this.none(callback);
+        }
+      };
+    },
+    objIter: function(o) {
+      var k, keys, length, nextIndex;
+      keys = (function() {
+        var _results;
+        _results = [];
+        for (k in o) {
+          if (Object.prototype.hasOwnProperty.call(o, k)) {
+            _results.push(k);
+          }
+        }
+        return _results;
+      })();
+      nextIndex = 0;
+      length = keys.length;
+      return {
+        len: function() {
+          return length;
+        },
+        remaining: function() {
+          if (nextIndex !== null) {
+            return length - nextIndex;
+          } else {
+            return 0;
+          }
+        },
+        next: function() {
+          if (nextIndex === null) {
+            throw new Error('Iterator stopped');
+          }
+          k = keys[nextIndex];
+          nextIndex += 1;
+          if (nextIndex === length) {
+            nextIndex = null;
+          }
+          return [k, o[k]];
+        },
+        each: function(callback) {
+          var key, val, _results;
+          _results = [];
+          for (key in o) {
+            val = o[key];
+            _results.push(callback.call(o, val, key));
+          }
+          return _results;
+        },
+        map: function(callback) {
+          var key, o1, val;
+          o1 = {};
+          for (key in o) {
+            val = o[key];
+            o1[key] = callback.call(o, val, key);
+          }
+          return o1;
+        },
+        reduce: function(callback, initial) {
+          var key, val;
+          if (initial == null) {
+            initial = 0;
+          }
+          for (key in o) {
+            val = o[key];
+            initial = callback.call(o, initial, val, key);
+          }
+          return initial;
+        },
+        filter: function(callback) {
+          var key, o1, val;
+          o1 = {};
+          for (key in o) {
+            val = o[key];
+            if (callback.call(o, val, key)) {
+              o1[key] = val;
+            }
+          }
+          return o1;
+        },
+        every: function(callback) {
+          var key, val;
+          for (key in o) {
+            val = o[key];
+            if (!callback.call(o, val, key)) {
+              return false;
+            }
+          }
+          return true;
+        },
+        none: function(callback) {
+          var key, val;
+          for (key in o) {
+            val = o[key];
+            if (callback.call(o, val, key)) {
+              return false;
+            }
+          }
+          return true;
+        },
+        any: function(callback) {
+          return !this.none(callback);
+        }
+      };
+    },
+    iter: function(v) {
+      switch (h.type(v)) {
+        case 'array':
+          return h.arrayIter(v);
+        case 'object':
+          return h.objIter(v);
+        default:
+          return void 0;
+      }
+    },
     objAttrs: function(o) {
       var attrs, key, val;
       attrs = [];

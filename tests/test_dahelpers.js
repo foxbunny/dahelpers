@@ -1236,6 +1236,460 @@ describe('#any()', function() {
   });
 });
 
+describe('#iter(array)', function() {
+  it('should return an iterator object', function() {
+    var i;
+    i = h.iter([]);
+    return isTrue(typeof i === 'object');
+  });
+  describe('iterator.len()', function() {
+    return it('returns length', function() {
+      var i;
+      i = h.iter([1, 2, 3]);
+      return equal(i.len(), 3);
+    });
+  });
+  describe('iterator.remaining()', function() {
+    return it('returns the number of remaining members', function() {
+      var i;
+      i = h.iter([1, 2, 3, 4]);
+      equal(i.remaining(), 4);
+      i.next();
+      equal(i.remaining(), 3);
+      i.next();
+      equal(i.remaining(), 2);
+      i.next();
+      equal(i.remaining(), 1);
+      i.next();
+      return equal(i.remaining(), 0);
+    });
+  });
+  describe('iterator.next()', function() {
+    it('returns the next member', function() {
+      var i;
+      i = h.iter([1, 2, 3, 4]);
+      equal(i.next(), 1);
+      equal(i.next(), 2);
+      equal(i.next(), 3);
+      return equal(i.next(), 4);
+    });
+    return it('throws an error when members are exhausted', function() {
+      var i;
+      i = h.iter([1, 2]);
+      i.next();
+      i.next();
+      return assert.throws(i.next, Error, 'Iterator stopped');
+    });
+  });
+  describe('iterator.each()', function() {
+    return it('calls a function on each member of the array', function() {
+      var a, i, res;
+      a = ['a', 'b', 'c'];
+      i = h.iter(a);
+      res = [];
+      i.each(function(item, idx) {
+        return res.push([this, item, idx]);
+      });
+      return assert.deepEqual(res, [[a, 'a', 0], [a, 'b', 1], [a, 'c', 2]]);
+    });
+  });
+  describe('iterator.map()', function() {
+    return it('calls a function on each member, and returns new array', function() {
+      var a, a1, i, res;
+      a = ['a', 'b', 'c'];
+      i = h.iter(a);
+      res = [];
+      a1 = i.map(function(item, idx) {
+        res.push([this, item, idx]);
+        return item + 'foo';
+      });
+      assert.deepEqual(res, [[a, 'a', 0], [a, 'b', 1], [a, 'c', 2]]);
+      return assert.deepEqual(a1, ['afoo', 'bfoo', 'cfoo']);
+    });
+  });
+  describe('iterator.reduce()', function() {
+    return it('reduces the array members to single value using callback', function() {
+      var a, i, n, res;
+      a = [1, 2, 3, 4];
+      i = h.iter(a);
+      res = [];
+      n = i.reduce(function(val, item, idx) {
+        res.push([this, val, item, idx]);
+        return val + item;
+      }, 0);
+      assert.deepEqual(res, [[a, 0, 1, 0], [a, 1, 2, 1], [a, 3, 3, 2], [a, 6, 4, 3]]);
+      return equal(n, 10);
+    });
+  });
+  describe('iterator.filter()', function() {
+    it('returns only items for which callback returns true', function() {
+      var a, i, n, res;
+      a = [1, 2, 3, 4];
+      i = h.iter(a);
+      res = [];
+      n = i.filter(function(item, idx) {
+        res.push([this, item, idx]);
+        return item % 2 === 0;
+      });
+      assert.deepEqual(res, [[a, 1, 0], [a, 2, 1], [a, 3, 2], [a, 4, 3]]);
+      return assert.deepEqual(n, [2, 4]);
+    });
+    it('returns no items if callback always returns false', function() {
+      var a;
+      a = h.iter([1, 2, 3, 4]).filter(function() {
+        return false;
+      });
+      return assert.deepEqual(a, []);
+    });
+    return it('returns all items if callback always returns true', function() {
+      var a;
+      a = h.iter([1, 2, 3, 4]).filter(function() {
+        return true;
+      });
+      return assert.deepEqual(a, [1, 2, 3, 4]);
+    });
+  });
+  describe('iterator.every()', function() {
+    it('returns true if at callback returns true for all items', function() {
+      var a, r, res;
+      a = [1, 2, 3, 4];
+      res = [];
+      r = h.iter(a).every(function(item, idx) {
+        res.push([this, item, idx]);
+        return item > 0;
+      });
+      assert.deepEqual(res, [[a, 1, 0], [a, 2, 1], [a, 3, 2], [a, 4, 3]]);
+      return isTrue(r);
+    });
+    return it('returns false if at callback returns false at least once', function() {
+      var a, r;
+      a = [1, 2, 3, 4];
+      r = h.iter(a).every(function(item) {
+        return item < 2;
+      });
+      return isFalse(r);
+    });
+  });
+  describe('iterator.none()', function() {
+    it('returns true if callback returns false for all members', function() {
+      var a, r, res;
+      a = [1, 2, 3, 4];
+      res = [];
+      r = h.iter(a).none(function(item, idx) {
+        res.push([this, item, idx]);
+        return item < 0;
+      });
+      assert.deepEqual(res, [[a, 1, 0], [a, 2, 1], [a, 3, 2], [a, 4, 3]]);
+      return isTrue(r);
+    });
+    return it('returns false if callback returns true at least once', function() {
+      var a, r;
+      a = [1, 2, 'a', 4];
+      r = h.iter(a).none(function(item) {
+        return typeof item === 'string';
+      });
+      return isFalse(r);
+    });
+  });
+  return describe('iterator.any()', function() {
+    it('returns true if callback returns true for at least one member', function() {
+      var a, r, res;
+      a = [1, 2, 3, 4];
+      res = [];
+      r = h.iter(a).any(function(item, idx) {
+        res.push([this, item, idx]);
+        return item === 3;
+      });
+      assert.deepEqual(res, [[a, 1, 0], [a, 2, 1], [a, 3, 2]]);
+      return isTrue(r);
+    });
+    return it('returns false if callback never returns true', function() {
+      var r;
+      r = h.iter([1, 2, 3]).any(function() {
+        return false;
+      });
+      return isFalse(r);
+    });
+  });
+});
+
+describe('#iter(object)', function() {
+  it('should return an iterator object', function() {
+    var i, o;
+    o = {
+      a: 1,
+      b: 2,
+      c: 3,
+      d: 4
+    };
+    i = h.iter(o);
+    return equal(typeof i, 'object');
+  });
+  describe('iterator.len()', function() {
+    return it('returns length', function() {
+      var i;
+      i = h.iter({
+        a: 1,
+        b: 2,
+        c: 3,
+        d: 4
+      });
+      return equal(i.len(), 4);
+    });
+  });
+  describe('iterators.remaining()', function() {
+    return it('returns the number of remainig members', function() {
+      var i;
+      i = h.iter({
+        a: 1,
+        b: 2,
+        c: 3,
+        d: 4
+      });
+      equal(i.remaining(), 4);
+      i.next();
+      equal(i.remaining(), 3);
+      i.next();
+      equal(i.remaining(), 2);
+      i.next();
+      equal(i.remaining(), 1);
+      i.next();
+      return equal(i.remaining(), 0);
+    });
+  });
+  describe('iterator.next()', function() {
+    it('returns next member', function() {
+      var i;
+      i = h.iter({
+        a: 1,
+        b: 2,
+        c: 3,
+        d: 4
+      });
+      assert.deepEqual(i.next(), ['a', 1]);
+      assert.deepEqual(i.next(), ['b', 2]);
+      assert.deepEqual(i.next(), ['c', 3]);
+      return assert.deepEqual(i.next(), ['d', 4]);
+    });
+    return it('throws an exception when all members are exhausted', function() {
+      var i;
+      i = h.iter({
+        a: 1,
+        b: 2,
+        c: 3,
+        d: 4
+      });
+      i.next();
+      i.next();
+      i.next();
+      i.next();
+      return assert.throws(i.next, Error, 'Iterator stopped');
+    });
+  });
+  describe('iterator.each()', function() {
+    return it('should invoke the callback oneach member', function() {
+      var i, o, res;
+      o = {
+        a: 1,
+        b: 2,
+        c: 3,
+        d: 4
+      };
+      i = h.iter(o);
+      res = [];
+      i.each(function(value, key) {
+        return res.push([this, value, key]);
+      });
+      return assert.deepEqual(res, [[o, 1, 'a'], [o, 2, 'b'], [o, 3, 'c'], [o, 4, 'd']]);
+    });
+  });
+  describe('iterator.map()', function() {
+    return it('calls a function on eachmember,and returns new object', function() {
+      var i, o, o1, res;
+      o = {
+        a: 1,
+        b: 2,
+        c: 3,
+        d: 4
+      };
+      i = h.iter(o);
+      res = [];
+      o1 = i.map(function(value, key) {
+        res.push([this, value, key]);
+        return value + 2;
+      });
+      assert.deepEqual(res, [[o, 1, 'a'], [o, 2, 'b'], [o, 3, 'c'], [o, 4, 'd']]);
+      assert.deepEqual(o1, {
+        a: 3,
+        b: 4,
+        c: 5,
+        d: 6
+      });
+      return assert.notEqual(o, o1);
+    });
+  });
+  describe('iterator.reduce()', function() {
+    return it('reduces the object members to single value using callback', function() {
+      var i, n, o, res;
+      o = {
+        a: 1,
+        b: 2,
+        c: 3,
+        d: 4
+      };
+      i = h.iter(o);
+      res = [];
+      n = i.reduce(function(val, value, key) {
+        res.push([this, val, value, key]);
+        return val + value;
+      }, 0);
+      assert.deepEqual(res, [[o, 0, 1, 'a'], [o, 1, 2, 'b'], [o, 3, 3, 'c'], [o, 6, 4, 'd']]);
+      return equal(n, 10);
+    });
+  });
+  describe('iterator.filter()', function() {
+    it('returns only members for which callback returns true', function() {
+      var i, o, r, res;
+      o = {
+        a: 1,
+        b: 2,
+        c: 3,
+        d: 4
+      };
+      i = h.iter(o);
+      res = [];
+      r = i.filter(function(value, key) {
+        res.push([this, value, key]);
+        return value % 2 === 0;
+      }, 0);
+      assert.deepEqual(res, [[o, 1, 'a'], [o, 2, 'b'], [o, 3, 'c'], [o, 4, 'd']]);
+      return assert.deepEqual(r, {
+        b: 2,
+        d: 4
+      });
+    });
+    it('shallow-copies object if callback always returns true', function() {
+      var o, o1;
+      o = {
+        a: 1,
+        b: 2,
+        c: 3,
+        d: 4
+      };
+      o1 = h.iter(o).filter(function() {
+        return true;
+      });
+      return assert.deepEqual(o1, o);
+    });
+    return it('returns an empty object if callback always returns false', function() {
+      var o, o1;
+      o = {
+        a: 1,
+        b: 2,
+        c: 3,
+        d: 4
+      };
+      o1 = h.iter(o).filter(function() {
+        return false;
+      });
+      return assert.deepEqual(o1, {});
+    });
+  });
+  describe('iterator.every()', function() {
+    it('should return true if callback returns true for all members', function() {
+      var o, r, res;
+      o = {
+        a: 1,
+        b: 2,
+        c: 3,
+        d: 4
+      };
+      res = [];
+      r = h.iter(o).every(function(value, key) {
+        res.push([this, value, key]);
+        return value > 0;
+      });
+      assert.deepEqual(res, [[o, 1, 'a'], [o, 2, 'b'], [o, 3, 'c'], [o, 4, 'd']]);
+      return isTrue(r);
+    });
+    return it('should return false if callback returns false at least once', function() {
+      var o, r;
+      o = {
+        a: 1,
+        b: 2,
+        c: 3,
+        d: 4
+      };
+      r = h.iter(o).every(function(value, key) {
+        return value < 4;
+      });
+      return isFalse(r);
+    });
+  });
+  describe('iterator.none()', function() {
+    it('should return true if callback returns false for all members', function() {
+      var o, r, res;
+      o = {
+        a: 1,
+        b: 2,
+        c: 3,
+        d: 4
+      };
+      res = [];
+      r = h.iter(o).none(function(value, key) {
+        res.push([this, value, key]);
+        return value < 0;
+      });
+      assert.deepEqual(res, [[o, 1, 'a'], [o, 2, 'b'], [o, 3, 'c'], [o, 4, 'd']]);
+      return isTrue(r);
+    });
+    return it('should return false if callback returns true at least once', function() {
+      var o, r;
+      o = {
+        a: 1,
+        b: 2,
+        c: 3,
+        d: 4
+      };
+      r = h.iter(o).none(function(value, key) {
+        return value === 3;
+      });
+      return isFalse(r);
+    });
+  });
+  return describe('iterator.any()', function() {
+    it('returns true if callback returns true for at least one member', function() {
+      var o, r, res;
+      o = {
+        a: 1,
+        b: 2,
+        c: 3,
+        d: 4
+      };
+      res = [];
+      r = h.iter(o).any(function(value, key) {
+        res.push([this, value, key]);
+        return value === 3;
+      });
+      assert.deepEqual(res, [[o, 1, 'a'], [o, 2, 'b'], [o, 3, 'c']]);
+      return isTrue(r);
+    });
+    return it('returns false if callback never returns true', function() {
+      var o, r;
+      o = {
+        a: 1,
+        b: 2,
+        c: 3,
+        d: 4
+      };
+      r = h.iter(o).any(function() {
+        return false;
+      });
+      return isFalse(r);
+    });
+  });
+});
+
 describe('tag aliases', function() {
   it('will render appropriate tags', function() {
     var s, tag, tags, _i, _len;

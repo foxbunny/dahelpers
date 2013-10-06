@@ -1709,6 +1709,62 @@ describe('#iter(object)', function() {
   });
 });
 
+describe('#lazy()', function() {
+  return it('basically works', function() {
+    var fn, lazyfn, r, res;
+    r = null;
+    fn = function(x, y) {
+      r = [x, y];
+      return x + y;
+    };
+    lazyfn = h.lazy(fn);
+    res = lazyfn(1, 2);
+    equal(r, null);
+    equal(typeof res, 'object');
+    equal(typeof res.valueOf, 'function');
+    res = res + 2;
+    assert.deepEqual(r, [1, 2]);
+    return equal(res, 5);
+  });
+});
+
+describe('#compose()', function() {
+  return it('composes functions', function() {
+    var fn1, fn2, fn3, fn4, n, res;
+    res = [];
+    fn1 = function(x) {
+      res.push(x);
+      return x + 1;
+    };
+    fn2 = function(x) {
+      res.push(x);
+      return x * 3;
+    };
+    fn3 = function(x) {
+      res.push(x);
+      return x / 2;
+    };
+    fn4 = h.compose(fn1, fn2, fn3);
+    n = fn4(1);
+    assert.deepEqual(res, [1, 0.5, 1.5]);
+    return equal(n, 2.5);
+  });
+});
+
+describe('#suicidal()', function() {
+  return it('makes a fn commit suicide after first use', function() {
+    var called, f;
+    called = 0;
+    f = function() {
+      return called += 1;
+    };
+    f = h.suicidal(f);
+    f();
+    f();
+    return equal(called, 1);
+  });
+});
+
 describe('tag aliases', function() {
   it('will render appropriate tags', function() {
     var s, tag, tags, _i, _len;

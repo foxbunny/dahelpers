@@ -1297,6 +1297,49 @@ describe '#iter(object)', () ->
       r = h.iter(o).any () -> false
       isFalse r
 
+describe '#lazy()', () ->
+  it 'basically works', () ->
+    r = null
+    fn = (x, y) ->
+      r = [x, y]
+      x + y
+    lazyfn = h.lazy fn
+
+    res = lazyfn(1, 2)
+    equal r, null
+    equal typeof res, 'object'
+    equal typeof res.valueOf, 'function'
+
+    res = res + 2
+    assert.deepEqual r, [1, 2]
+    equal res, 5
+
+describe '#compose()', () ->
+  it 'composes functions', () ->
+    res = []
+    fn1 = (x) ->
+      res.push(x)
+      x + 1
+    fn2 = (x) ->
+      res.push(x)
+      x * 3
+    fn3 = (x) ->
+      res.push(x)
+      x / 2
+    fn4 = h.compose(fn1, fn2, fn3)
+    n = fn4 1
+    assert.deepEqual res, [1, 0.5, 1.5]
+    equal n, 2.5
+
+describe '#suicidal()', () ->
+  it 'makes a fn commit suicide after first use', () ->
+    called = 0
+    f = () -> called += 1
+    f = h.suicidal(f)
+    f()
+    f()
+    equal called, 1
+
 describe 'tag aliases', () ->
   it 'will render appropriate tags', () ->
     tags = 'a p strong em ul ol li div span button option'.split ' '

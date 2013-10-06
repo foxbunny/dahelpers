@@ -491,6 +491,36 @@ define(function() {
           return void 0;
       }
     },
+    lazy: function(fn) {
+      return function() {
+        var args;
+        args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+        return {
+          valueOf: function() {
+            return fn.apply(null, args);
+          }
+        };
+      };
+    },
+    compose: function() {
+      var funcs;
+      funcs = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+      return function() {
+        var args, fn, _i;
+        args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+        for (_i = funcs.length - 1; _i >= 0; _i += -1) {
+          fn = funcs[_i];
+          args = fn.apply(null, h.toArray(args));
+        }
+        return args;
+      };
+    },
+    suicidal: function(fn) {
+      return function() {
+        fn.apply(null, arguments);
+        return fn = function() {};
+      };
+    },
     objAttrs: function(o) {
       var attrs, key, val;
       attrs = [];

@@ -841,6 +841,66 @@ define () ->
     # of `iterator.none()`.
     #
 
+    # ## Functional helpers
+    #
+
+    # ### `#lazy(fn)`
+    #
+    # Returns a function that returns a proxy object whose value will be the
+    # result of calling the `fn` function when its `#valueOf` method is called.
+    #
+    # Because the `valueOf` method is used by JavaScript when values are being
+    # coerced, this function works best with functions whose return values are
+    # going to be used in a situation where coercion int primitive vlues is
+    # possible.
+    #
+    # Example:
+    #
+    #     var fn = function (a, b) { return a + b; }
+    #     fn = dahelpers.lazy(fn);
+    #     var r = fn(1, 2); // original `fn` is not yet called at this point
+    #     r + 2; // now the original `fn` is called, and result is 5
+    #
+    lazy: (fn) ->
+      (args...) ->
+        valueOf: () ->
+          fn.apply null, args
+
+    # ### `#compose([fn...])`
+    #
+    # Composes functions passed as arguments into a single function.
+    #
+    # Example:
+    #
+    #     var fn1 = function () { ... };
+    #     var fn2 = function () { ... };
+    #     var fn3 = function () { ... };
+    #     var fn4 = dahelpers.compose(fn1, fn2, fn3);
+    #     // `fn4(args...)` is same as fn1(fn2(fn3(args...))
+    #
+    compose: (funcs...) ->
+      (args...) ->
+        for fn in funcs by -1
+          args = fn.apply null, h.toArray(args)
+        args
+
+    # ### `#suicidal(fn)`
+    #
+    # Returns a version of the function that undefines itself (commits suicide)
+    # after first call.
+    #
+    # Example:
+    #
+    #     var fn = function (x) { return x + 1; }
+    #     fn = dahelpers.suicidal(fn);
+    #     fn(2); // returns 3
+    #     fn(4); // returns undefined
+    #
+    suicidal: (fn) ->
+      () ->
+        fn.apply null, arguments
+        fn = () ->
+
     # ## Formatting
     #
 

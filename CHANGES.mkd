@@ -1,5 +1,24 @@
 # DaHelpers Changelog
 
+## Dev
+
+### Added `objIter()`, `arrayIter()`, and `iter()` functions
+
+These function return handy iterator object for manipulating arrays and objects
+as sequences.
+
+### Added `compose()` function
+
+Allows function composition.
+
+### Added `lazy()` function
+
+Allows creation of lazy-evaluating functions (sort of).
+
+### Added `suicidal()` function
+
+Allows creation of functions that commit suicide after first call.
+
 ## 0.2.11
 
 ### Fixed bug in `subset()` function

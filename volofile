@@ -29,7 +29,7 @@ module.exports = {
         }
     },
     docs: {
-      run: 'node tools/extract_comments.js src/dahelpers.coffee > README.mkd'
+      run: 'node tools/extract_docs.js src doc tests'
     },
     test: {
       run: 'n.mocha tests/*.js -C -R spec'

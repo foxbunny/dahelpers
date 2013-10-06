@@ -1,0 +1,1141 @@
+# <a name="dahelpers">DaHelpers</a>
+
+These are da helpers to help you out.
+
+A growing collection of miscellaneous general-purpose helper function for
+JavaScript in browsers and on NodeJS.
+
+ + [Variables](#variables)
+   - [`#USD`](#usd)
+   - [`#EUR`](#eur)
+   - [`#YN`](#yn)
+   - [`#GBP`](#gbp)
+   - [`#DEFAULT_CURRENCY`](#default_currency)
+   - [`#FIRST_CHAR`](#first_char)
+   - [`#WRAP_WIDTH`](#wrap_width)
+   - [`#FORMAT_CHARACTER`](#format_character)
+   - [`#PLURAL_RULES`](#plural_rules)
+   - [`#HTML_ESCAPE_MAPPINGS`](#html_escape_mappings)
+ + [Data manipulation and logic](#data-manipulation-and-logic)
+   - [`#type(v, type)`](#type-v-type)
+   - [`#klass(v, klass)`](#klass-v-klass)
+   - [`#props(o, p)`](#props-o-p)
+   - [`#propset(o, p, [v])`](#propset-o-p-v)
+   - [`#walk(obj, cb)`](#walk-obj-cb)
+   - [`#sweep(obj, cb)`](#sweep-obj-cb)
+   - [`#extend([guard], obj, mixin, [mixin...])`](#extend-guard-obj-mixin-mixin)
+   - [`#mixin(obj, mixin, [mixin...])`](#mixin-obj-mixin-mixin)
+   - [`#clone(obj)`](#clone-obj)
+   - [`#rekey(obj, map)`](#rekey-obj-map)
+   - [`#toArray(v)`](#toarray-v)
+   - [`#empty(v)`](#empty-v)
+   - [`#subset(small, big)`](#subset-small-big)
+   - [`#truth(v)`](#truth-v)
+   - [`#every(arr)`](#every-arr)
+   - [`#none(arr)`](#none-arr)
+   - [`#any(arr)`](#any-arr)
+   - [`#arrayIter(a)`](#arrayiter-a)
+   - [`#objIter(o)`](#objiter-o)
+   - [`#iter(v)`](#iter-v)
+   - [Iterator object](#iterator-object)
+     + [`iterator.indices()`](#iterator-indices)
+     + [`iterator.len()`](#iterator-len)
+     + [`iterator.remaining()`](#iterator-remaining)
+     + [`iterator.apply(fn, [fn...])`](#iterator-apply-fn-fn)
+     + [`iterator.get(index)`](#iterator-get-index)
+     + [`iterator.next()`](#iterator-next)
+     + [`iterator.each(callback)`](#iterator-each-callback)
+     + [`iterator.map(callback)`](#iterator-map-callback)
+     + [`iterator.reduce(callback, initial=0)`](#iterator-reduce-callback-initial-0)
+     + [`iterator.every(callback)`](#iterator-every-callback)
+     + [`iterator.none(callback)`](#iterator-none-callback)
+     + [`iterator.any(callback)`](#iterator-any-callback)
+ + [Functional helpers](#functional-helpers)
+   - [`#lazy(fn)`](#lazy-fn)
+   - [`#compose([fn...])`](#compose-fn)
+   - [`#suicidal(fn)`](#suicidal-fn)
+ + [Formatting](#formatting)
+   - [`#objAttrs(o)`](#objattrs-o)
+   - [`#tag(name, content, [attrs, silence])`](#tag-name-content-attrs-silence)
+   - [`#escape(s)`](#escape-s)
+   - [`#plural(singular, plural, [plural2...] count)`](#plural-singular-plural-plural2-count)
+   - [`#capitalize(s)`](#capitalize-s)
+   - [`#titleCase(s, [lowerFirst])`](#titlecase-s-lowerfirst)
+   - [`#format(s, format, [formatChar])`](#format-s-format-formatchar)
+   - [`#reverse(s)`](#reverse-s)
+   - [`#sgroup(s, n)`](#sgroup-s-n)
+   - [`#pad(s, len, [char, tail, sep])`](#pad-s-len-char-tail-sep)
+   - [`#thousands(num, [sep, decSep])`](#thousands-num-sep-decsep)
+   - [`#si(num, [d, thousands, sep, decSep])`](#si-num-d-thousands-sep-decsep)
+   - [`#digits(s)`](#digits-s)
+   - [`#prefix(num, prefix, sepLong)`](#prefix-num-prefix-seplong)
+   - [`#round(num, [d])`](#round-num-d)
+   - [`#currency(num, [currency, dec, sep, decSep, si, suffix])`](#currency-num-currency-dec-sep-decsep-si-suffix)
+   - [`#makeCurrency(name, currency, dec, sep, decSep, si, suffix)`](#makecurrency-name-currency-dec-sep-decsep-si-suffix)
+   - [`#siCurrency(num, [currency, dec, sep, decSep])`](#sicurrency-num-currency-dec-sep-decsep)
+   - [`dollars(num, dec, si)`](#dollars-num-dec-si)
+   - [`#euros(num, dec, si)`](#euros-num-dec-si)
+   - [`#yen(num, dec, si)`](#yen-num-dec-si)
+   - [`#yuan(num, dec, si)`](#yuan-num-dec-si)
+   - [`#pounds(num, dec, si)`](#pounds-num-dec-si)
+   - [`#wrap(s, [len, sep])`](#wrap-s-len-sep)
+   - [`#slug(s)`](#slug-s)
+   - [Tag aliases](#tag-aliases)
+ + [Running tests](#running-tests)
+ + [Reporting bugs](#reporting-bugs)
+
+
+This module is in UMD format and will create a `dahelpers` global in browsers
+when not used with an AMD loader such as RequireJS.
+
+This module has no external dependencies.
+
+## <a name="variables">Variables</a>
+
+The module contains variables that you can modify to influence the behavior of
+some of the functions.
+
+### <a name="usd">`#USD`</a>
+
+Symbol for US currency. Default is '$'.
+
+### <a name="eur">`#EUR`</a>
+
+Symbol for EU currency. Default is '€'.
+
+### <a name="yn">`#YN`</a>
+
+Symbol for Japanese and Chinese currencies. Default is '¥'.
+
+### <a name="gbp">`#GBP`</a>
+
+Symbol for UK currency. Default is '£'.
+
+### <a name="default_currency">`#DEFAULT_CURRENCY`</a>
+
+Default curency used by `#currency()` function. Default is '$'.
+
+### <a name="first_char">`#FIRST_CHAR`</a>
+
+Regular expression for capturing the first character of a word. Default is
+`/\b[a-z]/gi`. Please see documentation for the
+[`#titleCase()`](#titlecase-s-lowerfirst] for information on how this variable
+is used.
+
+### <a name="wrap_width">`#WRAP_WIDTH`</a>
+
+Default text wrap width.
+
+### <a name="format_character">`#FORMAT_CHARACTER`</a>
+
+Character used by default in [`#format()`](#format-s-format-formatchar)
+function.
+
+### <a name="plural_rules">`#PLURAL_RULES`</a>
+
+Returns the form to use based on number `n`. The form is 0 for singular, and 1
+or more for plural forms.
+
+This function is called by the
+[`#plural()`](#plural-singular-plural-plural2-count) function to yield the
+correct form.
+
+Default function accounts for English and compatible pluralization where
+singular is used when n==1, and a single plural form for all other cases.
+
+You can see different rules for different languages at [Unicode
+R](http://www.unicode.org/cldr/charts/supplemental/language_plural_rules.html).
+
+### <a name="html_escape_mappings">`#HTML_ESCAPE_MAPPINGS`</a>
+
+Mapping used to escape HTML.
+
+## <a name="data-manipulation-and-logic">Data manipulation and logic</a>
+
+### <a name="type-v-type">`#type(v, type)`</a>
+
+Tests if `v` is of type `type`. The valid types are:
+
+ + 'null'
+ + 'undefined'
+ + 'string'
+ + 'number'
+ + 'date'
+ + 'regexp'
+ + 'array'
+ + 'function'
+ + 'object'
+
+
+Note that this function can be reliably used as a replacement for `typeOf`
+function and differentiates between more object types.
+
+If the `type` argument is not supplied, it will return the type of the value.
+
+Example:
+
+    dahelpers.type([], 'array');
+    // returns true
+    dahelpers.type([])
+    // returns 'array'
+
+
+### <a name="klass-v-klass">`#klass(v, klass)`</a>
+
+Tests if `v` has constructor of `klass`. If `v` is not an object, it returns
+`false`.
+
+If the `klass` argument is missing, returns the constructor.
+
+Example:
+
+    dahelpers.klass({});
+    // returns `Object` (function)
+    dahelpers.klass([], Array);
+    // returns `true`
+
+
+### <a name="props-o-p">`#props(o, p)`</a>
+
+Get a value of a property tree `p` on the object `o` or undefined if any of the
+segments is undefined without throwing an exception.
+
+Example:
+
+    var obj = {foo: {bar: {baz: 1}}};
+    dahelpers.props(obj, 'foo.bar.baz'); // returns 1
+    dahelpers.props(obj, 'foo.foo.baz'); // returns undefined
+
+
+### <a name="propset-o-p-v">`#propset(o, p, [v])`</a>
+
+Sets the value of the property tree `p`'s last leaf to `v` creating all
+intermediate segments as necessary.
+
+The `p` argument can also be an array.
+
+Example:
+
+    var obj = {}
+    dahelpers.propset(obj, 'a.b.c.d.e.f', 1);
+    // obj is now {a: {b: {c: {d: {e: {f: 1}}}}}}
+
+
+    var obj = {}
+    dahelpers.propset(obj, ['a', 'b', 'c', 'd', 'e', 'f'], 1);
+    // obj is now {a: {b: {c: {d: {e: {f: 1}}}}}}
+
+
+### <a name="walk-obj-cb">`#walk(obj, cb)`</a>
+
+Recursively walks down `obj`'s properties and invokes the callback on each one.
+
+The callback function takes three arguments. The first argument is the property
+currently being iterated, and the second argument is the name of the key. The
+key name will be a full property path. For example a key name for
+`obj.foo.bar.baz` would be 'foo.bar.baz' (see example). Third argument is an
+array of key components that make up the second parameter. The key components
+array is generally more precise since it correctly handles cases where a period
+may be part of the key.
+
+The undocumented `key` and `comps` argument is an internal implementation
+detail, and should not be be passed under normal circumstances.
+
+Example:
+
+    var obj = {a: 1, b: 2, c: {a: 1, b: 2}};
+    dahelpers.walk(obj, console.log);
+    // Logs:
+    // 1 a
+    // 2 b
+    // Object { a=1, b=2 } c
+    // 1 c.a
+    // 2 c.b
+
+
+### <a name="sweep-obj-cb">`#sweep(obj, cb)`</a>
+
+Sweeps over the object attributes, and calls the callback on each key. The
+return value of the callback is used to build a new object with the same
+property structure as the old one.
+
+This function is similar to `#walk()` and uses walk to iterate over the object.
+
+The callback function takes four arguments:
+
+ + the value of the key
+ + the full key (e.g, 'foo.bar.baz' for `obj.foo.bar.baz`)
+ + boolean flag which is `true` if value is an object
+
+
+The reason for the latter is that the value's properties will also be iterated
+when a value is an object, so you may want to adjust the handling of that case.
+
+If the callback function returns undefined, the matching property will not be
+set at all on the resulting object.
+
+Example:
+
+    obj = {a: 1, b: 2, c: 3}
+    dahelpers.sweep(obj, function(v) { return v + 1; });
+    // Returns {a: 2, b: 3, c: 4}
+
+
+### <a name="extend-guard-obj-mixin-mixin">`#extend([guard], obj, mixin, [mixin...])`</a>
+
+Deep-copies properties from `mixin`s into `obj`. Any properties that are
+already present in `obj` will be overwritten by properties in mixins.
+
+It currently does not clone items within arrays embedded in objects. It just
+crates a new array containing the same objects as the original one.
+
+The optional `guard` function can be passed that prevents setting of a mixin
+property when it returns `true`. The guard has the following signature:
+
+    guard(obj, value, keys, components)
+
+
+ + `obj`: Child object
+ + `value`: Value of the mixin key currently being processed
+ + `keys`: The full key path (e.g., 'foo.bar.baz')
+ + `components`: The full key path as array (e.g., ['foo', 'bar', 'baz'])
+
+
+Default guard returns `false` if the the `value` is `undefined`. Note that this
+behavior is completely overridden by a guard function if one is specified.
+
+Example:
+
+    obj = {foo: 1, bar: {baz: new Date(2013, 8, 1)}};
+    obj1 = {foo: 2, baz: 3};
+    dahelpers.extend(obj, obj1)
+    // `obj` should now be:
+    // {foo: 2, bar: {baz: Date(2013, 8, 1)}, baz: 3}
+
+
+### <a name="mixin-obj-mixin-mixin">`#mixin(obj, mixin, [mixin...])`</a>
+
+Deep-copies properties from `mixin`s into `obj` only when `obj` does not
+already have the property.
+
+Main difference between the `#extend()` and `#mixin()` is the way existing
+properties on `obj` are handled. The `#extend()` function simply overwrites
+existing properties, whereas `#mixin()` doesn't. Otherwise, they are both
+identical, and, in fact, `#mixin()` is a simple wrapper around `#extend()` that
+uses a slightly different guard function.
+
+Example:
+
+    obj = {foo: 1, bar: {baz: new Date(2013, 8, 1)}};
+    obj1 = {foo: 2, baz: 3};
+    dahelpers.mixin(obj, obj1)
+    // `obj` should now be:
+    // {foo: 1, bar: {baz: Date(2013, 8, 1)}, baz: 3}
+    // Note that `foo` is still 1 unlike with `#extend()`
+
+
+### <a name="clone-obj">`#clone(obj)`</a>
+
+Returns an exact clone of `obj`.
+
+It currently does not clone items within arrays embedded in objects. It just
+crates a new array containing the same objects as the original one.
+
+Example:
+
+    obj = {foo: 1, bar: {baz: new Date(2013, 8, 1)}};
+    obj1 = dahelpers.clone(obj)
+    obj1.bar.baz.setFullYear(2020);
+    obj.bar.baz.getFullYear() == obj1.bar.baz.getFullYear()
+    // Should be `false`
+
+
+### <a name="rekey-obj-map">`#rekey(obj, map)`</a>
+
+Creates a new object whose keys are translated to new names using `map`.
+
+`map` should be a simple object that maps original keys to new keys. Both
+original and new keys can be full property subtrees.
+
+The target structure is unrelated to source structure, so an object of
+arbitrary complexity (or simplicity) can be created from any object.
+
+Any keys that are not found in the map will not be present in the new object.
+Keys that are undefined in the original object will also not be present in the
+new object.
+
+Example:
+
+    var obj = {
+      a: {
+        b: 1,
+        c: 2
+      },
+      d: {
+        e: 3,
+        f: 4
+      }
+    };
+
+
+    dahelpers.rekey(obj, {
+      'a.b', 'aa.b.bb',
+      'a.c', 'aa.b.cc',
+      'a.d', 'aa.b.dd'
+    })
+    // Returns
+    // {aa: b: {{bb: 1, cc: 1}}}
+
+
+### <a name="toarray-v">`#toArray(v)`</a>
+
+Converts `v` to an array if it's not an array.
+
+Example:
+
+    a = 'foo'
+    dahelpers.toArray(a);
+    // returns ['foo']
+
+
+### <a name="empty-v">`#empty(v)`</a>
+
+Tests if `v` is an empty object, array, or string.
+
+Always returns undefined if `v` is not array, object, nor string.
+
+Examples:
+
+    dahelpers.empty({});         // true
+    dahelpers.empty([]);         // true
+    dahelpers.empty(1);          // undefined
+    dahelpers.empty([1,2,3]);    // false
+    dahelpers.empty('');         // true
+    dahelpers.empty('foo bar');  // false
+
+
+### <a name="subset-small-big">`#subset(small, big)`</a>
+
+Returns true if `small` object is a subset of `big` object.
+
+Subset means that all key-value pairs of one object is contained within
+another.
+
+Example:
+
+    var a = {a: 1, b: 2, c: 3};
+    var b = {a: 1};
+    var d = {d: 2};
+    dahelpers.subset(b, a); // true
+    dahelpers.subset(d, a); // false
+    dahelpers.subset(a, b); // false
+
+
+### <a name="truth-v">`#truth(v)`</a>
+
+A more pragmatic truthy and falsy.
+
+This function returns `false` for the following values:
+
+ + `undefined`
+ + `null`
+ + `0`
+ + `''`
+ + `false`
+ + `{}`
+ + `[]`
+
+
+For all other values, it will return `true`.
+
+Examples:
+
+    var truth = dahelpers.truth;
+    truth(12);     // true
+    truth(null);   // false
+    truth('foo');  // true
+    truth('');     // false
+
+
+### <a name="every-arr">`#every(arr)`</a>
+
+Return true if all elements in `arr` array are truthy.
+
+Example:
+
+    var a = [1, true, 'foo'];
+    var b = [1, false, 'foo'];
+    dahelpers.every(a); // true
+    dahelpers.every(b); // false
+
+
+### <a name="none-arr">`#none(arr)`</a>
+
+Return true if none of the elements in `arr` array are truthy.
+
+Example:
+
+    var a = [false, undefined, null, 0];
+    var b = [false, 'foo', null, 0];
+    dahelpers.none(a); // true
+    dahelpers.none(b); // false
+
+
+### <a name="any-arr">`#any(arr)`</a>
+
+Return true if at least one item in array is truthy.
+
+This function is a reverse of `#none()`.
+
+Example:
+
+    var a = [false, undefined, null, 0];
+    var b = [false, 'foo', null, 0];
+    dahelpers.none(a); // false
+    dahelpers.none(b); // true
+
+
+### <a name="arrayiter-a">`#arrayIter(a)`</a>
+
+Returns an [iterator object](#iterator-object) for the given array.
+
+### <a name="objiter-o">`#objIter(o)`</a>
+
+Returns an [iterator object](#iterator-object) for the given object.
+
+### <a name="iter-v">`#iter(v)`</a>
+
+Returns an [iterator object](#iterator-object) for arrays and objects. If the
+argument is neither array nor object, it returns `undefined`.
+
+### <a name="iterator-object">Iterator object</a>
+
+Object returned from `#iter()`, `#objIter()` and `#arrayIter()` functions. This
+object contains methods for working with sequences such as arrays and objects.
+
+Objects are not strictly sequences. However, we can still apply all of the
+functions of the iterator objects to plain objects as well by treating their
+key-value pairs as sequence members. The main difference is that we cannot
+(always) predict the order of the properties.
+
+#### <a name="iterator-indices">`iterator.indices()`</a>
+
+Retuns all array indices or object keys as an array.
+
+#### <a name="iterator-len">`iterator.len()`</a>
+
+Returns the length of a sequence.
+
+#### <a name="iterator-remaining">`iterator.remaining()`</a>
+
+Returns the number of remaining members that haven't been returned by
+`iterator.next()`.
+
+#### <a name="iterator-apply-fn-fn">`iterator.apply(fn, [fn...])`</a>
+
+Adds one or more functions to be applied to each item returned from
+`iterator.get()` and `iterator.next()` methods.
+
+#### <a name="iterator-get-index">`iterator.get(index)`</a>
+
+Returns a member at the given index.
+
+`index` is an integer representing the member's index. This also applies to
+objects as well, where the `index` is the index of the key in the internal
+array of keys.
+
+#### <a name="iterator-next">`iterator.next()`</a>
+
+Returns the next member of a sequence that comes after the member returned in
+the previous call. When called for the first time, it returns the first item.
+Once all members have been returned, it throws an exception.
+
+#### <a name="iterator-each-callback">`iterator.each(callback)`</a>
+
+Invokes a callback on each member of the sequence.
+
+The callback function is bound to the sequence itself, and has the following
+signature:
+
+    callback(item, index)
+
+
+ + `item`: the member of the sequence.
+ + `index`: the index or key of the member within the sequence.
+
+
+#### <a name="iterator-map-callback">`iterator.map(callback)`</a>
+
+Invokes a callback on each member of the sequence and returns a new sequence
+that consists of callback's return values.
+
+The callback function is bound to the sequence itself, and has the following
+signature:
+
+    callback(item, index)
+
+
+ + `item`: the member of the sequence.
+ + `index`: the index or key of the member within the sequence.
+
+
+#### <a name="iterator-reduce-callback-initial-0">`iterator.reduce(callback, initial=0)`</a>
+
+Reduces a sequence to a single value by invoking a callback on each member.
+
+The callback function is bound to the sequence itself, and has the following
+signature:
+
+    callback(value, item, index)
+
+
+ + `value`: current value in reduction (this is the `initial` value when
+   reduction starts).
+ + `item`: the member of the sequence.
+ + `index`: the index or key of the member within the sequence.
+
+
+#### <a name="iterator-every-callback">`iterator.every(callback)`</a>
+
+Invokes a callback on each member of the sequence and returns `true` if the
+callback returns `true` for each member.
+
+The callback function is bound to the sequence itself, and has the following
+signature:
+
+    callback(item, index)
+
+
+ + `item`: the member of the sequence.
+ + `index`: the index or key of the member within the sequence.
+
+
+#### <a name="iterator-none-callback">`iterator.none(callback)`</a>
+
+Invokes a callback on each member of the sequence and returns `true` if the
+callback returns `false` for each member.
+
+The callback function is bound to the sequence itself, and has the following
+signature:
+
+    callback(item, index)
+
+
+ + `item`: the member of the sequence.
+ + `index`: the index or key of the member within the sequence.
+
+
+#### <a name="iterator-any-callback">`iterator.any(callback)`</a>
+
+Invokes a callback on each member of the sequence and returns `true` if the
+callback returns `true` for at least one member. This is the opposite of
+`iterator.none()`.
+
+## <a name="functional-helpers">Functional helpers</a>
+
+### <a name="lazy-fn">`#lazy(fn)`</a>
+
+Returns a function that returns a proxy object whose value will be the result
+of calling the `fn` function when its `#valueOf` method is called.
+
+Because the `valueOf` method is used by JavaScript when values are being
+coerced, this function works best with functions whose return values are going
+to be used in a situation where coercion int primitive vlues is possible.
+
+Example:
+
+    var fn = function (a, b) { return a + b; }
+    fn = dahelpers.lazy(fn);
+    var r = fn(1, 2); // original `fn` is not yet called at this point
+    r + 2; // now the original `fn` is called, and result is 5
+
+
+### <a name="compose-fn">`#compose([fn...])`</a>
+
+Composes functions passed as arguments into a single function.
+
+Example:
+
+    var fn1 = function () { ... };
+    var fn2 = function () { ... };
+    var fn3 = function () { ... };
+    var fn4 = dahelpers.compose(fn1, fn2, fn3);
+    // `fn4(args...)` is same as fn1(fn2(fn3(args...))
+
+
+### <a name="suicidal-fn">`#suicidal(fn)`</a>
+
+Returns a version of the function that undefines itself (commits suicide) after
+first call.
+
+Example:
+
+    var fn = function (x) { return x + 1; }
+    fn = dahelpers.suicidal(fn);
+    fn(2); // returns 3
+    fn(4); // returns undefined
+
+
+## <a name="formatting">Formatting</a>
+
+### <a name="objattrs-o">`#objAttrs(o)`</a>
+
+Converts a JavaScript object `o` into a set of HTML attributes where a key is
+the attribute name, and value is the attribute value.
+
+Note that the validity of attribute names are not checked, so it's developer's
+job to make sure valid attributes are being generated.
+
+All attribute values are double-quoted and any double quotes inside the
+attribute values are escaped.
+
+Example:
+
+    dahelpers.obAttrs({foo: 1, bar: 'foo'});
+    // returns 'foo="1" bar="foo"'
+
+
+### <a name="tag-name-content-attrs-silence">`#tag(name, content, [attrs, silence])`</a>
+
+Wraps optional content into a HTML tag with optional attributes hash.
+
+The `name` represents the name of the HTML tag (and it is not checked for
+validity at all. The `attrs` is an object whic is passed to
+[`#objAttrs()`](#objattrs-o).
+
+If the `silence` argument is `true`, the whole `tag` is only rendered if
+`content` is not null or undefined, and can be coerced into a non-empty string.
+
+Example:
+
+    dahelpers.tag('a', 'click here', {href: '#'});
+    // returns '<a href="#">click here</a>'
+
+
+### <a name="escape-s">`#escape(s)`</a>
+
+Escapes special characters in string `s` as a measure for preventing XSS
+attacks.
+
+Exampple:
+
+    dahelpers.escape('<a href="#">not so malicious HTML</a>')
+    // returns:
+    // '&lt;a href=&quot;#&quot;&gt;not so malicious HTML&lt;&#x2F;a&gt;'
+
+
+### <a name="plural-singular-plural-plural2-count">`#plural(singular, plural, [plural2...] count)`</a>
+
+Provides support for pluralization. All but the last argument are plural forms,
+starting with singular, which is the first argument, followed by 0 or more
+plural forms.
+
+The function will return an empty string if at least one form of singular and
+one form of plural are not passed along with the count.
+
+The pluralization rules are actually defined in the
+[`PLURAL_RULES`](#plural_rules) property, which is a function that returns 0
+for singular, and 1 or more for plural forms. The correct form is then selected
+from the arguments passed to this function.
+
+Example:
+
+    dahelpers.plural('bear', 'bears', 3);  // returns 'bears'
+
+
+### <a name="capitalize-s">`#capitalize(s)`</a>
+
+Capitalizes the first character of the string `s`. You can used this to build
+sentence case.
+
+Example:
+
+    dahelpers.capitalize('foo bar fam');  // returns 'Foo bar fam'
+
+
+### <a name="titlecase-s-lowerfirst">`#titleCase(s, [lowerFirst])`</a>
+
+Converts the string `s` to Title Case.
+
+This function uses a simple algorhythm for title-casing, so do not expect
+exceptions (e.g., it cannot do fancy title cases such as 'Question of Time').
+
+You can change the [`FIRST_CHAR`](#first_char) variable to customize the
+regular expression used to find the first character if you need a more complex
+behavior.
+
+To understand how the customization works here is a short description of what
+`#titleCase()` does with the regexp internally.  The regexp is used in a
+`String.prototype.replace()` call as the first argument, and the callback
+function is passed the entire match. The match (not any captured group) is then
+capitalized using [`#capitalize()`](#capitalize-s).
+
+Because of the way this function works, you generally must include the 'g' flag
+in your regexp. The rest is up to you. There is a very crude example of a
+customized title case which only capitalizes words that are longer than 4 and
+contain only letters.
+
+If the `lowerFirst` is `ture`, the whole string will be lower-cased before
+applying the title case. Default is `false`.
+
+Examples:
+
+    dahelpers.titleCase('This is a title');
+    // returns 'This Is A Title'
+
+
+    dahelpers.FIRST_CHAR = /\b[a-z]{4,}/gi;
+    dahelpers.titleCase('This is the title');
+    // returns 'This is the Title'
+
+
+### <a name="format-s-format-formatchar">`#format(s, format, [formatChar])`</a>
+
+Formats a string according to the `format`. The format is simply a series of
+hash character '#' that map the string's characters to appropriate places one
+by one.
+
+This works best with source strings were internal structure has no semantic
+like unformatted phone numbers or serial numbers. It doesn't work well for
+strings that already have structure or whose length is variable.
+
+The character used in the `format` string can be customed either by passing an
+alternative as `formatChar` argument, or by modifying the
+[`FORMAT_CHARACTER`](#format_character) variable.
+
+Examples:
+
+    dahelpers.format('abcdef', '##-##-##');  // returns 'ab-cd-ef'
+    dahelpers.format('John Doe', '## ###');  // returns 'Jo hnD'
+    dahelpers.format('1234', '$$$-$', '$');  // returns '123-4'
+
+
+### <a name="reverse-s">`#reverse(s)`</a>
+
+Reverses a string.
+
+Example:
+
+    dahelpers.reverse('esrever');  // returns 'reverse'
+
+
+### <a name="sgroup-s-n">`#sgroup(s, n)`</a>
+
+Groups the string's characters into groups of `n` characters and returns the
+groups as an array.
+
+The last group can be shorter than `n` if there are not enough characters.
+
+An empty string is returned if `s` is not defined or is an empty string, and an
+array containing the orginal string if `n` is not specified or is 0.
+
+Examples:
+
+    dahelpers.sgroup('Groupings', 3);  // returns ['Gro', 'upi', 'ngs']
+    dahelpers.sgroup('Grouping', 3);   // returns ['Gro', 'upi', 'ng']
+
+
+### <a name="pad-s-len-char-tail-sep">`#pad(s, len, [char, tail, sep])`</a>
+
+Pads a string `s` with `char` characters, so that the output is at least `len`
+long.
+
+The `char` is '0' by default.
+
+If `len` is 0 or less than the length of `s`, no padding is done, and the
+original string is left intact.
+
+Tail has the same meaning as `len` but from the tail end of the string. The
+`sep` character is used to split the string into head and tail, and they are
+padded separately and re-merged using the same separator character. The `tail`
+of 0 will omit the part after the `sep` separator. For numbers, this may be
+similar to coercing into integer without rounding.
+
+The only case where `tail` behaves differently than `len` is when it is set to
+`false`. This has a special meaning internally, where it disables any
+processing of the tail if it is `false`.
+
+Examples:
+
+    dahelpers.pad('2', 2);             // returns '02'
+    dahelpers.pad('2.5', 0, null, 3);  // returns '2.50'
+
+
+### <a name="thousands-num-sep-decsep">`#thousands(num, [sep, decSep])`</a>
+
+Adds the thousands separator to `num`.
+
+Default separator is a comma, and can be customized by passing the `sep`
+argument.
+
+The `decSep` argument can be used to customize the decimal separator ('.' by
+default).
+
+Although the `decSep` can control the output decimal separator, the input
+decimal separator is always period. This is a tradeoff to give `#thousands()`
+the ability to take JavaScript numbers as input, and still use a different
+separator in the output without cluttering the function signature.
+
+Examples:
+
+    dahelpers.thousands(1200000);               // returns '1,200,000'
+    dahelpers.thousands(1200000.12, '.', ',');  // returns '1.200.000,00'
+
+
+### <a name="si-num-d-thousands-sep-decsep">`#si(num, [d, thousands, sep, decSep])`</a>
+
+Converts the number to closes SI factor (Kilo, Mega, etc). Uses only factors of
+thousand (k, M, G, T, P, E, and Z) larger than 0.
+
+Due to overlow issues, the Y suffix is not avilable.
+
+The function will only add the next bigger suffix if the number is divisible by
+that factor. For example, 1000 can use the 'k' suffix, but 1100 will be
+returned as is.
+
+If `d` is specified, it will allow `d` number of decimals after the main unit.
+For example, with number 1100, with `d` of 1, the function will add return
+'1.1k'. With `d` of 1, 1110 would still be returned as is. Increasing `d` to 2
+would allow the function to output '1.11k'. And so on. `d` can be as large as
+you want.
+
+if `thousands` is `true`, the thousands separator will be added.
+
+You can control the characters used for separator and decimal separator by
+using the `sep` and `decSep` arguments. They work the same way as the
+`thousands`.
+
+Examples:
+
+    dahelpers.si(1000);                 // returns '1k'
+    dahelpers.si(1200);                 // returns '1200'
+    dahelpers.si(1200, 1);              // returns '1.2k'
+    dahelpers.si(1200, null, true);     // returns '1,200'
+
+
+### <a name="digits-s">`#digits(s)`</a>
+
+Removes all non-digit characters from a string. This includes decimal points,
+minus sign, and anyting else that does not match the `\d` regular expression.
+
+Examples:
+
+    dahelpers.digits('123.456.7890');           // returns '1234567890'
+    dahelpers.digits('Number of items is 12');  // returns '12'
+
+
+### <a name="prefix-num-prefix-seplong">`#prefix(num, prefix, sepLong)`</a>
+
+Adds a prefix to a number. The `prefix` argument can be any string of any
+length. `num` can be a real number, or just any string.
+
+The main difference between `#prefix()` and simple string concatenation is the
+handling of the leading minus sign. If there is a minus sign at the beginning
+of the number, the prefix will be inserted between the minus sign and the rest
+of the number.
+
+The `sepLong` argument is used to separate long prefixes from the number.
+
+Examples:
+
+    dahlperss.prefix(12, '$');          // returns '$12'
+    dahelpers.prefix(-12, '$');         // returns '-$12'
+    dahelpers.prefix(12, 'foo');        // returns 'foo12'
+    dahelpers.prefix(12, 'foo', true);  // returns 'foo 12'
+
+
+### <a name="round-num-d">`#round(num, [d])`</a>
+
+Round the number to `d` decimal places. `d` is 0 by default.
+
+Examples:
+
+    dahelpers.round(12.34);     // returns 12
+    dahelpers.round(12.34, 1);  // returns 12.3
+
+
+### <a name="currency-num-currency-dec-sep-decsep-si-suffix">`#currency(num, [currency, dec, sep, decSep, si, suffix])`</a>
+
+Formats `num` as currency  with thousands separator or SI suffix. Default
+currency is '$', and thousands separators are used by default.
+
+The `dec` argument specifies the number of decimal places (default is 2). This
+number is also used when converting to SI suffix. The value of 0 will
+completely omit the decimal places (this is not the same as rounding, though).
+
+The `sep` argument specifies the thousands separator (default is ',').
+
+The `decSep` argument specifies the decimal separator (default is '.').
+
+The `si` argument should be a boolean and tells the function to render the
+number with SI prefix instead of with thousands separator. Default is `false`.
+
+The `suffix` argument is used to suffix the currency instead of prefixing it.
+
+Example:
+
+    dahelpers.currency(12);            // returns '$12.00'
+    dahelpers.currency(12, null, 0);   // returns '$12'
+    dahelpers.currency(12, 'Fr');      // returns 'Fr 12.00'
+    dahelpers.currency(12, 'USD');     // returns 'USD 12.00'
+
+
+### <a name="makecurrency-name-currency-dec-sep-decsep-si-suffix">`#makeCurrency(name, currency, dec, sep, decSep, si, suffix)`</a>
+
+Because the `#currency()` function takes many arguments and you might not
+always use them all, this function will help you create a somewhat permanent
+alias for the mix of arguments you wish to use often.
+
+Except for the `name` argument, the others are passed through to
+[`#currency()`](#currency-num-currency-dec-sep-decsep-si-suffix) function, and
+work the same way. The `name` is the name you wish to use to refer to the
+currency. You can basically use any name you want, but since the name is used
+to create a new key on JavaScript object, you should use a name that can be
+used effectively in that context.
+
+The function returns a function which takes only the `num` argument and uess
+previously specified arguments to return formatted currency. The function is
+also accessible through `dahelpers._NAME` key where `NAME` is the name you
+originally specified.
+
+To modify the definition of an existing currency, simply call this function
+again and use the same name. To remove a currency, you should simply `delete`
+the property from the `dahelpers` module (see examples below).
+
+Examples:
+
+    dahelpers.makeCurrency('din', 'Din', 2, '.', ',', false, true);
+    dahelpers._din(15000);  // returns '15.000,00 Din'
+    delete dahelpers._din;  // removes 'din' currency
+
+
+### <a name="sicurrency-num-currency-dec-sep-decsep">`#siCurrency(num, [currency, dec, sep, decSep])`</a>
+
+This is a shortcut for
+[`#currency()`](#currency-num-currency-dec-sep-decsep-si-suffix) which passes
+the si argument.
+
+Example:
+
+    dahelpers.siCurrency(1200, 'Fr');  // returns 'Fr 1.2k'
+
+
+### <a name="dollars-num-dec-si">`dollars(num, dec, si)`</a>
+
+Shortcut function for formatting US currency.
+
+Example:
+
+    dahelpers.dollars(100);  // returns '$100.00'
+
+
+### <a name="euros-num-dec-si">`#euros(num, dec, si)`</a>
+
+Shortcut function for formatting EU currency.
+
+Example:
+
+    dahelpers.euros(100);  // returns '€100.00'
+
+
+### <a name="yen-num-dec-si">`#yen(num, dec, si)`</a>
+
+Shortcut function for formatting Japanese currency.
+
+Example:
+
+    dahelpers.yen(100);  // returns '¥100.00'
+
+
+### <a name="yuan-num-dec-si">`#yuan(num, dec, si)`</a>
+
+Shortcut function for formatting Chinese currency. Since both Chinese and
+Japanese currencies use the same symbol, this function is a simple alias for
+[`#yen()`](#yen-num-dec-si).
+
+Example:
+
+    dahelpers.yuan(100);  // returns '¥100.00'
+
+
+### <a name="pounds-num-dec-si">`#pounds(num, dec, si)`</a>
+
+Shortcut function for formatting UK currency.
+
+Example:
+
+    dahelpers.pounds(100); // returns '£100.00'
+
+
+### <a name="wrap-s-len-sep">`#wrap(s, [len, sep])`</a>
+
+Wraps the text to make lines of `len` length separated by `sep` separator. The
+`len` is 79 by default, and separator is a LF character ('\n').
+
+Default wrap width can be customized globally by changing the
+[`WRAP_WIDTH`](#wrap_width) variable.
+
+Code for this function is based on the idea from [James Padolsey's blog
+post](http://james.padolsey.com/javascript/wordwrap-for-javascript/).
+
+Example:
+
+    dahelpers.wrap('The quick brown fox jumps over lazy old fox.', 20);
+    // returns:
+    // 'The quick brown\n
+    // fox jumps over\n
+    // lazy old fox.'
+
+
+### <a name="slug-s">`#slug(s)`</a>
+
+Converts a string to a slug (URL-compatible string). This function is fairly
+basic, so don't depend on it for strings that contain non-ASCII letters.
+
+Example:
+
+    dahelpers.slug('This is some text.');
+    // returns 'this-is-some-text'
+
+
+### <a name="tag-aliases">Tag aliases</a>
+
+For convenience we include a few aliases for HTML tags that will call `#tag()`
+function with a specific HTML tag name. The tags that are aliased are:
+
+ + a
+ + p
+ + strong
+ + em
+ + ul
+ + ol
+ + li
+ + div
+ + span
+ + button
+ + option
+
+
+They take the same arguments as the `#tag()` function except `name`.
+
+## <a name="running-tests">Running tests</a>
+
+To run the tests you first need to install all development dependencies. In the
+source directory run:
+
+    npm install
+
+
+Next run:
+
+    node node_modules/mocha/bin/_mocha tests/*.js
+
+
+To run tests in your browser, simply open `index.html` located in `tests`
+directory.
+
+## <a name="reporting-bugs">Reporting bugs</a>
+
+Please report all bugs to the [GitHub issue
+tracker](https://github.com/foxbunny/dahelpers/issues). Please check if there
+are any failing tests and include that information in the report.

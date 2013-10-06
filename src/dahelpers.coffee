@@ -12,27 +12,8 @@
 #
 # ::TOC::
 #
-# ## Installation
-#
-# This module is in UMD format. It can be used with an AMD loader such as
-# RequireJS, on NodeJS, or in browsers using `<script>` tag.
-#
-# ### NodeJS
-#
-# Install with NPM:
-#
-#     npm install dahelpers
-#
-# ### volo
-#
-# Install with:
-#
-#     volo add foxbunny/dahelpers
-#
-# ### Browser
-#
-# Either `require()` it if using RequireJS, or add a `<script>` tag. When using
-# with the `<script>` tag, the module will create a `dahelpers` global.
+# This module is in UMD format and will create a `dahelpers` global in browsers
+# when not used with an AMD loader such as RequireJS.
 #
 define = ((root) ->
   if typeof root.define is 'function' and root.define.amd
@@ -46,64 +27,10 @@ define = ((root) ->
 
 define () ->
 
-  # ## Usage tips
-  #
-  # Here are some usage tips that can make using DaHelpers easier.
-  #
-  # ### Using function stand-alone
-  #
-  # All function can be decoupled from the `dahelpers` module/global and used
-  # stand-alone. For example:
-  #
-  #     var type = dahelpers.type;
-  #     var thousands = dahelpers.thousands;
-  #     type('foo');
-  #     thousands(3000);
-  #
-  # If you are using CoffeeScript, this can be even easier:
-  #
-  #     {type, thousands} = dahelpers;
-  #     type 'foo'
-  #     thousands 3000
-  #
-  # ### Modifying Underscore `#template()` to add DaHelpers
-  #
-  # Here is a pattern for including DaHelpers in uderscore templates.
-  #
-  #     var type = dahelpers.type;
-  #     var extend = dahelpers.extend;
-  #     var origTemplate = _.template;
-  #     _.template = function(src, data, settings) {
-  #       if (type(data, 'undefined')) {
-  #         var precompiled = origTemplate(src, data, settings);
-  #         return function(data) {
-  #           return precompiled(extend({d: dahelpers}, data));
-  #         }
-  #       } else {
-  #         return origTemplate(src, extend({d: dahelpers}, data), settings);
-  #       }
-  #     };
-  #
-  # This makes DaHelpers available as `d` within the templates. Now you can:
-  #
-  #     _.template("Here's <%= d.currency(money) %>", {money: 200})
-  #     // returns "Here's $200.00"
+  # This module has no external dependencies.
   #
 
   h =
-
-    # ## Using functions in this module
-    #
-    # The methods in the DaHelpers module are actually all functions. They
-    # reference each other by referring to the module object directly instead
-    # of using `this`, so they can be safely decoupled from the module and used
-    # stand-alone.
-    #
-    # For example:
-    #
-    #     var type = dahelpers.type;
-    #     type('foo');
-    #
 
     # ## Variables
     #

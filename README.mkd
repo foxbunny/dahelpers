@@ -31,7 +31,8 @@ JavaScript in browsers and on NodeJS.
    - [`#propset(o, p, [v])`](#propset-o-p-v)
    - [`#walk(obj, cb)`](#walk-obj-cb)
    - [`#sweep(obj, cb)`](#sweep-obj-cb)
-   - [`#extend(obj, mixin, [mixin...])`](#extend-obj-mixin-mixin)
+   - [`#extend([guard], obj, mixin, [mixin...])`](#extend-guard-obj-mixin-mixin)
+   - [`#mixin(obj, mixin, [mixin...])`](#mixin-obj-mixin-mixin)
    - [`#clone(obj)`](#clone-obj)
    - [`#rekey(obj, map)`](#rekey-obj-map)
    - [`#toArray(v)`](#toarray-v)
@@ -366,13 +367,28 @@ Example:
     // Returns {a: 2, b: 3, c: 4}
 
 
-### <a name="extend-obj-mixin-mixin">`#extend(obj, mixin, [mixin...])`</a>
+### <a name="extend-guard-obj-mixin-mixin">`#extend([guard], obj, mixin, [mixin...])`</a>
 
 Deep-copies properties from `mixin`s into `obj`. Any properties that are
 already present in `obj` will be overwritten by properties in mixins.
 
 It currently does not clone items within arrays embedded in objects. It just
 crates a new array containing the same objects as the original one.
+
+The optional `guard` function can be passed that prevents setting of a mixin
+property when it returns `true`. The guard has the following signature:
+
+    guard(obj, value, keys, components)
+
+
+ + `obj`: Child object
+ + `value`: Value of the mixin key currently being processed
+ + `keys`: The full key path (e.g., 'foo.bar.baz')
+ + `components`: The full key path as array (e.g., ['foo', 'bar', 'baz'])
+
+
+Default guard returns `false` if the the `value` is `undefined`. Note that this
+behavior is completely overridden by a guard function if one is specified.
 
 Example:
 
@@ -381,6 +397,27 @@ Example:
     dahelpers.extend(obj, obj1)
     // `obj` should now be:
     // {foo: 2, bar: {baz: Date(2013, 8, 1)}, baz: 3}
+
+
+### <a name="mixin-obj-mixin-mixin">`#mixin(obj, mixin, [mixin...])`</a>
+
+Deep-copies properties from `mixin`s into `obj` only when `obj` does not
+already have the property.
+
+Main difference between the `#extend()` and `#mixin()` is the way existing
+properties on `obj` are handled. The `#extend()` function simply overwrites
+existing properties, whereas `#mixin()` doesn't. Otherwise, they are both
+identical, and, in fact, `#mixin()` is a simple wrapper around `#extend()` that
+uses a slightly different guard function.
+
+Example:
+
+    obj = {foo: 1, bar: {baz: new Date(2013, 8, 1)}};
+    obj1 = {foo: 2, baz: 3};
+    dahelpers.mixin(obj, obj1)
+    // `obj` should now be:
+    // {foo: 1, bar: {baz: Date(2013, 8, 1)}, baz: 3}
+    // Note that `foo` is still 1 unlike with `#extend()`
 
 
 ### <a name="clone-obj">`#clone(obj)`</a>

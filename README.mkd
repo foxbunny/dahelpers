@@ -1,4 +1,4 @@
-# <a name="dahelpers">DaHelpers</a>
+# DaHelpers
 
 These are da helpers to help you out.
 
@@ -29,6 +29,21 @@ Install with:
 Either `require()` it if using RequireJS, or add a `<script>` tag. When using
 with the `<script>` tag, the module will create a `dahelpers` global.
 
+## Using functions in this module
+
+The methods in the DaHelpers module are actually all functions. They reference
+each other by referring to the module object directly instead of using `this`,
+so they can be safely decoupled from the module and used stand-alone.
+
+For example:
+
+    var type = dahelpers.type;
+    type('foo');
+
+## API documentation
+
+Full API documentation can be found in the `doc` directory.
+
 ## Usage tips
 
 Here are some usage tips that can make using DaHelpers easier.
@@ -53,7 +68,7 @@ If you are using CoffeeScript, this can be even easier:
 
 ### Modifying Underscore `#template()` to add DaHelpers
 
-Here is a pattern for including DaHelpers in uderscore templates.
+Here is a pattern for including DaHelpers in UnderscoreJS templates.
 
     var type = dahelpers.type;
     var extend = dahelpers.extend;
@@ -74,20 +89,4 @@ This makes DaHelpers available as `d` within the templates. Now you can:
 
     _.template("Here's <%= d.currency(money) %>", {money: 200})
     // returns "Here's $200.00"
-
-
-## Using functions in this module
-
-The methods in the DaHelpers module are actually all functions. They reference
-each other by referring to the module object directly instead of using `this`,
-so they can be safely decoupled from the module and used stand-alone.
-
-For example:
-
-    var type = dahelpers.type;
-    type('foo');
-
-## API documentation
-
-Full API documentation can be found in the `doc` directory.
 

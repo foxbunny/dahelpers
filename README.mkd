@@ -45,6 +45,7 @@ JavaScript in browsers and on NodeJS.
    - [`#objIter(o)`](#objiter-o)
    - [`#iter(v)`](#iter-v)
    - [Iterator object](#iterator-object)
+     + [`iterator.indices()`](#iterator-indices)
      + [`iterator.len()`](#iterator-len)
      + [`iterator.remaining()`](#iterator-remaining)
      + [`iterator.next()`](#iterator-next)
@@ -54,6 +55,10 @@ JavaScript in browsers and on NodeJS.
      + [`iterator.every(callback)`](#iterator-every-callback)
      + [`iterator.none(callback)`](#iterator-none-callback)
      + [`iterator.any(callback)`](#iterator-any-callback)
+ + [Functional helpers](#functional-helpers)
+   - [`#lazy(fn)`](#lazy-fn)
+   - [`#compose([fn...])`](#compose-fn)
+   - [`#suicidal(fn)`](#suicidal-fn)
  + [Formatting](#formatting)
    - [`#objAttrs(o)`](#objattrs-o)
    - [`#tag(name, content, [attrs, silence])`](#tag-name-content-attrs-silence)
@@ -463,6 +468,16 @@ Returns true if `small` object is a subset of `big` object.
 Subset means that all key-value pairs of one object is contained within
 another.
 
+Example:
+
+    var a = {a: 1, b: 2, c: 3};
+    var b = {a: 1};
+    var d = {d: 2};
+    dahelpers.subset(b, a); // true
+    dahelpers.subset(d, a); // false
+    dahelpers.subset(a, b); // false
+
+
 ### <a name="truth-v">`#truth(v)`</a>
 
 A more pragmatic truthy and falsy.
@@ -480,19 +495,52 @@ This function returns `false` for the following values:
 
 For all other values, it will return `true`.
 
+Examples:
+
+    var truth = dahelpers.truth;
+    truth(12);     // true
+    truth(null);   // false
+    truth('foo');  // true
+    truth('');     // false
+
+
 ### <a name="every-arr">`#every(arr)`</a>
 
 Return true if all elements in `arr` array are truthy.
 
+Example:
+
+    var a = [1, true, 'foo'];
+    var b = [1, false, 'foo'];
+    dahelpers.every(a); // true
+    dahelpers.every(b); // false
+
+
 ### <a name="none-arr">`#none(arr)`</a>
 
 Return true if none of the elements in `arr` array are truthy.
+
+Example:
+
+    var a = [false, undefined, null, 0];
+    var b = [false, 'foo', null, 0];
+    dahelpers.none(a); // true
+    dahelpers.none(b); // false
+
 
 ### <a name="any-arr">`#any(arr)`</a>
 
 Return true if at least one item in array is truthy.
 
 This function is a reverse of `#none()`.
+
+Example:
+
+    var a = [false, undefined, null, 0];
+    var b = [false, 'foo', null, 0];
+    dahelpers.none(a); // false
+    dahelpers.none(b); // true
+
 
 ### <a name="arrayiter-a">`#arrayIter(a)`</a>
 
@@ -516,6 +564,10 @@ Objects are not strictly sequences. However, we can still apply all of the
 functions of the iterator objects to plain objects as well by treating their
 key-value pairs as sequence members. The main difference is that we cannot
 (always) predict the order of the properties.
+
+#### <a name="iterator-indices">`iterator.indices()`</a>
+
+Retuns all array indices or object keys as an array.
 
 #### <a name="iterator-len">`iterator.len()`</a>
 
@@ -612,6 +664,51 @@ signature:
 Invokes a callback on each member of the sequence and returns `true` if the
 callback returns `true` for at least one member. This is the opposite of
 `iterator.none()`.
+
+## <a name="functional-helpers">Functional helpers</a>
+
+### <a name="lazy-fn">`#lazy(fn)`</a>
+
+Returns a function that returns a proxy object whose value will be the result
+of calling the `fn` function when its `#valueOf` method is called.
+
+Because the `valueOf` method is used by JavaScript when values are being
+coerced, this function works best with functions whose return values are going
+to be used in a situation where coercion int primitive vlues is possible.
+
+Example:
+
+    var fn = function (a, b) { return a + b; }
+    fn = dahelpers.lazy(fn);
+    var r = fn(1, 2); // original `fn` is not yet called at this point
+    r + 2; // now the original `fn` is called, and result is 5
+
+
+### <a name="compose-fn">`#compose([fn...])`</a>
+
+Composes functions passed as arguments into a single function.
+
+Example:
+
+    var fn1 = function () { ... };
+    var fn2 = function () { ... };
+    var fn3 = function () { ... };
+    var fn4 = dahelpers.compose(fn1, fn2, fn3);
+    // `fn4(args...)` is same as fn1(fn2(fn3(args...))
+
+
+### <a name="suicidal-fn">`#suicidal(fn)`</a>
+
+Returns a version of the function that undefines itself (commits suicide) after
+first call.
+
+Example:
+
+    var fn = function (x) { return x + 1; }
+    fn = dahelpers.suicidal(fn);
+    fn(2); // returns 3
+    fn(4); // returns undefined
+
 
 ## <a name="formatting">Formatting</a>
 

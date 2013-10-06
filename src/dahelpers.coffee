@@ -513,6 +513,15 @@ define () ->
     # Subset means that all key-value pairs of one object is contained within
     # another.
     #
+    # Example:
+    #
+    #     var a = {a: 1, b: 2, c: 3};
+    #     var b = {a: 1};
+    #     var d = {d: 2};
+    #     dahelpers.subset(b, a); // true
+    #     dahelpers.subset(d, a); // false
+    #     dahelpers.subset(a, b); // false
+    #
     subset: (small, big) ->
       try
         h.walk small, (v, k, c) ->
@@ -537,6 +546,14 @@ define () ->
     #
     # For all other values, it will return `true`.
     #
+    # Examples:
+    #
+    #     var truth = dahelpers.truth;
+    #     truth(12);     // true
+    #     truth(null);   // false
+    #     truth('foo');  // true
+    #     truth('');     // false
+    #
     truth: (v) ->
       return false if h.type(v, 'undefined') or h.type(v, 'null')
       return false if v is 0
@@ -551,6 +568,13 @@ define () ->
     #
     # Return true if all elements in `arr` array are truthy.
     #
+    # Example:
+    #
+    #     var a = [1, true, 'foo'];
+    #     var b = [1, false, 'foo'];
+    #     dahelpers.every(a); // true
+    #     dahelpers.every(b); // false
+    #
     every: (arr) ->
       for item in arr
         return false if not item
@@ -559,6 +583,13 @@ define () ->
     # ### `#none(arr)`
     #
     # Return true if none of the elements in `arr` array are truthy.
+    #
+    # Example:
+    #
+    #     var a = [false, undefined, null, 0];
+    #     var b = [false, 'foo', null, 0];
+    #     dahelpers.none(a); // true
+    #     dahelpers.none(b); // false
     #
     none: (arr) ->
       for item in arr
@@ -571,6 +602,13 @@ define () ->
     #
     # This function is a reverse of `#none()`.
     #
+    # Example:
+    #
+    #     var a = [false, undefined, null, 0];
+    #     var b = [false, 'foo', null, 0];
+    #     dahelpers.none(a); // false
+    #     dahelpers.none(b); // true
+    #
     any: (arr) ->
       not h.none(arr)
 
@@ -582,6 +620,10 @@ define () ->
       a = [].concat a
       nextIndex = 0
       length = a.length
+      indices = [0..length - 1]
+
+      indices: () ->
+        indices
 
       len: () ->
         length
@@ -633,6 +675,9 @@ define () ->
       keys = (k for k of o when Object::hasOwnProperty.call o, k)
       nextIndex = 0
       length = keys.length
+
+      indices: () ->
+        keys
 
       len: () ->
         length
@@ -702,6 +747,10 @@ define () ->
     # the functions of the iterator objects to plain objects as well by
     # treating their key-value pairs as sequence members. The main difference
     # is that we cannot (always) predict the order of the properties.
+    #
+    # #### `iterator.indices()`
+    #
+    # Retuns all array indices or object keys as an array.
     #
     # #### `iterator.len()`
     #

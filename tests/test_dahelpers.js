@@ -1242,6 +1242,13 @@ describe('#iter(array)', function() {
     i = h.iter([]);
     return isTrue(typeof i === 'object');
   });
+  describe('iterator.indices()', function() {
+    return it('returns all array indices', function() {
+      var i;
+      i = h.iter([1, 2, 3, 4, 5]);
+      return assert.deepEqual(i.indices(), [0, 1, 2, 3, 4]);
+    });
+  });
   describe('iterator.len()', function() {
     return it('returns length', function() {
       var i;
@@ -1424,6 +1431,18 @@ describe('#iter(object)', function() {
     };
     i = h.iter(o);
     return equal(typeof i, 'object');
+  });
+  describe('iterator.indices()', function() {
+    return it('returns object keys', function() {
+      var i;
+      i = h.iter({
+        a: 1,
+        b: 2,
+        c: 3,
+        d: 4
+      });
+      return assert.deepEqual(i.indices(), ['a', 'b', 'c', 'd']);
+    });
   });
   describe('iterator.len()', function() {
     return it('returns length', function() {

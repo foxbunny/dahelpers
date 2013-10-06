@@ -920,6 +920,12 @@ describe '#iter(array)', () ->
     i = h.iter []
     isTrue typeof i is 'object'
 
+  describe 'iterator.indices()', () ->
+
+    it 'returns all array indices', () ->
+      i = h.iter [1, 2, 3, 4, 5]
+      assert.deepEqual i.indices(), [0, 1, 2, 3, 4]
+
   describe 'iterator.len()', () ->
 
     it 'returns length', () ->
@@ -1099,6 +1105,12 @@ describe '#iter(object)', () ->
     o = a: 1, b: 2, c: 3, d: 4
     i = h.iter o
     equal typeof i, 'object'
+
+  describe 'iterator.indices()', () ->
+
+    it 'returns object keys', () ->
+      i = h.iter a: 1, b: 2, c: 3, d: 4
+      assert.deepEqual i.indices(), ['a', 'b','c', 'd']
 
   describe 'iterator.len()', () ->
 

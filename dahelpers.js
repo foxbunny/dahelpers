@@ -276,11 +276,19 @@ define(function() {
       return !h.none(arr);
     },
     arrayIter: function(a) {
-      var length, nextIndex;
+      var indices, length, nextIndex, _i, _ref, _results;
       a = [].concat(a);
       nextIndex = 0;
       length = a.length;
+      indices = (function() {
+        _results = [];
+        for (var _i = 0, _ref = length - 1; 0 <= _ref ? _i <= _ref : _i >= _ref; 0 <= _ref ? _i++ : _i--){ _results.push(_i); }
+        return _results;
+      }).apply(this);
       return {
+        indices: function() {
+          return indices;
+        },
         len: function() {
           return length;
         },
@@ -304,48 +312,48 @@ define(function() {
           return item;
         },
         each: function(callback) {
-          var idx, item, _i, _len, _results;
-          _results = [];
-          for (idx = _i = 0, _len = a.length; _i < _len; idx = ++_i) {
+          var idx, item, _j, _len, _results1;
+          _results1 = [];
+          for (idx = _j = 0, _len = a.length; _j < _len; idx = ++_j) {
             item = a[idx];
-            _results.push(callback.call(a, item, idx));
+            _results1.push(callback.call(a, item, idx));
           }
-          return _results;
+          return _results1;
         },
         map: function(callback) {
-          var idx, item, _i, _len, _results;
-          _results = [];
-          for (idx = _i = 0, _len = a.length; _i < _len; idx = ++_i) {
+          var idx, item, _j, _len, _results1;
+          _results1 = [];
+          for (idx = _j = 0, _len = a.length; _j < _len; idx = ++_j) {
             item = a[idx];
-            _results.push(callback.call(a, item, idx));
+            _results1.push(callback.call(a, item, idx));
           }
-          return _results;
+          return _results1;
         },
         reduce: function(callback, initial) {
-          var idx, item, _i, _len;
+          var idx, item, _j, _len;
           if (initial == null) {
             initial = 0;
           }
-          for (idx = _i = 0, _len = a.length; _i < _len; idx = ++_i) {
+          for (idx = _j = 0, _len = a.length; _j < _len; idx = ++_j) {
             item = a[idx];
             initial = callback.call(a, initial, item, idx);
           }
           return initial;
         },
         filter: function(callback) {
-          var idx, item, _i, _len, _results;
-          _results = [];
-          for (idx = _i = 0, _len = a.length; _i < _len; idx = ++_i) {
+          var idx, item, _j, _len, _results1;
+          _results1 = [];
+          for (idx = _j = 0, _len = a.length; _j < _len; idx = ++_j) {
             item = a[idx];
             if (callback.call(a, item, idx)) {
-              _results.push(item);
+              _results1.push(item);
             }
           }
-          return _results;
+          return _results1;
         },
         every: function(callback) {
-          var idx, item, _i, _len;
-          for (idx = _i = 0, _len = a.length; _i < _len; idx = ++_i) {
+          var idx, item, _j, _len;
+          for (idx = _j = 0, _len = a.length; _j < _len; idx = ++_j) {
             item = a[idx];
             if (!callback.call(a, item, idx)) {
               return false;
@@ -354,8 +362,8 @@ define(function() {
           return true;
         },
         none: function(callback) {
-          var idx, item, _i, _len;
-          for (idx = _i = 0, _len = a.length; _i < _len; idx = ++_i) {
+          var idx, item, _j, _len;
+          for (idx = _j = 0, _len = a.length; _j < _len; idx = ++_j) {
             item = a[idx];
             if (callback.call(a, item, idx)) {
               return false;
@@ -384,6 +392,9 @@ define(function() {
       nextIndex = 0;
       length = keys.length;
       return {
+        indices: function() {
+          return keys;
+        },
         len: function() {
           return length;
         },

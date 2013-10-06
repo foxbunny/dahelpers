@@ -343,7 +343,7 @@ define () ->
     # same property structure as the old one.
     #
     # This function is similar to `#walk()` and uses walk to iterate over the
-      # object.
+    # object.
     #
     # The callback function takes four arguments:
     #
@@ -373,13 +373,28 @@ define () ->
         o
       ) {}
 
-    # ### `#extend(obj, mixin, [mixin...])`
+    # ### `#extend([guard], obj, mixin, [mixin...])`
     #
     # Deep-copies properties from `mixin`s into `obj`. Any properties that are
     # already present in `obj` will be overwritten by properties in mixins.
     #
     # It currently does not clone items within arrays embedded in objects. It
     # just crates a new array containing the same objects as the original one.
+    #
+    # The optional `guard` function can be passed that prevents setting of a
+    # mixin property when it returns `true`. The guard has the following
+    # signature:
+    #
+    #     guard(obj, value, keys, components)
+    #
+    #  + `obj`: Child object
+    #  + `value`: Value of the mixin key currently being processed
+    #  + `keys`: The full key path (e.g., 'foo.bar.baz')
+    #  + `components`: The full key path as array (e.g., ['foo', 'bar', 'baz'])
+    #
+    # Default guard returns `false` if the the `value` is `undefined`. Note
+    # that this behavior is completely overridden by a guard function if one is
+    # specified.
     #
     # Example:
     #
@@ -390,23 +405,56 @@ define () ->
     #     // {foo: 2, bar: {baz: Date(2013, 8, 1)}, baz: 3}
     #
     extend: (obj, mixins...) ->
+      if h.type obj, 'function'
+        guard = obj
+        [obj, mixins...] = mixins
+      else
+        guard = (obj, v) -> h.type(v) isnt 'undefined'
+
       for mixin in mixins
         h.walk mixin, (v, k, c) ->
-          return if h.type(v, 'undefined')
+          return if not guard obj, v, k, c
 
           if h.klass(v) is false
             h.propset obj, c, v
 
           else
             h.propset obj, c, (() ->
-              switch h.klass(v)
-                when Object then {}
-                when Date then new Date v.getTime()
-                when RegExp then new RegExp v
-                when Array then v[0..]
+              switch h.type(v)
+                when 'object' or 'arguments' then {}
+                when 'date' then new Date v.getTime()
+                when 'regexp' then new RegExp v
+                when 'array' then v[0..]
                 else v
             )()
       obj
+
+    # ### `#mixin(obj, mixin, [mixin...])`
+    #
+    # Deep-copies properties from `mixin`s into `obj` only when `obj` does
+    # not already have the property.
+    #
+    # Main difference between the `#extend()` and `#mixin()` is the way
+    # existing properties on `obj` are handled. The `#extend()` function simply
+    # overwrites existing properties, whereas `#mixin()` doesn't. Otherwise,
+    # they are both identical, and, in fact, `#mixin()` is a simple wrapper
+    # around `#extend()` that uses a slightly different guard function.
+    #
+    # Example:
+    #
+    #     obj = {foo: 1, bar: {baz: new Date(2013, 8, 1)}};
+    #     obj1 = {foo: 2, baz: 3};
+    #     dahelpers.mixin(obj, obj1)
+    #     // `obj` should now be:
+    #     // {foo: 1, bar: {baz: Date(2013, 8, 1)}, baz: 3}
+    #     // Note that `foo` is still 1 unlike with `#extend()`
+    #
+    mixin: (obj, mixins...) ->
+      guard = (obj, v, k, c) ->
+        return false if h.type(v) is 'undefined'
+        propType = h.type(h.props(obj, c))
+        propType is 'undefined'
+      h.extend.apply null, [guard, obj].concat mixins
 
     # ### `#clone(obj)`
     #
@@ -612,144 +660,126 @@ define () ->
     any: (arr) ->
       not h.none(arr)
 
+    iterBase: (state) ->
+      indices: () ->
+        state.indices
+
+      len: () ->
+        state.length
+
+      remaining: () ->
+        hasNext = state.nextIndex isnt null
+        if hasNext then state.length - state.nextIndex else 0
+
+      apply: (fns...) ->
+        state.funcs = state.funcs.concat fns
+        @
+
+      get: (idx) ->
+        [val] = @itemize idx
+        if state.funcs.length
+          fn = h.compose.apply null, state.funcs
+          val = fn.call state.v, val
+        val
+
+      next: () ->
+        throw new Error('Iterator stopped') if state.nextIndex is null
+        item = this.get state.nextIndex
+        state.nextIndex += 1
+        state.nextIndex = null if state.nextIndex is state.length
+        item
+
+      each: (callback) ->
+        for idx in state.indices
+          callback.apply state.v, @itemize(idx)
+
+      reduce: (callback, initial=0) ->
+        for idx in state.indices
+          initial = callback.apply state.v, [initial].concat @itemize idx
+        initial
+
+      every: (callback) ->
+        for idx in state.indices
+          return false if not callback.apply state.v, @itemize idx
+        true
+
+      none: (callback) ->
+        for idx in state.indices
+          return false if callback.apply state.v, @itemize idx
+        true
+
+      any: (callback) ->
+        not @none(callback)
+
     # ### `#arrayIter(a)`
     #
     # Returns an [iterator object](#iterator-object) for the given array.
     #
     arrayIter: (a) ->
-      a = [].concat a
-      nextIndex = 0
-      length = a.length
-      indices = [0..length - 1]
-      funcs = []
+      state =
+        v: [].concat a
+        nextIndex: 0
+        length: a.length
+        indices: [0..a.length - 1]
+        funcs: []
 
-      indices: () ->
-        indices
+      base = h.iterBase state
 
-      len: () ->
-        length
+      iterator =
+        itemize: (idx) ->
+          [state.v[idx], idx]
 
-      remaining: () ->
-        if nextIndex isnt null then length - nextIndex else 0
+        map: (callback) ->
+          callback.apply(state.v, @itemize idx) for idx in state.indices
 
-      apply: (fns...) ->
-        funcs = funcs.concat fns
-        @
+        filter: (callback) ->
+          state.v[idx] for idx in state.indices when callback.apply state.v, @itemize idx
 
-      get: (idx) ->
-        item = a[idx]
-        if funcs.length
-          fn = h.compose.apply null, funcs
-          item = fn.call a, item
-        item
-
-      next: () ->
-        throw new Error('Iterator stopped') if nextIndex is null
-        item = this.get nextIndex
-        nextIndex += 1
-        nextIndex = null if nextIndex is length
-        item
-
-      each: (callback) ->
-        for item, idx in a
-          callback.call a, item, idx
-
-      map: (callback) ->
-        callback.call(a, item, idx) for item, idx in a
-
-      reduce: (callback, initial=0) ->
-        for item, idx in a
-          initial = callback.call a, initial, item, idx
-        initial
-
-      filter: (callback) ->
-        item for item, idx in a when callback.call a, item, idx
-
-      every: (callback) ->
-        for item, idx in a
-          return false if not callback.call a, item, idx
-        true
-
-      none: (callback) ->
-        for item, idx in a
-          return false if callback.call a, item, idx
-        true
-
-      any: (callback) ->
-        not @none(callback)
+      h.mixin iterator, base
 
     # ### `#objIter(o)`
     #
     # Returns an [iterator object](#iterator-object) for the given object.
     #
     objIter: (o) ->
-      o = h.clone o
       keys = (k for k of o when Object::hasOwnProperty.call o, k)
-      nextIndex = 0
-      length = keys.length
-      funcs = []
 
-      indices: () ->
-        keys
+      state =
+        v: h.clone o
+        indices: [0..keys.length - 1]
+        nextIndex: 0
+        length: keys.length
+        funcs: []
 
-      len: () ->
-        length
+      base = @iterBase state
 
-      remaining: () ->
-        if nextIndex isnt null then length - nextIndex else 0
+      iterator =
+        itemize: (idx) ->
+          key = keys[idx]
+          value = state.v[key]
+          [value, key]
 
-      apply: (fns...) ->
-        funcs = funcs.concat fns
-        @
+        indices: () ->
+          keys
 
-      get: (idx) ->
-        k = keys[idx]
-        val = o[k]
-        if funcs.length
-          fn = h.compose.apply null, funcs
-          val = fn.call o, val
-        [k, val]
+        get: (idx) ->
+          val = base.get.call @, idx
+          key = keys[idx]
+          [key, val]
 
-      next: () ->
-        throw new Error('Iterator stopped') if nextIndex is null
-        item = this.get nextIndex
-        nextIndex += 1
-        nextIndex = null if nextIndex is length
-        item
+        map: (callback) ->
+          o1 = {}
+          for key, val of state.v
+            o1[key] = callback.call state.v, val, key
+          o1
 
-      each: (callback) ->
-        for key, val of o
-          callback.call o, val, key
+        filter: (callback) ->
+          o1 = {}
+          for key, val of state.v
+            o1[key] = val if callback.call state.v, val, key
+          o1
 
-      map: (callback) ->
-        o1 = {}
-        for key, val of o
-          o1[key] = callback.call o, val, key
-        o1
-
-      reduce: (callback, initial=0) ->
-        for key, val of o
-          initial = callback.call o, initial, val, key
-        initial
-
-      filter: (callback) ->
-        o1 = {}
-        for key, val of o
-          o1[key] = val if callback.call o, val, key
-        o1
-
-      every: (callback) ->
-        for key, val of o
-          return false if not callback.call o, val, key
-        true
-
-      none: (callback) ->
-        for key, val of o
-          return false if callback.call o, val, key
-        true
-
-      any: (callback) ->
-        not @none(callback)
+      h.mixin iterator, base
 
     # ### `#iter(v)`
     #

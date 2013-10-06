@@ -963,7 +963,7 @@ describe('#extend()', function() {
       'foo .bar baz': 1
     });
   });
-  return it('shold be fine with deep-nested properties', function() {
+  it('should be fine with deep-nested properties', function() {
     var obj, obj1;
     obj = {
       a: 1
@@ -981,6 +981,98 @@ describe('#extend()', function() {
     };
     h.extend(obj, obj1);
     return assert.deepEqual(obj, obj1);
+  });
+  it('should accept a guard function', function() {
+    var guard, obj, obj1;
+    obj = {
+      a: 1,
+      b: 1,
+      c: 1,
+      d: 1
+    };
+    obj1 = {
+      a: 1,
+      b: 2,
+      c: 3,
+      d: 4
+    };
+    guard = function(o, v, k, c) {
+      return v > 2;
+    };
+    h.extend(guard, obj, obj1);
+    return assert.deepEqual(obj, {
+      a: 1,
+      b: 1,
+      c: 3,
+      d: 4
+    });
+  });
+  return it('should not modify original object if guard always returns false', function() {
+    var guard, obj, obj1;
+    obj = {
+      a: 1,
+      b: 2,
+      c: 3,
+      d: 4
+    };
+    obj1 = {
+      a: 0,
+      b: 0,
+      c: 0,
+      d: 0
+    };
+    guard = function() {
+      return false;
+    };
+    h.extend(guard, obj, obj1);
+    return assert.deepEqual(obj, {
+      a: 1,
+      b: 2,
+      c: 3,
+      d: 4
+    });
+  });
+});
+
+describe('#mixin()', function() {
+  it('should copy properties from one object to another', function() {
+    var o1, o2, o3;
+    o1 = {
+      a: 1,
+      b: 2
+    };
+    o2 = {
+      c: 3,
+      d: 4
+    };
+    o3 = dahelpers.mixin(o1, o2);
+    equal(o1, o3);
+    return assert.deepEqual(o3, {
+      a: 1,
+      b: 2,
+      c: 3,
+      d: 4
+    });
+  });
+  return it('should leave existing properties intact', function() {
+    var o1, o2, o3;
+    o1 = {
+      a: 1,
+      b: 2
+    };
+    o2 = {
+      a: 3,
+      c: 3,
+      d: 4
+    };
+    o3 = dahelpers.mixin(o1, o2);
+    equal(o1, o3);
+    return assert.deepEqual(o3, {
+      a: 1,
+      b: 2,
+      c: 3,
+      d: 4
+    });
   });
 });
 
@@ -1599,7 +1691,7 @@ describe('#iter(object)', function() {
     });
   });
   describe('iterator.each()', function() {
-    return it('should invoke the callback oneach member', function() {
+    return it('should invoke the callback on each member', function() {
       var i, o, res;
       o = {
         a: 1,

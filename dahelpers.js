@@ -142,26 +142,34 @@ define(function() {
       })({});
     },
     extend: function() {
-      var mixin, mixins, obj, _i, _len;
+      var guard, mixin, mixins, obj, _i, _len, _ref;
       obj = arguments[0], mixins = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
+      if (h.type(obj, 'function')) {
+        guard = obj;
+        _ref = mixins, obj = _ref[0], mixins = 2 <= _ref.length ? __slice.call(_ref, 1) : [];
+      } else {
+        guard = function(obj, v) {
+          return h.type(v) !== 'undefined';
+        };
+      }
       for (_i = 0, _len = mixins.length; _i < _len; _i++) {
         mixin = mixins[_i];
         h.walk(mixin, function(v, k, c) {
-          if (h.type(v, 'undefined')) {
+          if (!guard(obj, v, k, c)) {
             return;
           }
           if (h.klass(v) === false) {
             return h.propset(obj, c, v);
           } else {
             return h.propset(obj, c, (function() {
-              switch (h.klass(v)) {
-                case Object:
+              switch (h.type(v)) {
+                case 'object' || 'arguments':
                   return {};
-                case Date:
+                case 'date':
                   return new Date(v.getTime());
-                case RegExp:
+                case 'regexp':
                   return new RegExp(v);
-                case Array:
+                case 'array':
                   return v.slice(0);
                 default:
                   return v;
@@ -171,6 +179,19 @@ define(function() {
         });
       }
       return obj;
+    },
+    mixin: function() {
+      var guard, mixins, obj;
+      obj = arguments[0], mixins = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
+      guard = function(obj, v, k, c) {
+        var propType;
+        if (h.type(v) === 'undefined') {
+          return false;
+        }
+        propType = h.type(h.props(obj, c));
+        return propType === 'undefined';
+      };
+      return h.extend.apply(null, [guard, obj].concat(mixins));
     },
     clone: function(obj) {
       if (!h.klass(obj, Object)) {
@@ -275,27 +296,19 @@ define(function() {
     any: function(arr) {
       return !h.none(arr);
     },
-    arrayIter: function(a) {
-      var funcs, indices, length, nextIndex, _i, _ref, _results;
-      a = [].concat(a);
-      nextIndex = 0;
-      length = a.length;
-      indices = (function() {
-        _results = [];
-        for (var _i = 0, _ref = length - 1; 0 <= _ref ? _i <= _ref : _i >= _ref; 0 <= _ref ? _i++ : _i--){ _results.push(_i); }
-        return _results;
-      }).apply(this);
-      funcs = [];
+    iterBase: function(state) {
       return {
         indices: function() {
-          return indices;
+          return state.indices;
         },
         len: function() {
-          return length;
+          return state.length;
         },
         remaining: function() {
-          if (nextIndex !== null) {
-            return length - nextIndex;
+          var hasNext;
+          hasNext = state.nextIndex !== null;
+          if (hasNext) {
+            return state.length - state.nextIndex;
           } else {
             return 0;
           }
@@ -303,85 +316,69 @@ define(function() {
         apply: function() {
           var fns;
           fns = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
-          funcs = funcs.concat(fns);
+          state.funcs = state.funcs.concat(fns);
           return this;
         },
         get: function(idx) {
-          var fn, item;
-          item = a[idx];
-          if (funcs.length) {
-            fn = h.compose.apply(null, funcs);
-            item = fn.call(a, item);
+          var fn, val;
+          val = this.itemize(idx)[0];
+          if (state.funcs.length) {
+            fn = h.compose.apply(null, state.funcs);
+            val = fn.call(state.v, val);
           }
-          return item;
+          return val;
         },
         next: function() {
           var item;
-          if (nextIndex === null) {
+          if (state.nextIndex === null) {
             throw new Error('Iterator stopped');
           }
-          item = this.get(nextIndex);
-          nextIndex += 1;
-          if (nextIndex === length) {
-            nextIndex = null;
+          item = this.get(state.nextIndex);
+          state.nextIndex += 1;
+          if (state.nextIndex === state.length) {
+            state.nextIndex = null;
           }
           return item;
         },
         each: function(callback) {
-          var idx, item, _j, _len, _results1;
-          _results1 = [];
-          for (idx = _j = 0, _len = a.length; _j < _len; idx = ++_j) {
-            item = a[idx];
-            _results1.push(callback.call(a, item, idx));
+          var idx, _i, _len, _ref, _results;
+          _ref = state.indices;
+          _results = [];
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            idx = _ref[_i];
+            _results.push(callback.apply(state.v, this.itemize(idx)));
           }
-          return _results1;
-        },
-        map: function(callback) {
-          var idx, item, _j, _len, _results1;
-          _results1 = [];
-          for (idx = _j = 0, _len = a.length; _j < _len; idx = ++_j) {
-            item = a[idx];
-            _results1.push(callback.call(a, item, idx));
-          }
-          return _results1;
+          return _results;
         },
         reduce: function(callback, initial) {
-          var idx, item, _j, _len;
+          var idx, _i, _len, _ref;
           if (initial == null) {
             initial = 0;
           }
-          for (idx = _j = 0, _len = a.length; _j < _len; idx = ++_j) {
-            item = a[idx];
-            initial = callback.call(a, initial, item, idx);
+          _ref = state.indices;
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            idx = _ref[_i];
+            initial = callback.apply(state.v, [initial].concat(this.itemize(idx)));
           }
           return initial;
         },
-        filter: function(callback) {
-          var idx, item, _j, _len, _results1;
-          _results1 = [];
-          for (idx = _j = 0, _len = a.length; _j < _len; idx = ++_j) {
-            item = a[idx];
-            if (callback.call(a, item, idx)) {
-              _results1.push(item);
-            }
-          }
-          return _results1;
-        },
         every: function(callback) {
-          var idx, item, _j, _len;
-          for (idx = _j = 0, _len = a.length; _j < _len; idx = ++_j) {
-            item = a[idx];
-            if (!callback.call(a, item, idx)) {
+          var idx, _i, _len, _ref;
+          _ref = state.indices;
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            idx = _ref[_i];
+            if (!callback.apply(state.v, this.itemize(idx))) {
               return false;
             }
           }
           return true;
         },
         none: function(callback) {
-          var idx, item, _j, _len;
-          for (idx = _j = 0, _len = a.length; _j < _len; idx = ++_j) {
-            item = a[idx];
-            if (callback.call(a, item, idx)) {
+          var idx, _i, _len, _ref;
+          _ref = state.indices;
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            idx = _ref[_i];
+            if (callback.apply(state.v, this.itemize(idx))) {
               return false;
             }
           }
@@ -392,9 +389,51 @@ define(function() {
         }
       };
     },
+    arrayIter: function(a) {
+      var base, iterator, state, _i, _ref, _results;
+      state = {
+        v: [].concat(a),
+        nextIndex: 0,
+        length: a.length,
+        indices: (function() {
+          _results = [];
+          for (var _i = 0, _ref = a.length - 1; 0 <= _ref ? _i <= _ref : _i >= _ref; 0 <= _ref ? _i++ : _i--){ _results.push(_i); }
+          return _results;
+        }).apply(this),
+        funcs: []
+      };
+      base = h.iterBase(state);
+      iterator = {
+        itemize: function(idx) {
+          return [state.v[idx], idx];
+        },
+        map: function(callback) {
+          var idx, _j, _len, _ref1, _results1;
+          _ref1 = state.indices;
+          _results1 = [];
+          for (_j = 0, _len = _ref1.length; _j < _len; _j++) {
+            idx = _ref1[_j];
+            _results1.push(callback.apply(state.v, this.itemize(idx)));
+          }
+          return _results1;
+        },
+        filter: function(callback) {
+          var idx, _j, _len, _ref1, _results1;
+          _ref1 = state.indices;
+          _results1 = [];
+          for (_j = 0, _len = _ref1.length; _j < _len; _j++) {
+            idx = _ref1[_j];
+            if (callback.apply(state.v, this.itemize(idx))) {
+              _results1.push(state.v[idx]);
+            }
+          }
+          return _results1;
+        }
+      };
+      return h.mixin(iterator, base);
+    },
     objIter: function(o) {
-      var funcs, k, keys, length, nextIndex;
-      o = h.clone(o);
+      var base, iterator, k, keys, state, _i, _ref, _results;
       keys = (function() {
         var _results;
         _results = [];
@@ -405,115 +444,58 @@ define(function() {
         }
         return _results;
       })();
-      nextIndex = 0;
-      length = keys.length;
-      funcs = [];
-      return {
+      state = {
+        v: h.clone(o),
+        indices: (function() {
+          _results = [];
+          for (var _i = 0, _ref = keys.length - 1; 0 <= _ref ? _i <= _ref : _i >= _ref; 0 <= _ref ? _i++ : _i--){ _results.push(_i); }
+          return _results;
+        }).apply(this),
+        nextIndex: 0,
+        length: keys.length,
+        funcs: []
+      };
+      base = this.iterBase(state);
+      iterator = {
+        itemize: function(idx) {
+          var key, value;
+          key = keys[idx];
+          value = state.v[key];
+          return [value, key];
+        },
         indices: function() {
           return keys;
         },
-        len: function() {
-          return length;
-        },
-        remaining: function() {
-          if (nextIndex !== null) {
-            return length - nextIndex;
-          } else {
-            return 0;
-          }
-        },
-        apply: function() {
-          var fns;
-          fns = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
-          funcs = funcs.concat(fns);
-          return this;
-        },
         get: function(idx) {
-          var fn, val;
-          k = keys[idx];
-          val = o[k];
-          if (funcs.length) {
-            fn = h.compose.apply(null, funcs);
-            val = fn.call(o, val);
-          }
-          return [k, val];
-        },
-        next: function() {
-          var item;
-          if (nextIndex === null) {
-            throw new Error('Iterator stopped');
-          }
-          item = this.get(nextIndex);
-          nextIndex += 1;
-          if (nextIndex === length) {
-            nextIndex = null;
-          }
-          return item;
-        },
-        each: function(callback) {
-          var key, val, _results;
-          _results = [];
-          for (key in o) {
-            val = o[key];
-            _results.push(callback.call(o, val, key));
-          }
-          return _results;
+          var key, val;
+          val = base.get.call(this, idx);
+          key = keys[idx];
+          return [key, val];
         },
         map: function(callback) {
-          var key, o1, val;
+          var key, o1, val, _ref1;
           o1 = {};
-          for (key in o) {
-            val = o[key];
-            o1[key] = callback.call(o, val, key);
+          _ref1 = state.v;
+          for (key in _ref1) {
+            val = _ref1[key];
+            o1[key] = callback.call(state.v, val, key);
           }
           return o1;
         },
-        reduce: function(callback, initial) {
-          var key, val;
-          if (initial == null) {
-            initial = 0;
-          }
-          for (key in o) {
-            val = o[key];
-            initial = callback.call(o, initial, val, key);
-          }
-          return initial;
-        },
         filter: function(callback) {
-          var key, o1, val;
+          var key, o1, val, _ref1;
           o1 = {};
-          for (key in o) {
-            val = o[key];
-            if (callback.call(o, val, key)) {
+          _ref1 = state.v;
+          for (key in _ref1) {
+            val = _ref1[key];
+            if (callback.call(state.v, val, key)) {
               o1[key] = val;
             }
           }
           return o1;
-        },
-        every: function(callback) {
-          var key, val;
-          for (key in o) {
-            val = o[key];
-            if (!callback.call(o, val, key)) {
-              return false;
-            }
-          }
-          return true;
-        },
-        none: function(callback) {
-          var key, val;
-          for (key in o) {
-            val = o[key];
-            if (callback.call(o, val, key)) {
-              return false;
-            }
-          }
-          return true;
-        },
-        any: function(callback) {
-          return !this.none(callback);
         }
       };
+      return h.mixin(iterator, base);
     },
     iter: function(v) {
       switch (h.type(v)) {

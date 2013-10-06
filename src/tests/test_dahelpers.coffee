@@ -735,11 +735,58 @@ describe '#extend()', () ->
     assert.deepEqual h.extend({}, obj),
       'foo .bar baz': 1
 
-  it 'shold be fine with deep-nested properties', () ->
+  it 'should be fine with deep-nested properties', () ->
     obj = a: 1
     obj1 = a: b: c: d: e: 2
     h.extend obj, obj1
     assert.deepEqual obj, obj1
+
+  it 'should accept a guard function', () ->
+    obj = a: 1, b: 1, c: 1, d: 1
+    obj1 = a: 1, b: 2, c: 3, d: 4
+    guard = (o, v, k, c) ->
+      v > 2
+    h.extend guard, obj, obj1
+    assert.deepEqual obj,
+      a: 1
+      b: 1
+      c: 3
+      d: 4
+
+  it 'should not modify original object if guard always returns false', () ->
+    obj = a: 1, b: 2, c: 3, d: 4
+    obj1 = a: 0, b: 0, c: 0, d: 0
+    guard = () -> false
+    h.extend guard, obj, obj1
+    assert.deepEqual obj,
+      a: 1
+      b: 2
+      c: 3
+      d: 4
+
+
+describe '#mixin()', () ->
+  it 'should copy properties from one object to another', () ->
+    o1 = a: 1, b: 2
+    o2 = c: 3, d: 4
+    o3 = dahelpers.mixin o1, o2
+    equal o1, o3
+    assert.deepEqual o3,
+      a: 1
+      b: 2
+      c: 3
+      d: 4
+
+  it 'should leave existing properties intact', () ->
+    o1 = a: 1, b: 2
+    o2 = a: 3, c: 3, d: 4
+    o3 = dahelpers.mixin o1, o2
+    equal o1, o3
+    assert.deepEqual o3,
+      a: 1
+      b: 2
+      c: 3
+      d: 4
 
 describe '#clone()', () ->
   it 'should clone objects', () ->
@@ -1211,7 +1258,7 @@ describe '#iter(object)', () ->
 
   describe 'iterator.each()', () ->
 
-    it 'should invoke the callback oneach member', () ->
+    it 'should invoke the callback on each member', () ->
       o = a: 1, b: 2, c: 3, d: 4
       i = h.iter o
       res = []

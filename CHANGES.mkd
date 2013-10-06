@@ -2,6 +2,11 @@
 
 ## Dev
 
+### Added `mixin()` function
+
+The `mixin()` is similar to `extend()` but does not overwrite existing
+properties.
+
 ### Added `objIter()`, `arrayIter()`, and `iter()` functions
 
 These function return handy iterator object for manipulating arrays and objects

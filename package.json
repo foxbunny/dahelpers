@@ -2,7 +2,8 @@
   "name" : "dahelpers",
   "description" : "Library of miscellaneous formatting and helper functions",
   "homepage" : "https://github.com/foxbunny/dahelpers/",
-  "keywords" : ["server", "browser", "helpers", "formatting", "number", "string"],
+  "keywords" : ["server", "browser", "helpers", "formatting", "number", 
+    "string", "functional", "iteration", "lazy"],
   "author" : "Branko Vukelic <branko@brankovukelic.com>",
   "bugs": {
     "url": "https://github.com/foxbunny/dahelpers/issues",

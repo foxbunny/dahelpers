@@ -48,6 +48,8 @@ JavaScript in browsers and on NodeJS.
      + [`iterator.indices()`](#iterator-indices)
      + [`iterator.len()`](#iterator-len)
      + [`iterator.remaining()`](#iterator-remaining)
+     + [`iterator.apply(fn, [fn...])`](#iterator-apply-fn-fn)
+     + [`iterator.get(index)`](#iterator-get-index)
      + [`iterator.next()`](#iterator-next)
      + [`iterator.each(callback)`](#iterator-each-callback)
      + [`iterator.map(callback)`](#iterator-map-callback)
@@ -577,6 +579,19 @@ Returns the length of a sequence.
 
 Returns the number of remaining members that haven't been returned by
 `iterator.next()`.
+
+#### <a name="iterator-apply-fn-fn">`iterator.apply(fn, [fn...])`</a>
+
+Adds one or more functions to be applied to each item returned from
+`iterator.get()` and `iterator.next()` methods.
+
+#### <a name="iterator-get-index">`iterator.get(index)`</a>
+
+Returns a member at the given index.
+
+`index` is an integer representing the member's index. This also applies to
+objects as well, where the `index` is the index of the key in the internal
+array of keys.
 
 #### <a name="iterator-next">`iterator.next()`</a>
 

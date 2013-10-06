@@ -1288,6 +1288,45 @@ describe('#iter(array)', function() {
       return assert.throws(i.next, Error, 'Iterator stopped');
     });
   });
+  describe('iterator.get()', function() {
+    return it('returns the member with given index', function() {
+      var i;
+      i = h.iter([1, 2, 3, 4]);
+      equal(i.get(0), 1);
+      equal(i.get(1), 2);
+      equal(i.get(2), 3);
+      return equal(i.get(3), 4);
+    });
+  });
+  describe('iterator.apply()', function() {
+    it('adds a function to be applied to members', function() {
+      var fn, i;
+      i = h.iter([1, 2, 3, 4]);
+      fn = function(x) {
+        return x + 2;
+      };
+      i.apply(fn);
+      equal(i.next(), 3);
+      equal(i.next(), 4);
+      equal(i.next(), 5);
+      return equal(i.next(), 6);
+    });
+    return it('can add more functions', function() {
+      var fn1, fn2, i;
+      i = h.iter([1, 2, 3, 4]);
+      fn1 = function(x) {
+        return '' + x;
+      };
+      fn2 = function(x) {
+        return x * 2 - 1;
+      };
+      i.apply(fn1, fn2);
+      equal(i.next(), '1');
+      equal(i.next(), '3');
+      equal(i.next(), '5');
+      return equal(i.next(), '7');
+    });
+  });
   describe('iterator.each()', function() {
     return it('calls a function on each member of the array', function() {
       var a, i, res;
@@ -1503,6 +1542,60 @@ describe('#iter(object)', function() {
       i.next();
       i.next();
       return assert.throws(i.next, Error, 'Iterator stopped');
+    });
+  });
+  describe('iterator.get()', function() {
+    return it('returns members by index', function() {
+      var i;
+      i = h.iter({
+        a: 1,
+        b: 2,
+        c: 3,
+        d: 4
+      });
+      assert.deepEqual(i.get(0), ['a', 1]);
+      assert.deepEqual(i.get(1), ['b', 2]);
+      assert.deepEqual(i.get(2), ['c', 3]);
+      return assert.deepEqual(i.get(3), ['d', 4]);
+    });
+  });
+  describe('iterator.apply()', function() {
+    it('adds a function to be applied to members', function() {
+      var fn, i;
+      i = h.iter({
+        a: 1,
+        b: 2,
+        c: 3,
+        d: 4
+      });
+      fn = function(val) {
+        return val + 1;
+      };
+      i.apply(fn);
+      assert.deepEqual(i.next(), ['a', 2]);
+      assert.deepEqual(i.next(), ['b', 3]);
+      assert.deepEqual(i.next(), ['c', 4]);
+      return assert.deepEqual(i.next(), ['d', 5]);
+    });
+    return it('can add more functions', function() {
+      var fn1, fn2, i;
+      i = h.iter({
+        a: 1,
+        b: 2,
+        c: 3,
+        d: 4
+      });
+      fn1 = function(x) {
+        return '' + x;
+      };
+      fn2 = function(x) {
+        return x * 2 - 1;
+      };
+      i.apply(fn1, fn2);
+      assert.deepEqual(i.next(), ['a', '1']);
+      assert.deepEqual(i.next(), ['b', '3']);
+      assert.deepEqual(i.next(), ['c', '5']);
+      return assert.deepEqual(i.next(), ['d', '7']);
     });
   });
   describe('iterator.each()', function() {

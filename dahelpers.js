@@ -276,7 +276,7 @@ define(function() {
       return !h.none(arr);
     },
     arrayIter: function(a) {
-      var indices, length, nextIndex, _i, _ref, _results;
+      var funcs, indices, length, nextIndex, _i, _ref, _results;
       a = [].concat(a);
       nextIndex = 0;
       length = a.length;
@@ -285,6 +285,7 @@ define(function() {
         for (var _i = 0, _ref = length - 1; 0 <= _ref ? _i <= _ref : _i >= _ref; 0 <= _ref ? _i++ : _i--){ _results.push(_i); }
         return _results;
       }).apply(this);
+      funcs = [];
       return {
         indices: function() {
           return indices;
@@ -299,12 +300,27 @@ define(function() {
             return 0;
           }
         },
+        apply: function() {
+          var fns;
+          fns = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+          funcs = funcs.concat(fns);
+          return this;
+        },
+        get: function(idx) {
+          var fn, item;
+          item = a[idx];
+          if (funcs.length) {
+            fn = h.compose.apply(null, funcs);
+            item = fn.call(a, item);
+          }
+          return item;
+        },
         next: function() {
           var item;
           if (nextIndex === null) {
             throw new Error('Iterator stopped');
           }
-          item = a[nextIndex];
+          item = this.get(nextIndex);
           nextIndex += 1;
           if (nextIndex === length) {
             nextIndex = null;
@@ -377,7 +393,7 @@ define(function() {
       };
     },
     objIter: function(o) {
-      var k, keys, length, nextIndex;
+      var funcs, k, keys, length, nextIndex;
       o = h.clone(o);
       keys = (function() {
         var _results;
@@ -391,6 +407,7 @@ define(function() {
       })();
       nextIndex = 0;
       length = keys.length;
+      funcs = [];
       return {
         indices: function() {
           return keys;
@@ -405,16 +422,33 @@ define(function() {
             return 0;
           }
         },
+        apply: function() {
+          var fns;
+          fns = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+          funcs = funcs.concat(fns);
+          return this;
+        },
+        get: function(idx) {
+          var fn, val;
+          k = keys[idx];
+          val = o[k];
+          if (funcs.length) {
+            fn = h.compose.apply(null, funcs);
+            val = fn.call(o, val);
+          }
+          return [k, val];
+        },
         next: function() {
+          var item;
           if (nextIndex === null) {
             throw new Error('Iterator stopped');
           }
-          k = keys[nextIndex];
+          item = this.get(nextIndex);
           nextIndex += 1;
           if (nextIndex === length) {
             nextIndex = null;
           }
-          return [k, o[k]];
+          return item;
         },
         each: function(callback) {
           var key, val, _results;

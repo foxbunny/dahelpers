@@ -621,6 +621,7 @@ define () ->
       nextIndex = 0
       length = a.length
       indices = [0..length - 1]
+      funcs = []
 
       indices: () ->
         indices
@@ -631,9 +632,20 @@ define () ->
       remaining: () ->
         if nextIndex isnt null then length - nextIndex else 0
 
+      apply: (fns...) ->
+        funcs = funcs.concat fns
+        @
+
+      get: (idx) ->
+        item = a[idx]
+        if funcs.length
+          fn = h.compose.apply null, funcs
+          item = fn.call a, item
+        item
+
       next: () ->
         throw new Error('Iterator stopped') if nextIndex is null
-        item = a[nextIndex]
+        item = this.get nextIndex
         nextIndex += 1
         nextIndex = null if nextIndex is length
         item
@@ -675,6 +687,7 @@ define () ->
       keys = (k for k of o when Object::hasOwnProperty.call o, k)
       nextIndex = 0
       length = keys.length
+      funcs = []
 
       indices: () ->
         keys
@@ -685,12 +698,24 @@ define () ->
       remaining: () ->
         if nextIndex isnt null then length - nextIndex else 0
 
+      apply: (fns...) ->
+        funcs = funcs.concat fns
+        @
+
+      get: (idx) ->
+        k = keys[idx]
+        val = o[k]
+        if funcs.length
+          fn = h.compose.apply null, funcs
+          val = fn.call o, val
+        [k, val]
+
       next: () ->
         throw new Error('Iterator stopped') if nextIndex is null
-        k = keys[nextIndex]
+        item = this.get nextIndex
         nextIndex += 1
         nextIndex = null if nextIndex is length
-        [k, o[k]]
+        item
 
       each: (callback) ->
         for key, val of o
@@ -760,6 +785,19 @@ define () ->
     #
     # Returns the number of remaining members that haven't been returned by
     # `iterator.next()`.
+    #
+    # #### `iterator.apply(fn, [fn...])`
+    #
+    # Adds one or more functions to be applied to each item returned from
+    # `iterator.get()` and `iterator.next()` methods.
+    #
+    # #### `iterator.get(index)`
+    #
+    # Returns a member at the given index.
+    #
+    # `index` is an integer representing the member's index. This also applies
+    # to objects as well, where the `index` is the index of the key in the
+    # internal array of keys.
     #
     # #### `iterator.next()`
     #

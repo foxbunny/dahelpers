@@ -961,6 +961,36 @@ describe '#iter(array)', () ->
       i.next()
       assert.throws i.next, Error, 'Iterator stopped'
 
+  describe 'iterator.get()', () ->
+
+    it 'returns the member with given index', () ->
+      i = h.iter [1, 2, 3, 4]
+      equal i.get(0), 1
+      equal i.get(1), 2
+      equal i.get(2), 3
+      equal i.get(3), 4
+
+  describe 'iterator.apply()', () ->
+
+    it 'adds a function to be applied to members', () ->
+      i = h.iter [1, 2, 3, 4]
+      fn = (x) -> x + 2
+      i.apply fn
+      equal i.next(), 3
+      equal i.next(), 4
+      equal i.next(), 5
+      equal i.next(), 6
+
+    it 'can add more functions', () ->
+      i = h.iter [1, 2, 3, 4]
+      fn1 = (x) -> '' + x
+      fn2 = (x) -> x * 2 - 1
+      i.apply fn1, fn2
+      equal i.next(), '1'
+      equal i.next(), '3'
+      equal i.next(), '5'
+      equal i.next(), '7'
+
   describe 'iterator.each()', () ->
 
     it 'calls a function on each member of the array', () ->
@@ -1148,6 +1178,36 @@ describe '#iter(object)', () ->
       i.next()
       i.next()
       assert.throws i.next, Error, 'Iterator stopped'
+
+  describe 'iterator.get()', () ->
+
+    it 'returns members by index', () ->
+      i = h.iter a: 1, b: 2, c: 3, d: 4
+      assert.deepEqual i.get(0), ['a', 1]
+      assert.deepEqual i.get(1), ['b', 2]
+      assert.deepEqual i.get(2), ['c', 3]
+      assert.deepEqual i.get(3), ['d', 4]
+
+  describe 'iterator.apply()', () ->
+
+    it 'adds a function to be applied to members', () ->
+      i = h.iter a: 1, b: 2, c: 3, d: 4
+      fn = (val) -> val + 1
+      i.apply fn
+      assert.deepEqual i.next(), ['a', 2]
+      assert.deepEqual i.next(), ['b', 3]
+      assert.deepEqual i.next(), ['c', 4]
+      assert.deepEqual i.next(), ['d', 5]
+
+    it 'can add more functions', () ->
+      i = h.iter a: 1, b: 2, c: 3, d: 4
+      fn1 = (x) -> '' + x
+      fn2 = (x) -> x * 2 - 1
+      i.apply fn1, fn2
+      assert.deepEqual i.next(), ['a', '1']
+      assert.deepEqual i.next(), ['b', '3']
+      assert.deepEqual i.next(), ['c', '5']
+      assert.deepEqual i.next(), ['d', '7']
 
   describe 'iterator.each()', () ->
 

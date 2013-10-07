@@ -614,7 +614,7 @@ define () ->
         state.currentIndex + 1 < state.length
 
       hasPrev: () ->
-        state.currentIndex >= 0
+        state.currentIndex > 0
 
       remaining: () ->
         if this.hasNext() then state.length - state.currentIndex - 1 else 0

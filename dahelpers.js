@@ -319,7 +319,7 @@ define(function() {
           return state.currentIndex + 1 < state.length;
         },
         hasPrev: function() {
-          return state.currentIndex >= 0;
+          return state.currentIndex > 0;
         },
         remaining: function() {
           if (this.hasNext()) {

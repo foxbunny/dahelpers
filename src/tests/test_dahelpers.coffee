@@ -7,6 +7,7 @@ if require?
 assert = chai.assert
 h = dahelpers
 equal = assert.equal
+deepEqual = assert.deepEqual
 isTrue = assert.ok
 isFalse = assert.notOk
 
@@ -230,31 +231,31 @@ describe '#reverse()', () ->
 describe '#sgroup()', () ->
   it 'will group characters into strings of given length', () ->
     a = h.sgroup '123456', 2
-    assert.deepEqual a, ['12', '34', '56']
+    deepEqual a, ['12', '34', '56']
 
   it 'will return a partial last group if not enough characters', () ->
     a = h.sgroup '12345', 2
-    assert.deepEqual a, ['12', '34', '5']
+    deepEqual a, ['12', '34', '5']
 
   it 'will return the original string as one group if no length', () ->
     a = h.sgroup '12345'
-    assert.deepEqual a, ['12345']
+    deepEqual a, ['12345']
 
   it 'will return original string as one group if n is 0', () ->
     a = h.sgroup '12345', 0
-    assert.deepEqual a, ['12345']
+    deepEqual a, ['12345']
 
   it 'will return original string as one group if too short', () ->
     a = h.sgroup '1', 2
-    assert.deepEqual a, ['1']
+    deepEqual a, ['1']
 
   it 'will return empty array given no arguments', () ->
     a = h.sgroup()
-    assert.deepEqual a, []
+    deepEqual a, []
 
   it 'will return an empty array if string is empty', () ->
     a = h.sgroup ''
-    assert.deepEqual a, []
+    deepEqual a, []
 
 describe '#pad()', () ->
   it 'should pad a number with leading characters', () ->
@@ -509,7 +510,7 @@ describe '#makeCurrency()', () ->
       currencyArgs = args
     h.makeCurrency 'din', 'Din', 2, '.', ',', false, true
     h._din 1000
-    assert.deepEqual currencyArgs, [1000, 'Din', 2, '.', ',', false, true]
+    deepEqual currencyArgs, [1000, 'Din', 2, '.', ',', false, true]
     h.currency = originalCurrency
 
 describe '#wrap()', () ->
@@ -595,7 +596,7 @@ describe '#propset()', () ->
   it 'should set a property tree and assign a value to the leaf', () ->
     obj = {}
     h.propset obj, 'foo.bar.baz', 1
-    assert.deepEqual obj,
+    deepEqual obj,
       foo:
         bar:
           baz: 1
@@ -603,7 +604,7 @@ describe '#propset()', () ->
   it 'should also accept funky property names', () ->
     obj = {}
     h.propset obj, 'foo.This is totally funky!.bar', 1
-    assert.deepEqual obj,
+    deepEqual obj,
       foo:
         'This is totally funky!':
           bar: 1
@@ -616,7 +617,7 @@ describe '#propset()', () ->
   it 'should be chainable', () ->
     obj = {}
     h.propset h.propset(obj, 'foo.bar', 2), 'foo.baz', 3
-    assert.deepEqual obj,
+    deepEqual obj,
       foo:
         bar: 2
         baz: 3
@@ -624,7 +625,7 @@ describe '#propset()', () ->
   it 'should work with an array as well', () ->
     obj = {}
     h.propset obj, ['foo', 'bar.baz', 'fam'], 3
-    assert.deepEqual obj,
+    deepEqual obj,
       foo:
         'bar.baz':
           fam: 3
@@ -644,7 +645,7 @@ describe '#walk()', () ->
     h.walk obj, (args...) ->
       walkArgs.push args
 
-    assert.deepEqual walkArgs, [
+    deepEqual walkArgs, [
       [1, 'a', ['a']]
       [2, 'b', ['b']]
       [3, 'c', ['c']]
@@ -664,7 +665,7 @@ describe '#walk()', () ->
     h.walk obj, (args...) ->
       walkArgs.push args
 
-    assert.deepEqual walkArgs, [
+    deepEqual walkArgs, [
       [1, 'a', ['a']]
       [[1, 2, 3], 'b', ['b']]
       [null, 'c', ['c']]
@@ -684,7 +685,7 @@ describe '#sweep()', () ->
     obj1 = h.sweep obj, (args...) ->
       args[0]
 
-    assert.deepEqual obj, obj1
+    deepEqual obj, obj1
 
   it 'should create a clone, not return same object', () ->
     obj =
@@ -697,7 +698,7 @@ describe '#sweep()', () ->
     obj1 = h.sweep obj, (v) -> v
     obj1.b = 2
 
-    assert.deepEqual obj1, {a: 1, b: 2}
+    deepEqual obj1, {a: 1, b: 2}
     assert.notDeepEqual obj, obj1
 
   it 'shoud not set any properties that return undefined from cb', () ->
@@ -707,7 +708,7 @@ describe '#sweep()', () ->
       c: 3
 
     obj1 = h.sweep obj, () -> return
-    assert.deepEqual obj1, {}
+    deepEqual obj1, {}
 
 describe '#extend()', () ->
   it 'copies properties from other objects', () ->
@@ -732,14 +733,14 @@ describe '#extend()', () ->
   it 'should be fine with properties with spaces', () ->
     obj =
       'foo .bar baz': 1
-    assert.deepEqual h.extend({}, obj),
+    deepEqual h.extend({}, obj),
       'foo .bar baz': 1
 
   it 'should be fine with deep-nested properties', () ->
     obj = a: 1
     obj1 = a: b: c: d: e: 2
     h.extend obj, obj1
-    assert.deepEqual obj, obj1
+    deepEqual obj, obj1
 
   it 'should accept a guard function', () ->
     obj = a: 1, b: 1, c: 1, d: 1
@@ -747,7 +748,7 @@ describe '#extend()', () ->
     guard = (o, v, k, c) ->
       v > 2
     h.extend guard, obj, obj1
-    assert.deepEqual obj,
+    deepEqual obj,
       a: 1
       b: 1
       c: 3
@@ -758,7 +759,7 @@ describe '#extend()', () ->
     obj1 = a: 0, b: 0, c: 0, d: 0
     guard = () -> false
     h.extend guard, obj, obj1
-    assert.deepEqual obj,
+    deepEqual obj,
       a: 1
       b: 2
       c: 3
@@ -771,7 +772,7 @@ describe '#mixin()', () ->
     o2 = c: 3, d: 4
     o3 = dahelpers.mixin o1, o2
     equal o1, o3
-    assert.deepEqual o3,
+    deepEqual o3,
       a: 1
       b: 2
       c: 3
@@ -782,7 +783,7 @@ describe '#mixin()', () ->
     o2 = a: 3, c: 3, d: 4
     o3 = dahelpers.mixin o1, o2
     equal o1, o3
-    assert.deepEqual o3,
+    deepEqual o3,
       a: 1
       b: 2
       c: 3
@@ -829,7 +830,7 @@ describe '#clone()', () ->
     assert.notEqual obj.d.f, obj1.d.f  # They are now different RegExp objects
     equal obj.d.f.toString(), obj1.d.f.toString()  # but same regexp
 
-    assert.deepEqual obj.d.g, obj1.d.g
+    deepEqual obj.d.g, obj1.d.g
 
   it 'should make real clones, not just two identical copies', () ->
     obj =
@@ -860,7 +861,7 @@ describe '#rekey()', () ->
 
     obj1 = h.rekey obj, map
 
-    assert.deepEqual obj1,
+    deepEqual obj1,
       a:
         a: 1
         b: 2
@@ -885,21 +886,21 @@ describe '#rekey()', () ->
     assert.notEqual obj1.a.getFullYear(), obj.a.getFullYear()
 
   it 'returns an empty object if map is an empty object', () ->
-    assert.deepEqual h.rekey({a: 1}, {}), {}
+    deepEqual h.rekey({a: 1}, {}), {}
 
 describe '#toArray()', () ->
   it 'should convert to array the non-array values', () ->
-    assert.deepEqual h.toArray('foo'), ['foo']
-    assert.deepEqual h.toArray(1), [1]
-    assert.deepEqual h.toArray(true), [true]
+    deepEqual h.toArray('foo'), ['foo']
+    deepEqual h.toArray(1), [1]
+    deepEqual h.toArray(true), [true]
 
   it 'should return empty value for undefined or null', () ->
-    assert.deepEqual h.toArray(), []
-    assert.deepEqual h.toArray(null), []
+    deepEqual h.toArray(), []
+    deepEqual h.toArray(null), []
 
   it 'should return original if already an array', () ->
     a = [1, 2, 3]
-    assert.deepEqual h.toArray(a), a
+    deepEqual h.toArray(a), a
 
 describe '#empty()', () ->
   it 'should tell us if array is empty', () ->
@@ -989,7 +990,7 @@ describe '#iter(array)', () ->
 
     it 'returns all array indices', () ->
       i = h.iter [1, 2, 3, 4, 5]
-      assert.deepEqual i.indices(), [0, 1, 2, 3, 4]
+      deepEqual i.indices(), [0, 1, 2, 3, 4]
 
   describe 'iterator.len()', () ->
 
@@ -1026,6 +1027,20 @@ describe '#iter(array)', () ->
       i.next()
       assert.throws () ->
         i.next()
+      , Error, 'No more items'
+
+  describe 'iterator.prev()', () ->
+
+    it 'returns previous member', () ->
+      i = h.iter [1, 2, 3, 4]
+      i.next()  # 1
+      i.next()  # 2
+      deepEqual i.prev(), 1
+
+    it 'throws an exception when iterator is at the beginning', () ->
+      i = h.iter [1, 2, 3, 4]
+      assert.throws () ->
+        i.prev()
       , Error, 'No more items'
 
   describe 'iterator.get()', () ->
@@ -1066,7 +1081,7 @@ describe '#iter(array)', () ->
       res = []
       i.each (item, idx) ->
         res.push [this, item, idx]
-      assert.deepEqual res, [
+      deepEqual res, [
         [a, 'a', 0]
         [a, 'b', 1]
         [a, 'c', 2]
@@ -1083,12 +1098,12 @@ describe '#iter(array)', () ->
         res.push [this, item, idx]
         item + 'foo'
 
-      assert.deepEqual res, [
+      deepEqual res, [
         [a, 'a', 0]
         [a, 'b', 1]
         [a, 'c', 2]
       ]
-      assert.deepEqual a1, ['afoo', 'bfoo', 'cfoo']
+      deepEqual a1, ['afoo', 'bfoo', 'cfoo']
 
   describe 'iterator.reduce()', () ->
 
@@ -1100,7 +1115,7 @@ describe '#iter(array)', () ->
         res.push [this, val, item, idx]
         val + item
       , 0
-      assert.deepEqual res, [
+      deepEqual res, [
         [a, 0, 1, 0]
         [a, 1, 2, 1]
         [a, 3, 3, 2]
@@ -1118,21 +1133,21 @@ describe '#iter(array)', () ->
         res.push [this, item, idx]
         item % 2 is 0
 
-      assert.deepEqual res, [
+      deepEqual res, [
         [a, 1, 0]
         [a, 2, 1]
         [a, 3, 2]
         [a, 4, 3]
       ]
-      assert.deepEqual n, [2, 4]
+      deepEqual n, [2, 4]
 
     it 'returns no items if callback always returns false', () ->
       a = h.iter([1, 2, 3, 4]).filter () -> false
-      assert.deepEqual a, []
+      deepEqual a, []
 
     it 'returns all items if callback always returns true', () ->
       a = h.iter([1, 2, 3, 4]).filter () -> true
-      assert.deepEqual a, [1, 2, 3, 4]
+      deepEqual a, [1, 2, 3, 4]
 
   describe 'iterator.every()', () ->
 
@@ -1142,7 +1157,7 @@ describe '#iter(array)', () ->
       r = h.iter(a).every (item, idx) ->
         res.push [this, item, idx]
         item > 0
-      assert.deepEqual res, [
+      deepEqual res, [
         [a, 1, 0]
         [a, 2, 1]
         [a, 3, 2]
@@ -1163,7 +1178,7 @@ describe '#iter(array)', () ->
       r = h.iter(a).none (item, idx) ->
         res.push [this, item, idx]
         item < 0
-      assert.deepEqual res, [
+      deepEqual res, [
         [a, 1, 0]
         [a, 2, 1]
         [a, 3, 2]
@@ -1184,7 +1199,7 @@ describe '#iter(array)', () ->
       r = h.iter(a).any (item, idx) ->
         res.push [this, item, idx]
         item is 3
-      assert.deepEqual res, [
+      deepEqual res, [
         [a, 1, 0]
         [a, 2, 1]
         [a, 3, 2]
@@ -1207,7 +1222,7 @@ describe '#iter(object)', () ->
 
     it 'returns object keys', () ->
       i = h.iter a: 1, b: 2, c: 3, d: 4
-      assert.deepEqual i.indices(), ['a', 'b','c', 'd']
+      deepEqual i.indices(), ['a', 'b','c', 'd']
 
   describe 'iterator.len()', () ->
 
@@ -1233,10 +1248,10 @@ describe '#iter(object)', () ->
 
     it 'returns next member', () ->
       i = h.iter a: 1, b: 2, c: 3, d: 4
-      assert.deepEqual i.next(), ['a', 1]
-      assert.deepEqual i.next(), ['b', 2]
-      assert.deepEqual i.next(), ['c', 3]
-      assert.deepEqual i.next(), ['d', 4]
+      deepEqual i.next(), ['a', 1]
+      deepEqual i.next(), ['b', 2]
+      deepEqual i.next(), ['c', 3]
+      deepEqual i.next(), ['d', 4]
 
     it 'throws an exception when all members are exhausted', () ->
       i = h.iter a: 1, b: 2, c: 3, d: 4
@@ -1248,14 +1263,28 @@ describe '#iter(object)', () ->
         i.next()
       , Error, 'No more items'
 
+  describe 'iterator.prev()', () ->
+
+    it 'returns previous member', () ->
+      i = h.iter a: 1, b: 2, c: 3, d: 4
+      i.next()  # a: 1
+      i.next()  # b: 2
+      deepEqual i.prev(), ['a', 1]
+
+    it 'throws an exception when iterator is at the beginning', () ->
+      i = h.iter a: 1, b: 2, c: 3, d: 4
+      assert.throws () ->
+        i.prev()
+      , Error, 'No more items'
+
   describe 'iterator.get()', () ->
 
     it 'returns members by index', () ->
       i = h.iter a: 1, b: 2, c: 3, d: 4
-      assert.deepEqual i.get(0), ['a', 1]
-      assert.deepEqual i.get(1), ['b', 2]
-      assert.deepEqual i.get(2), ['c', 3]
-      assert.deepEqual i.get(3), ['d', 4]
+      deepEqual i.get(0), ['a', 1]
+      deepEqual i.get(1), ['b', 2]
+      deepEqual i.get(2), ['c', 3]
+      deepEqual i.get(3), ['d', 4]
 
   describe 'iterator.apply()', () ->
 
@@ -1263,20 +1292,20 @@ describe '#iter(object)', () ->
       i = h.iter a: 1, b: 2, c: 3, d: 4
       fn = (val) -> val + 1
       i.apply fn
-      assert.deepEqual i.next(), ['a', 2]
-      assert.deepEqual i.next(), ['b', 3]
-      assert.deepEqual i.next(), ['c', 4]
-      assert.deepEqual i.next(), ['d', 5]
+      deepEqual i.next(), ['a', 2]
+      deepEqual i.next(), ['b', 3]
+      deepEqual i.next(), ['c', 4]
+      deepEqual i.next(), ['d', 5]
 
     it 'can add more functions', () ->
       i = h.iter a: 1, b: 2, c: 3, d: 4
       fn1 = (x) -> '' + x
       fn2 = (x) -> x * 2 - 1
       i.apply fn1, fn2
-      assert.deepEqual i.next(), ['a', '1']
-      assert.deepEqual i.next(), ['b', '3']
-      assert.deepEqual i.next(), ['c', '5']
-      assert.deepEqual i.next(), ['d', '7']
+      deepEqual i.next(), ['a', '1']
+      deepEqual i.next(), ['b', '3']
+      deepEqual i.next(), ['c', '5']
+      deepEqual i.next(), ['d', '7']
 
   describe 'iterator.each()', () ->
 
@@ -1286,7 +1315,7 @@ describe '#iter(object)', () ->
       res = []
       i.each (value, key) ->
         res.push [this, value, key]
-      assert.deepEqual res, [
+      deepEqual res, [
         [o, 1, 'a']
         [o, 2, 'b']
         [o, 3, 'c']
@@ -1302,13 +1331,13 @@ describe '#iter(object)', () ->
       o1 = i.map (value, key) ->
         res.push [this, value, key]
         value + 2
-      assert.deepEqual res, [
+      deepEqual res, [
         [o, 1, 'a']
         [o, 2, 'b']
         [o, 3, 'c']
         [o, 4, 'd']
       ]
-      assert.deepEqual o1,
+      deepEqual o1,
         a: 3
         b: 4
         c: 5
@@ -1325,7 +1354,7 @@ describe '#iter(object)', () ->
         res.push [this, val, value, key]
         val + value
       , 0
-      assert.deepEqual res, [
+      deepEqual res, [
         [o, 0, 1, 'a']
         [o, 1, 2, 'b']
         [o, 3, 3, 'c']
@@ -1343,25 +1372,25 @@ describe '#iter(object)', () ->
         res.push [this, value, key]
         value % 2 is 0
       , 0
-      assert.deepEqual res, [
+      deepEqual res, [
         [o, 1, 'a']
         [o, 2, 'b']
         [o, 3, 'c']
         [o, 4, 'd']
       ]
-      assert.deepEqual r,
+      deepEqual r,
         b: 2
         d: 4
 
     it 'shallow-copies object if callback always returns true', () ->
       o = a: 1, b: 2, c: 3, d: 4
       o1 = h.iter(o).filter () -> true
-      assert.deepEqual o1, o
+      deepEqual o1, o
 
     it 'returns an empty object if callback always returns false', () ->
       o = a: 1, b: 2, c: 3, d: 4
       o1 = h.iter(o).filter () -> false
-      assert.deepEqual o1, {}
+      deepEqual o1, {}
 
   describe 'iterator.every()', () ->
 
@@ -1371,7 +1400,7 @@ describe '#iter(object)', () ->
       r = h.iter(o).every (value, key) ->
         res.push [this, value, key]
         value > 0
-      assert.deepEqual res, [
+      deepEqual res, [
         [o, 1, 'a']
         [o, 2, 'b']
         [o, 3, 'c']
@@ -1392,7 +1421,7 @@ describe '#iter(object)', () ->
       r = h.iter(o).none (value, key) ->
         res.push [this, value, key]
         value < 0
-      assert.deepEqual res, [
+      deepEqual res, [
         [o, 1, 'a']
         [o, 2, 'b']
         [o, 3, 'c']
@@ -1413,7 +1442,7 @@ describe '#iter(object)', () ->
       r = h.iter(o).any (value, key) ->
         res.push [this, value, key]
         value is 3
-      assert.deepEqual res, [
+      deepEqual res, [
         [o, 1, 'a']
         [o, 2, 'b']
         [o, 3, 'c']
@@ -1440,7 +1469,7 @@ describe '#lazy()', () ->
     equal typeof res.valueOf, 'function'
 
     res = res + 2
-    assert.deepEqual r, [1, 2]
+    deepEqual r, [1, 2]
     equal res, 5
 
 describe '#compose()', () ->
@@ -1457,7 +1486,7 @@ describe '#compose()', () ->
       x / 2
     fn4 = h.compose(fn1, fn2, fn3)
     n = fn4 1
-    assert.deepEqual res, [1, 0.5, 1.5]
+    deepEqual res, [1, 0.5, 1.5]
     equal n, 2.5
 
 describe '#suicidal()', () ->

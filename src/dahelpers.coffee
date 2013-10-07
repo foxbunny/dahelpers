@@ -394,8 +394,8 @@ define () ->
     create: (parent, mixins...) ->
       Child = () ->
         h.extend.apply null, [this].concat mixins
-        this.__super__ = parent
-        this
+        @__super__ = parent
+        @
       Child.prototype = parent
       new Child()
 

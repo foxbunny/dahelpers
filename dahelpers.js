@@ -193,6 +193,16 @@ define(function() {
       };
       return h.extend.apply(null, [guard, obj].concat(mixins));
     },
+    create: function() {
+      var Child, mixins, parent;
+      parent = arguments[0], mixins = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
+      Child = function() {
+        h.mixin.apply(null, [this].concat(mixins));
+        return this;
+      };
+      Child.prototype = parent;
+      return new Child();
+    },
     clone: function(obj) {
       if (!h.klass(obj, Object)) {
         return obj;

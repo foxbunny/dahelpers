@@ -383,6 +383,18 @@ define () ->
         propType is 'undefined'
       h.extend.apply null, [guard, obj].concat mixins
 
+    # ## `create(parent, mixin)`
+    #
+    # Prototypal inhertiance as per Douglas Crockford's recipe with support for
+    # mixins.
+    #
+    create: (parent, mixins...) ->
+      Child = () ->
+        h.mixin.apply null, [this].concat mixins
+        this
+      Child.prototype = parent
+      new Child()
+
     # ### `#clone(obj)`
     #
     # Returns an exact clone of `obj`.

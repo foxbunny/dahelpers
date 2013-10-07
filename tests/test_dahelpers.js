@@ -1076,6 +1076,26 @@ describe('#mixin()', function() {
   });
 });
 
+describe('#inherit()', function() {
+  return it('should set up inheritance chain between parent and child', function() {
+    var o1, o2, o4;
+    o1 = {
+      a: 1,
+      b: 2
+    };
+    o2 = {
+      c: 3
+    };
+    o4 = dahelpers.create(o1, o2);
+    equal(o4.a, 1);
+    equal(o4.b, 2);
+    equal(o4.c, 3);
+    isFalse(Object.prototype.hasOwnProperty.call(o4, 'a'));
+    isFalse(Object.prototype.hasOwnProperty.call(o4, 'b'));
+    return isTrue(Object.prototype.hasOwnProperty.call(o4, 'c'));
+  });
+});
+
 describe('#clone()', function() {
   it('should clone objects', function() {
     var obj, obj1;

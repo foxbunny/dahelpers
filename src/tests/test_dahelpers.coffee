@@ -788,6 +788,19 @@ describe '#mixin()', () ->
       c: 3
       d: 4
 
+describe '#inherit()', () ->
+
+  it 'should set up inheritance chain between parent and child', () ->
+    o1 = a: 1, b: 2
+    o2 = c: 3
+    o4 = dahelpers.create o1, o2
+    equal o4.a, 1
+    equal o4.b, 2
+    equal o4.c, 3
+    isFalse Object::hasOwnProperty.call o4, 'a'
+    isFalse Object::hasOwnProperty.call o4, 'b'
+    isTrue Object::hasOwnProperty.call o4, 'c'
+
 describe '#clone()', () ->
   it 'should clone objects', () ->
     obj =

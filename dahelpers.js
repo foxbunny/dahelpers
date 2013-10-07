@@ -315,11 +315,15 @@ define(function() {
         len: function() {
           return state.length;
         },
+        hasNext: function() {
+          return state.currentIndex + 1 < state.length;
+        },
+        hasPrev: function() {
+          return state.currentIndex >= 0;
+        },
         remaining: function() {
-          var hasNext;
-          hasNext = state.nextIndex !== state.length;
-          if (hasNext) {
-            return state.length - state.nextIndex;
+          if (this.hasNext()) {
+            return state.length - state.currentIndex - 1;
           } else {
             return 0;
           }
@@ -333,6 +337,7 @@ define(function() {
         get: function(idx) {
           var fn, val;
           val = this.itemize(idx)[0];
+          state.currentIndex = idx;
           if (state.funcs.length) {
             fn = h.compose.apply(null, state.funcs);
             val = fn.call(state.v, val);
@@ -340,13 +345,18 @@ define(function() {
           return val;
         },
         next: function() {
-          var item;
-          if (state.nextIndex === state.length) {
-            throw new Error('Iterator stopped');
+          if (!this.hasNext()) {
+            throw new Error('No more items');
           }
-          item = this.get(state.nextIndex);
-          state.nextIndex += 1;
-          return item;
+          state.currentIndex += 1;
+          return this.get(state.currentIndex);
+        },
+        prev: function() {
+          if (!this.hasPrev()) {
+            throw new Error('No more items');
+          }
+          state.currentIndex -= 1;
+          return this.get(state.currentIndex);
         },
         each: function(callback) {
           var idx, _i, _len, _ref, _results;
@@ -398,10 +408,10 @@ define(function() {
       };
     },
     arrayIter: function(a) {
-      var base, iterator, state, _i, _ref, _results;
+      var iterator, state, _i, _ref, _results;
       state = {
         v: [].concat(a),
-        nextIndex: 0,
+        currentIndex: -1,
         length: a.length,
         indices: (function() {
           _results = [];
@@ -410,8 +420,8 @@ define(function() {
         }).apply(this),
         funcs: []
       };
-      base = h.iterBase(state);
-      iterator = {
+      iterator = h.create(h.iterBase(state));
+      return h.extend(iterator, {
         itemize: function(idx) {
           return [state.v[idx], idx];
         },
@@ -437,11 +447,10 @@ define(function() {
           }
           return _results1;
         }
-      };
-      return h.mixin(iterator, base);
+      });
     },
     objIter: function(o) {
-      var base, iterator, k, keys, state, _i, _ref, _results;
+      var k, keys, state, _i, _ref, _results;
       keys = (function() {
         var _results;
         _results = [];
@@ -459,12 +468,11 @@ define(function() {
           for (var _i = 0, _ref = keys.length - 1; 0 <= _ref ? _i <= _ref : _i >= _ref; 0 <= _ref ? _i++ : _i--){ _results.push(_i); }
           return _results;
         }).apply(this),
-        nextIndex: 0,
+        currentIndex: -1,
         length: keys.length,
         funcs: []
       };
-      base = this.iterBase(state);
-      iterator = {
+      return h.create(h.iterBase(state), {
         itemize: function(idx) {
           var key, value;
           key = keys[idx];
@@ -476,7 +484,7 @@ define(function() {
         },
         get: function(idx) {
           var key, val;
-          val = base.get.call(this, idx);
+          val = this.__super__.get.call(this, idx);
           key = keys[idx];
           return [key, val];
         },
@@ -502,8 +510,7 @@ define(function() {
           }
           return o1;
         }
-      };
-      return h.mixin(iterator, base);
+      });
     },
     iter: function(v) {
       switch (h.type(v)) {

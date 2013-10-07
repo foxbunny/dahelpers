@@ -1406,7 +1406,9 @@ describe('#iter(array)', function() {
       i = h.iter([1, 2]);
       i.next();
       i.next();
-      return assert.throws(i.next, Error, 'Iterator stopped');
+      return assert.throws(function() {
+        return i.next();
+      }, Error, 'No more items');
     });
   });
   describe('iterator.get()', function() {
@@ -1662,7 +1664,9 @@ describe('#iter(object)', function() {
       i.next();
       i.next();
       i.next();
-      return assert.throws(i.next, Error, 'Iterator stopped');
+      return assert.throws(function() {
+        return i.next();
+      }, Error, 'No more items');
     });
   });
   describe('iterator.get()', function() {

@@ -388,6 +388,9 @@ define () ->
     # Prototypal inhertiance as per Douglas Crockford's recipe with support for
     # mixins.
     #
+    # The created object additionally has a `__super__` property which points
+    # to the parent object.
+    #
     create: (parent, mixins...) ->
       Child = () ->
         h.extend.apply null, [this].concat mixins
@@ -607,9 +610,14 @@ define () ->
       len: () ->
         state.length
 
+      hasNext: () ->
+        state.currentIndex + 1 < state.length
+
+      hasPrev: () ->
+        state.currentIndex >= 0
+
       remaining: () ->
-        hasNext = state.nextIndex isnt state.length
-        if hasNext then state.length - state.nextIndex else 0
+        if this.hasNext() then state.length - state.currentIndex - 1 else 0
 
       apply: (fns...) ->
         state.funcs = state.funcs.concat fns
@@ -617,16 +625,21 @@ define () ->
 
       get: (idx) ->
         [val] = @itemize idx
+        state.currentIndex = idx
         if state.funcs.length
           fn = h.compose.apply null, state.funcs
           val = fn.call state.v, val
         val
 
       next: () ->
-        throw new Error('Iterator stopped') if state.nextIndex == state.length
-        item = this.get state.nextIndex
-        state.nextIndex += 1
-        item
+        throw new Error('No more items') if not @hasNext()
+        state.currentIndex += 1
+        this.get state.currentIndex
+
+      prev: () ->
+        throw new Error('No more items') if not @hasPrev()
+        state.currentIndex -= 1
+        this.get state.currentIndex
 
       each: (callback) ->
         for idx in state.indices
@@ -657,14 +670,14 @@ define () ->
     arrayIter: (a) ->
       state =
         v: [].concat a
-        nextIndex: 0
+        currentIndex: -1
         length: a.length
         indices: [0..a.length - 1]
         funcs: []
 
-      base = h.iterBase state
+      iterator = h.create h.iterBase(state)
 
-      iterator =
+      h.extend iterator,
         itemize: (idx) ->
           [state.v[idx], idx]
 
@@ -674,7 +687,6 @@ define () ->
         filter: (callback) ->
           state.v[idx] for idx in state.indices when callback.apply state.v, @itemize idx
 
-      h.mixin iterator, base
 
     # ### `#objIter(o)`
     #
@@ -686,13 +698,11 @@ define () ->
       state =
         v: h.clone o
         indices: [0..keys.length - 1]
-        nextIndex: 0
+        currentIndex: -1
         length: keys.length
         funcs: []
 
-      base = @iterBase state
-
-      iterator =
+      h.create h.iterBase(state),
         itemize: (idx) ->
           key = keys[idx]
           value = state.v[key]
@@ -702,7 +712,7 @@ define () ->
           keys
 
         get: (idx) ->
-          val = base.get.call @, idx
+          val = this.__super__.get.call @, idx
           key = keys[idx]
           [key, val]
 
@@ -717,8 +727,6 @@ define () ->
           for key, val of state.v
             o1[key] = val if callback.call state.v, val, key
           o1
-
-      h.mixin iterator, base
 
     # ### `#iter(v)`
     #

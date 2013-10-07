@@ -1024,7 +1024,9 @@ describe '#iter(array)', () ->
       i = h.iter [1, 2]
       i.next()
       i.next()
-      assert.throws i.next, Error, 'Iterator stopped'
+      assert.throws () ->
+        i.next()
+      , Error, 'No more items'
 
   describe 'iterator.get()', () ->
 
@@ -1242,7 +1244,9 @@ describe '#iter(object)', () ->
       i.next()
       i.next()
       i.next()
-      assert.throws i.next, Error, 'Iterator stopped'
+      assert.throws () ->
+        i.next()
+      , Error, 'No more items'
 
   describe 'iterator.get()', () ->
 

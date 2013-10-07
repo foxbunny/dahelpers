@@ -788,7 +788,7 @@ describe '#mixin()', () ->
       c: 3
       d: 4
 
-describe '#inherit()', () ->
+describe '#create()', () ->
 
   it 'should set up inheritance chain between parent and child', () ->
     o1 = a: 1, b: 2
@@ -800,6 +800,11 @@ describe '#inherit()', () ->
     isFalse Object::hasOwnProperty.call o4, 'a'
     isFalse Object::hasOwnProperty.call o4, 'b'
     isTrue Object::hasOwnProperty.call o4, 'c'
+
+  it 'creates __super__ property which points to parent', () ->
+    o1 = a: 1, b: 2
+    o2 = dahelpers.create o1
+    equal o2.__super__, o1
 
 describe '#clone()', () ->
   it 'should clone objects', () ->

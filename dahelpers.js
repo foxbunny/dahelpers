@@ -197,7 +197,8 @@ define(function() {
       var Child, mixins, parent;
       parent = arguments[0], mixins = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
       Child = function() {
-        h.mixin.apply(null, [this].concat(mixins));
+        h.extend.apply(null, [this].concat(mixins));
+        this.__super__ = parent;
         return this;
       };
       Child.prototype = parent;
@@ -316,7 +317,7 @@ define(function() {
         },
         remaining: function() {
           var hasNext;
-          hasNext = state.nextIndex !== null;
+          hasNext = state.nextIndex !== state.length;
           if (hasNext) {
             return state.length - state.nextIndex;
           } else {
@@ -340,14 +341,11 @@ define(function() {
         },
         next: function() {
           var item;
-          if (state.nextIndex === null) {
+          if (state.nextIndex === state.length) {
             throw new Error('Iterator stopped');
           }
           item = this.get(state.nextIndex);
           state.nextIndex += 1;
-          if (state.nextIndex === state.length) {
-            state.nextIndex = null;
-          }
           return item;
         },
         each: function(callback) {

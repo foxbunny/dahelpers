@@ -390,7 +390,8 @@ define () ->
     #
     create: (parent, mixins...) ->
       Child = () ->
-        h.mixin.apply null, [this].concat mixins
+        h.extend.apply null, [this].concat mixins
+        this.__super__ = parent
         this
       Child.prototype = parent
       new Child()
@@ -607,7 +608,7 @@ define () ->
         state.length
 
       remaining: () ->
-        hasNext = state.nextIndex isnt null
+        hasNext = state.nextIndex isnt state.length
         if hasNext then state.length - state.nextIndex else 0
 
       apply: (fns...) ->
@@ -622,10 +623,9 @@ define () ->
         val
 
       next: () ->
-        throw new Error('Iterator stopped') if state.nextIndex is null
+        throw new Error('Iterator stopped') if state.nextIndex == state.length
         item = this.get state.nextIndex
         state.nextIndex += 1
-        state.nextIndex = null if state.nextIndex is state.length
         item
 
       each: (callback) ->

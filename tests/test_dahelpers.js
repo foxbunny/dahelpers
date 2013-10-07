@@ -1076,8 +1076,8 @@ describe('#mixin()', function() {
   });
 });
 
-describe('#inherit()', function() {
-  return it('should set up inheritance chain between parent and child', function() {
+describe('#create()', function() {
+  it('should set up inheritance chain between parent and child', function() {
     var o1, o2, o4;
     o1 = {
       a: 1,
@@ -1093,6 +1093,15 @@ describe('#inherit()', function() {
     isFalse(Object.prototype.hasOwnProperty.call(o4, 'a'));
     isFalse(Object.prototype.hasOwnProperty.call(o4, 'b'));
     return isTrue(Object.prototype.hasOwnProperty.call(o4, 'c'));
+  });
+  return it('creates __super__ property which points to parent', function() {
+    var o1, o2;
+    o1 = {
+      a: 1,
+      b: 2
+    };
+    o2 = dahelpers.create(o1);
+    return equal(o2.__super__, o1);
   });
 });
 

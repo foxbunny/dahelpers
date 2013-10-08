@@ -111,7 +111,7 @@ immediately.
 The iterator object currently has a very limited API that has lazy mapping via
 the `#apply()` method, and eager (non-lazy) methods such as `#map()`,
 `#filter()`, `#reduce()` and similar (see [full API
-docs](https://github.com/foxbunny/dahelpers/blob/master/doc/dahelpers.mkd#iterator-object).
+docs](https://github.com/foxbunny/dahelpers/blob/master/doc/dahelpers.mkd#iterator-object)).
 Here we will take a look at the lazy `#apply()` method.
 
     var seq = [1, 2, 3];

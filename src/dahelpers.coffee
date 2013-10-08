@@ -120,7 +120,7 @@ define () ->
       "'": '&#x27;'
       '/': '&#x2F;'
 
-    # ## Data manipulation and logic
+    # ## Logic, type detection
     #
 
     # ### `#type(v, type)`

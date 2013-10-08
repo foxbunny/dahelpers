@@ -16,7 +16,7 @@ JavaScript in browsers and on NodeJS.
    - [`#FORMAT_CHARACTER`](#format_character)
    - [`#PLURAL_RULES`](#plural_rules)
    - [`#HTML_ESCAPE_MAPPINGS`](#html_escape_mappings)
- + [Data manipulation and logic](#data-manipulation-and-logic)
+ + [Logic, type detection](#logic-type-detection)
    - [`#type(v, type)`](#type-v-type)
    - [`#klass(v, klass)`](#klass-v-klass)
    - [`#truth(v)`](#truth-v)
@@ -154,7 +154,7 @@ R](http://www.unicode.org/cldr/charts/supplemental/language_plural_rules.html).
 
 Mapping used to escape HTML.
 
-## <a name="data-manipulation-and-logic">Data manipulation and logic</a>
+## <a name="logic-type-detection">Logic, type detection</a>
 
 ### <a name="type-v-type">`#type(v, type)`</a>
 

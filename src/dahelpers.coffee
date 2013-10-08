@@ -503,7 +503,7 @@ define () ->
         propType is 'undefined'
       h.extend.apply null, [guard, obj].concat mixins
 
-    # ### `create(parent, mixin)`
+    # ### `#create(parent, mixin)`
     #
     # Prototypal inhertiance as per Douglas Crockford's recipe with support for
     # mixins.

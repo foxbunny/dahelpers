@@ -32,7 +32,7 @@ JavaScript in browsers and on NodeJS.
    - [`#sweep(obj, cb)`](#sweep-obj-cb)
    - [`#extend([guard], obj, mixin, [mixin...])`](#extend-guard-obj-mixin-mixin)
    - [`#mixin(obj, mixin, [mixin...])`](#mixin-obj-mixin-mixin)
-   - [`create(parent, mixin)`](#create-parent-mixin)
+   - [`#create(parent, mixin)`](#create-parent-mixin)
    - [`#clone(obj)`](#clone-obj)
    - [`#rekey(obj, map)`](#rekey-obj-map)
    - [`#subset(small, big)`](#subset-small-big)
@@ -431,7 +431,7 @@ Example:
     // Note that `foo` is still 1 unlike with `#extend()`
 
 
-### <a name="create-parent-mixin">`create(parent, mixin)`</a>
+### <a name="create-parent-mixin">`#create(parent, mixin)`</a>
 
 Prototypal inhertiance as per Douglas Crockford's recipe with support for
 mixins.

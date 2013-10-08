@@ -19,6 +19,13 @@ JavaScript in browsers and on NodeJS.
  + [Data manipulation and logic](#data-manipulation-and-logic)
    - [`#type(v, type)`](#type-v-type)
    - [`#klass(v, klass)`](#klass-v-klass)
+   - [`#truth(v)`](#truth-v)
+   - [`#every(arr)`](#every-arr)
+   - [`#none(arr)`](#none-arr)
+   - [`#any(arr)`](#any-arr)
+   - [`#toArray(v)`](#toarray-v)
+   - [`#empty(v)`](#empty-v)
+ + [Working with objects](#working-with-objects)
    - [`#props(o, p)`](#props-o-p)
    - [`#propset(o, p, [v])`](#propset-o-p-v)
    - [`#walk(obj, cb)`](#walk-obj-cb)
@@ -28,13 +35,8 @@ JavaScript in browsers and on NodeJS.
    - [`create(parent, mixin)`](#create-parent-mixin)
    - [`#clone(obj)`](#clone-obj)
    - [`#rekey(obj, map)`](#rekey-obj-map)
-   - [`#toArray(v)`](#toarray-v)
-   - [`#empty(v)`](#empty-v)
    - [`#subset(small, big)`](#subset-small-big)
-   - [`#truth(v)`](#truth-v)
-   - [`#every(arr)`](#every-arr)
-   - [`#none(arr)`](#none-arr)
-   - [`#any(arr)`](#any-arr)
+ + [Iteration](#iteration)
    - [`#arrayIter(a)`](#arrayiter-a)
    - [`#objIter(o)`](#objiter-o)
    - [`#iter(v)`](#iter-v)
@@ -196,6 +198,99 @@ Example:
     dahelpers.klass([], Array);
     // returns `true`
 
+
+### <a name="truth-v">`#truth(v)`</a>
+
+A more pragmatic truthy and falsy.
+
+This function returns `false` for the following values:
+
+ + `undefined`
+ + `null`
+ + `0`
+ + `''`
+ + `false`
+ + `{}`
+ + `[]`
+
+
+For all other values, it will return `true`.
+
+Examples:
+
+    var truth = dahelpers.truth;
+    truth(12);     // true
+    truth(null);   // false
+    truth('foo');  // true
+    truth('');     // false
+
+
+### <a name="every-arr">`#every(arr)`</a>
+
+Return true if all elements in `arr` array are truthy.
+
+Example:
+
+    var a = [1, true, 'foo'];
+    var b = [1, false, 'foo'];
+    dahelpers.every(a); // true
+    dahelpers.every(b); // false
+
+
+### <a name="none-arr">`#none(arr)`</a>
+
+Return true if none of the elements in `arr` array are truthy.
+
+Example:
+
+    var a = [false, undefined, null, 0];
+    var b = [false, 'foo', null, 0];
+    dahelpers.none(a); // true
+    dahelpers.none(b); // false
+
+
+### <a name="any-arr">`#any(arr)`</a>
+
+Return true if at least one item in array is truthy.
+
+This function is a reverse of `#none()`.
+
+Example:
+
+    var a = [false, undefined, null, 0];
+    var b = [false, 'foo', null, 0];
+    dahelpers.none(a); // false
+    dahelpers.none(b); // true
+
+
+### <a name="toarray-v">`#toArray(v)`</a>
+
+Converts `v` to an array if it's not an array.
+
+Example:
+
+    a = 'foo'
+    dahelpers.toArray(a);
+    // returns ['foo']
+
+
+### <a name="empty-v">`#empty(v)`</a>
+
+Tests if `v` is an empty object, array, or string.
+
+Always returns undefined if `v` is not array, object, nor string.
+
+Examples:
+
+    dahelpers.empty({});         // true
+    dahelpers.empty([]);         // true
+    dahelpers.empty(1);          // undefined
+    dahelpers.empty([1,2,3]);    // false
+    dahelpers.empty('');         // true
+    dahelpers.empty('foo bar');  // false
+
+
+## <a name="working-with-objects">Working with objects</a>
 
 ### <a name="props-o-p">`#props(o, p)`</a>
 
@@ -397,33 +492,6 @@ Example:
     // {aa: b: {{bb: 1, cc: 1}}}
 
 
-### <a name="toarray-v">`#toArray(v)`</a>
-
-Converts `v` to an array if it's not an array.
-
-Example:
-
-    a = 'foo'
-    dahelpers.toArray(a);
-    // returns ['foo']
-
-
-### <a name="empty-v">`#empty(v)`</a>
-
-Tests if `v` is an empty object, array, or string.
-
-Always returns undefined if `v` is not array, object, nor string.
-
-Examples:
-
-    dahelpers.empty({});         // true
-    dahelpers.empty([]);         // true
-    dahelpers.empty(1);          // undefined
-    dahelpers.empty([1,2,3]);    // false
-    dahelpers.empty('');         // true
-    dahelpers.empty('foo bar');  // false
-
-
 ### <a name="subset-small-big">`#subset(small, big)`</a>
 
 Returns true if `small` object is a subset of `big` object.
@@ -441,69 +509,7 @@ Example:
     dahelpers.subset(a, b); // false
 
 
-### <a name="truth-v">`#truth(v)`</a>
-
-A more pragmatic truthy and falsy.
-
-This function returns `false` for the following values:
-
- + `undefined`
- + `null`
- + `0`
- + `''`
- + `false`
- + `{}`
- + `[]`
-
-
-For all other values, it will return `true`.
-
-Examples:
-
-    var truth = dahelpers.truth;
-    truth(12);     // true
-    truth(null);   // false
-    truth('foo');  // true
-    truth('');     // false
-
-
-### <a name="every-arr">`#every(arr)`</a>
-
-Return true if all elements in `arr` array are truthy.
-
-Example:
-
-    var a = [1, true, 'foo'];
-    var b = [1, false, 'foo'];
-    dahelpers.every(a); // true
-    dahelpers.every(b); // false
-
-
-### <a name="none-arr">`#none(arr)`</a>
-
-Return true if none of the elements in `arr` array are truthy.
-
-Example:
-
-    var a = [false, undefined, null, 0];
-    var b = [false, 'foo', null, 0];
-    dahelpers.none(a); // true
-    dahelpers.none(b); // false
-
-
-### <a name="any-arr">`#any(arr)`</a>
-
-Return true if at least one item in array is truthy.
-
-This function is a reverse of `#none()`.
-
-Example:
-
-    var a = [false, undefined, null, 0];
-    var b = [false, 'foo', null, 0];
-    dahelpers.none(a); // false
-    dahelpers.none(b); // true
-
+## <a name="iteration">Iteration</a>
 
 ### <a name="arrayiter-a">`#arrayIter(a)`</a>
 

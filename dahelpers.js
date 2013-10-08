@@ -67,6 +67,73 @@ define(function() {
         return v.constructor;
       }
     },
+    truth: function(v) {
+      if (h.type(v, 'undefined') || h.type(v, 'null')) {
+        return false;
+      }
+      if (v === 0) {
+        return false;
+      }
+      if (v === '') {
+        return false;
+      }
+      if (v === false) {
+        return false;
+      }
+      if (h.type(v, 'object') || h.type(v, 'array')) {
+        return !h.empty(v);
+      } else {
+        return true;
+      }
+    },
+    every: function(arr) {
+      var item, _i, _len;
+      for (_i = 0, _len = arr.length; _i < _len; _i++) {
+        item = arr[_i];
+        if (!item) {
+          return false;
+        }
+      }
+      return true;
+    },
+    none: function(arr) {
+      var item, _i, _len;
+      for (_i = 0, _len = arr.length; _i < _len; _i++) {
+        item = arr[_i];
+        if (item) {
+          return false;
+        }
+      }
+      return true;
+    },
+    any: function(arr) {
+      return !h.none(arr);
+    },
+    toArray: function(v) {
+      if (v == null) {
+        return [];
+      }
+      if (h.type(v, 'array')) {
+        return v;
+      } else {
+        return [v];
+      }
+    },
+    empty: function(v) {
+      var k;
+      if (h.type(v, 'array') || h.type(v, 'string')) {
+        return !v.length;
+      } else if (h.type(v, 'object')) {
+        return !((function() {
+          var _results;
+          _results = [];
+          for (k in v) {
+            _results.push(k);
+          }
+          return _results;
+        })()).length;
+      }
+    },
     props: function(o, p) {
       var f, r;
       if (o == null) {
@@ -228,31 +295,6 @@ define(function() {
       }
       return newObj;
     },
-    toArray: function(v) {
-      if (v == null) {
-        return [];
-      }
-      if (h.type(v, 'array')) {
-        return v;
-      } else {
-        return [v];
-      }
-    },
-    empty: function(v) {
-      var k;
-      if (h.type(v, 'array') || h.type(v, 'string')) {
-        return !v.length;
-      } else if (h.type(v, 'object')) {
-        return !((function() {
-          var _results;
-          _results = [];
-          for (k in v) {
-            _results.push(k);
-          }
-          return _results;
-        })()).length;
-      }
-    },
     subset: function(small, big) {
       try {
         h.walk(small, function(v, k, c) {
@@ -264,48 +306,6 @@ define(function() {
         return false;
       }
       return true;
-    },
-    truth: function(v) {
-      if (h.type(v, 'undefined') || h.type(v, 'null')) {
-        return false;
-      }
-      if (v === 0) {
-        return false;
-      }
-      if (v === '') {
-        return false;
-      }
-      if (v === false) {
-        return false;
-      }
-      if (h.type(v, 'object') || h.type(v, 'array')) {
-        return !h.empty(v);
-      } else {
-        return true;
-      }
-    },
-    every: function(arr) {
-      var item, _i, _len;
-      for (_i = 0, _len = arr.length; _i < _len; _i++) {
-        item = arr[_i];
-        if (!item) {
-          return false;
-        }
-      }
-      return true;
-    },
-    none: function(arr) {
-      var item, _i, _len;
-      for (_i = 0, _len = arr.length; _i < _len; _i++) {
-        item = arr[_i];
-        if (item) {
-          return false;
-        }
-      }
-      return true;
-    },
-    any: function(arr) {
-      return !h.none(arr);
     },
     iterBase: function(state) {
       return {

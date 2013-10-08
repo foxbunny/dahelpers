@@ -176,6 +176,126 @@ define () ->
       else
         v.constructor
 
+    # ### `#truth(v)`
+    #
+    # A more pragmatic truthy and falsy.
+    #
+    # This function returns `false` for the following values:
+    #
+    #  + `undefined`
+    #  + `null`
+    #  + `0`
+    #  + `''`
+    #  + `false`
+    #  + `{}`
+    #  + `[]`
+    #
+    # For all other values, it will return `true`.
+    #
+    # Examples:
+    #
+    #     var truth = dahelpers.truth;
+    #     truth(12);     // true
+    #     truth(null);   // false
+    #     truth('foo');  // true
+    #     truth('');     // false
+    #
+    truth: (v) ->
+      return false if h.type(v, 'undefined') or h.type(v, 'null')
+      return false if v is 0
+      return false if v is ''
+      return false if v is false
+      if h.type(v, 'object') or h.type(v, 'array')
+        not h.empty v
+      else
+        true
+
+    # ### `#every(arr)`
+    #
+    # Return true if all elements in `arr` array are truthy.
+    #
+    # Example:
+    #
+    #     var a = [1, true, 'foo'];
+    #     var b = [1, false, 'foo'];
+    #     dahelpers.every(a); // true
+    #     dahelpers.every(b); // false
+    #
+    every: (arr) ->
+      for item in arr
+        return false if not item
+      true
+
+    # ### `#none(arr)`
+    #
+    # Return true if none of the elements in `arr` array are truthy.
+    #
+    # Example:
+    #
+    #     var a = [false, undefined, null, 0];
+    #     var b = [false, 'foo', null, 0];
+    #     dahelpers.none(a); // true
+    #     dahelpers.none(b); // false
+    #
+    none: (arr) ->
+      for item in arr
+        return false if item
+      true
+
+    # ### `#any(arr)`
+    #
+    # Return true if at least one item in array is truthy.
+    #
+    # This function is a reverse of `#none()`.
+    #
+    # Example:
+    #
+    #     var a = [false, undefined, null, 0];
+    #     var b = [false, 'foo', null, 0];
+    #     dahelpers.none(a); // false
+    #     dahelpers.none(b); // true
+    #
+    any: (arr) ->
+      not h.none(arr)
+
+    # ### `#toArray(v)`
+    #
+    # Converts `v` to an array if it's not an array.
+    #
+    # Example:
+    #
+    #     a = 'foo'
+    #     dahelpers.toArray(a);
+    #     // returns ['foo']
+    #
+    toArray: (v) ->
+      return [] if not v?
+      if h.type(v, 'array') then v else [v]
+
+    # ### `#empty(v)`
+    #
+    # Tests if `v` is an empty object, array, or string.
+    #
+    # Always returns undefined if `v` is not array, object, nor string.
+    #
+    # Examples:
+    #
+    #     dahelpers.empty({});         // true
+    #     dahelpers.empty([]);         // true
+    #     dahelpers.empty(1);          // undefined
+    #     dahelpers.empty([1,2,3]);    // false
+    #     dahelpers.empty('');         // true
+    #     dahelpers.empty('foo bar');  // false
+    #
+    empty: (v) ->
+      if h.type(v, 'array') or h.type(v, 'string')
+        not v.length
+      else if h.type(v, 'object')
+        not (k for k of v).length
+
+    # ## Working with objects
+    #
+
     # ### `#props(o, p)`
     #
     # Get a value of a property tree `p` on the object `o` or undefined if any
@@ -462,41 +582,6 @@ define () ->
         h.propset newObj, target, h.props obj, source
       newObj
 
-    # ### `#toArray(v)`
-    #
-    # Converts `v` to an array if it's not an array.
-    #
-    # Example:
-    #
-    #     a = 'foo'
-    #     dahelpers.toArray(a);
-    #     // returns ['foo']
-    #
-    toArray: (v) ->
-      return [] if not v?
-      if h.type(v, 'array') then v else [v]
-
-    # ### `#empty(v)`
-    #
-    # Tests if `v` is an empty object, array, or string.
-    #
-    # Always returns undefined if `v` is not array, object, nor string.
-    #
-    # Examples:
-    #
-    #     dahelpers.empty({});         // true
-    #     dahelpers.empty([]);         // true
-    #     dahelpers.empty(1);          // undefined
-    #     dahelpers.empty([1,2,3]);    // false
-    #     dahelpers.empty('');         // true
-    #     dahelpers.empty('foo bar');  // false
-    #
-    empty: (v) ->
-      if h.type(v, 'array') or h.type(v, 'string')
-        not v.length
-      else if h.type(v, 'object')
-        not (k for k of v).length
-
     # ### `#subset(small, big)`
     #
     # Returns true if `small` object is a subset of `big` object.
@@ -521,87 +606,8 @@ define () ->
         return false
       return true
 
-    # ### `#truth(v)`
+    # ## Iteration
     #
-    # A more pragmatic truthy and falsy.
-    #
-    # This function returns `false` for the following values:
-    #
-    #  + `undefined`
-    #  + `null`
-    #  + `0`
-    #  + `''`
-    #  + `false`
-    #  + `{}`
-    #  + `[]`
-    #
-    # For all other values, it will return `true`.
-    #
-    # Examples:
-    #
-    #     var truth = dahelpers.truth;
-    #     truth(12);     // true
-    #     truth(null);   // false
-    #     truth('foo');  // true
-    #     truth('');     // false
-    #
-    truth: (v) ->
-      return false if h.type(v, 'undefined') or h.type(v, 'null')
-      return false if v is 0
-      return false if v is ''
-      return false if v is false
-      if h.type(v, 'object') or h.type(v, 'array')
-        not h.empty v
-      else
-        true
-
-    # ### `#every(arr)`
-    #
-    # Return true if all elements in `arr` array are truthy.
-    #
-    # Example:
-    #
-    #     var a = [1, true, 'foo'];
-    #     var b = [1, false, 'foo'];
-    #     dahelpers.every(a); // true
-    #     dahelpers.every(b); // false
-    #
-    every: (arr) ->
-      for item in arr
-        return false if not item
-      true
-
-    # ### `#none(arr)`
-    #
-    # Return true if none of the elements in `arr` array are truthy.
-    #
-    # Example:
-    #
-    #     var a = [false, undefined, null, 0];
-    #     var b = [false, 'foo', null, 0];
-    #     dahelpers.none(a); // true
-    #     dahelpers.none(b); // false
-    #
-    none: (arr) ->
-      for item in arr
-        return false if item
-      true
-
-    # ### `#any(arr)`
-    #
-    # Return true if at least one item in array is truthy.
-    #
-    # This function is a reverse of `#none()`.
-    #
-    # Example:
-    #
-    #     var a = [false, undefined, null, 0];
-    #     var b = [false, 'foo', null, 0];
-    #     dahelpers.none(a); // false
-    #     dahelpers.none(b); // true
-    #
-    any: (arr) ->
-      not h.none(arr)
 
     iterBase: (state) ->
       indices: () ->

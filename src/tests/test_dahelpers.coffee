@@ -1052,6 +1052,11 @@ describe '#iter(array)', () ->
       equal i.get(2), 3
       equal i.get(3), 4
 
+    it 'sets the current index', () ->
+      i = h.iter [1, 2, 3, 4]
+      i.get(2)
+      equal i.next(), 4
+
   describe 'iterator.apply()', () ->
 
     it 'adds a function to be applied to members', () ->
@@ -1285,6 +1290,11 @@ describe '#iter(object)', () ->
       deepEqual i.get(1), ['b', 2]
       deepEqual i.get(2), ['c', 3]
       deepEqual i.get(3), ['d', 4]
+
+    it 'sets the current index', () ->
+      i = h.iter a: 1, b: 2, c: 3, d: 4
+      i.get(2)
+      deepEqual i.next(), ['d', 4]
 
   describe 'iterator.apply()', () ->
 

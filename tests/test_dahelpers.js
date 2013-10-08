@@ -1430,13 +1430,19 @@ describe('#iter(array)', function() {
     });
   });
   describe('iterator.get()', function() {
-    return it('returns the member with given index', function() {
+    it('returns the member with given index', function() {
       var i;
       i = h.iter([1, 2, 3, 4]);
       equal(i.get(0), 1);
       equal(i.get(1), 2);
       equal(i.get(2), 3);
       return equal(i.get(3), 4);
+    });
+    return it('sets the current index', function() {
+      var i;
+      i = h.iter([1, 2, 3, 4]);
+      i.get(2);
+      return equal(i.next(), 4);
     });
   });
   describe('iterator.apply()', function() {
@@ -1714,7 +1720,7 @@ describe('#iter(object)', function() {
     });
   });
   describe('iterator.get()', function() {
-    return it('returns members by index', function() {
+    it('returns members by index', function() {
       var i;
       i = h.iter({
         a: 1,
@@ -1726,6 +1732,17 @@ describe('#iter(object)', function() {
       deepEqual(i.get(1), ['b', 2]);
       deepEqual(i.get(2), ['c', 3]);
       return deepEqual(i.get(3), ['d', 4]);
+    });
+    return it('sets the current index', function() {
+      var i;
+      i = h.iter({
+        a: 1,
+        b: 2,
+        c: 3,
+        d: 4
+      });
+      i.get(2);
+      return deepEqual(i.next(), ['d', 4]);
     });
   });
   describe('iterator.apply()', function() {

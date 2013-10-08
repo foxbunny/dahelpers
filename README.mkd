@@ -29,21 +29,6 @@ Install with:
 Either `require()` it if using RequireJS, or add a `<script>` tag. When using
 with the `<script>` tag, the module will create a `dahelpers` global.
 
-## Using functions in this module
-
-The methods in the DaHelpers module are actually all functions. They reference
-each other by referring to the module object directly instead of using `this`,
-so they can be safely decoupled from the module and used stand-alone.
-
-For example:
-
-    var type = dahelpers.type;
-    type('foo');
-
-## API documentation
-
-Full API documentation can be found in the `doc` directory.
-
 ## Usage tips
 
 Here are some usage tips that can make using DaHelpers easier.
@@ -58,15 +43,13 @@ stand-alone. For example:
     type('foo');
     thousands(3000);
 
-
 If you are using CoffeeScript, this can be even easier:
 
     {type, thousands} = dahelpers;
     type 'foo'
     thousands 3000
 
-
-### Modifying Underscore `#template()` to add DaHelpers
+### Modifying Underscore `template()` to add DaHelpers
 
 Here is a pattern for including DaHelpers in UnderscoreJS templates.
 
@@ -90,3 +73,97 @@ This makes DaHelpers available as `d` within the templates. Now you can:
     _.template("Here's <%= d.currency(money) %>", {money: 200})
     // returns "Here's $200.00"
 
+### Prototypal inhertiance with `create()`
+
+DaHelper includes a `create()` function which can be used for doing prototypal
+inhertiance. For example:
+
+    var parent = {
+       name: 'Fred',
+       lastName: 'Stevens',
+       fullName: function () {
+          return this.name + ' ' + this.lastName;
+       }
+    };
+
+    var child = dahelpers.create(parent, {
+        title: 'Mr',
+        fullName: function () {
+            return this.title + '. ' + this.__super__.fullName.call(this);
+        }
+    });
+
+    child.fullName();  // returns 'Mr. Fred Stevens'
+
+The first argument to `create()` is the parent object. The other arguments are
+optional, and they are mixin objects whose properties are deep-copied into the
+created object. You will notice that the created object also has a `__super__`
+property which points to the parent object (i.e., the child's prototype).
+
+### Create and use iterator objects with `iter()`.
+
+DaHelpers supports lazy iteration in the same vein as Dan Tao's
+[LazyJS](http://danieltao.com/lazy.js/), although not as fully-featured. The
+iterator object allows us to specify any number of composable functions that
+will be applied to sequence members when we actually need them, rather than
+immediately.
+
+The iterator object currently has a very limited API that has lazy mapping via
+the `#apply()` method, and non-lazy methods such as `#map()`, `#filter()`,
+`#reduce()` and similar, that are eager. Here we will take a look at the lazy
+`#apply()` method.
+
+    var seq = [1, 2, 3];
+    var fn = function (n) { return (n + 1) * 2; };
+    var iterator = dahelpers.iter(seq);
+    iterator.apply(fn);
+    iterator.get(1);  // Returns 6 (=== (2 + 1) * 2)
+
+Unlke map, in the above example the `fn` function only gets called once, when
+we call the get() method. The functions passed to apply are composable, so we
+can break the above into:
+
+    var seq = [1, 2, 3];
+    var fn1 = function (n) { return n + 1; };
+    var fn2 = function (n) { return n * 2; };
+    var iterator = dahelpers.iter(seq);
+    iterator.apply(fn2, fn1);
+    iterator.get(1);  // Returns 6 (same as the first time)
+
+In the above example, applying fn2 then fn1 is the same as saying
+`fn2(fn1(item))` for each item in the sequence. The last function specified is
+the innermost.
+
+The iterator object maintains an internal counter which points to current
+index. When `#get()` is called, this index is updated to the index used to
+retrieve the item. This internal counter is set to -1 initially.
+
+The iterator also has `#next()` and `#prev()` methods that retrieve the next
+and previous item respectively. They work the same way as the `#get()` method
+and functions are applied only when the methods are called, and they use the
+internal counter to determine what the next or previous item is.
+
+    var seq = [1, 2, 3];
+    var fn1 = function (n) { return n + 1; };
+    var fn2 = function (n) { return n * 2; };
+    var iterator = dahelpers.iter(seq);
+    iterator.apply(fn2, fn1);
+    iterator.next();  // Returns 4
+    iterator.next();  // Returns 6
+    iterator.next();  // Returns 8
+    iterator.next();  // Error: No more items
+
+As you can see from the example, the `#next()` method will throw an exception
+when there are no more items. This is by design. The `#prev()` method works
+exactly the same way but in reverse, and throws an error when there are no
+previous items or the counter is -1.
+
+## API documentation
+
+The full API documentation can be found in the [doc
+directory](https://github.com/foxbunny/dahelpers/blob/master/doc/dahelpers.mkd).
+
+## Reporting bugs
+
+Report all bugs and feature requests to the [GitHub issue
+tracker](https://github.com/foxbunny/dahelpers/issues).

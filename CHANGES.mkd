@@ -1,6 +1,11 @@
 # DaHelpers Changelog
 
-## Dev
+## 0.3.0
+
+### Added guard function to `extend()`
+
+The guard function can be used to specify a condition under which the extend
+will copy a property.
 
 ### Added `mixin()` function
 

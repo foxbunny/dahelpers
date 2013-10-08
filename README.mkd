@@ -49,6 +49,31 @@ If you are using CoffeeScript, this can be even easier:
     type 'foo'
     thousands 3000
 
+### Type detection using `type()`
+
+We all know that the `typeof` can be quite awkward and limited, and sometimes
+plain wrong. The DaHelpers' `type()` function aims to fix this by wrapping the
+`Object.prototype.toString` and performing some formatting to make it less
+cumbersome.
+
+    var type = dahelpers.type;
+    type(null);       // 'null'
+    type(undefined);  // 'undefined'
+    type(1);          // 'number'
+    type(/abc/);      // 'regexp'
+
+The same function can also be used to test the type for convenience.
+
+    type(null, 'null'); // true
+    type(1, 'string');  // false
+
+Note that the case of the second argument does not matter. This is perfectly
+valid:
+
+    type(/abc/, 'RegExp'); // true
+    type(/abc/, 'regexp'); // true
+    type(/abc/, 'REGEXP'); // true
+
 ### Modifying Underscore `template()` to add DaHelpers
 
 Here is a pattern for including DaHelpers in UnderscoreJS templates.

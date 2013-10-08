@@ -7,6 +7,11 @@
 The `mixin()` is similar to `extend()` but does not overwrite existing
 properties.
 
+### Added `create()` function
+
+This is a Crockford-style prototypal inheritance function with support for
+mixins. It also adds a `__super__` property which points to the prototype.
+
 ### Added `objIter()`, `arrayIter()`, and `iter()` functions
 
 These function return handy iterator object for manipulating arrays and objects

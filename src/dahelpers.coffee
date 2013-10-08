@@ -779,9 +779,17 @@ define () ->
     # #### `iterator.next()`
     #
     # Returns the next member of a sequence that comes after the member
-    # returned in the previous call. When called for the first time, it returns
-    # the first item. Once all members have been returned, it throws an
-    # exception.
+    # returned in the previous call or a call to `iterator.get()`. When no next
+    # memeber exist, it throws an exception. When none of the getter methods
+    # have been called, it returns the first member.
+    #
+    # #### `iterator.prev()`
+    #
+    # Returns the previous member of a sequence that comes before the member
+    # retruned in the previous call or a call to `iterator.get()`. When no
+    # previous member exists, it throws an exception. When none of the getter
+    # methods have been called or the current index of the iterator is 0, it
+    # throws an exception.
     #
     # #### `iterator.each(callback)`
     #

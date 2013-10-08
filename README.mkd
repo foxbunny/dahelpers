@@ -122,7 +122,7 @@ Here we will take a look at the lazy `#apply()` method.
 
 Unlke map, in the above example the `fn` function only gets called once, when
 we call the get() method. The functions passed to apply are composable, so we
-can break the above into:
+can break the above down to:
 
     var seq = [1, 2, 3];
     var fn1 = function (n) { return n + 1; };

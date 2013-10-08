@@ -408,7 +408,7 @@ define(function() {
       };
     },
     arrayIter: function(a) {
-      var iterator, state, _i, _ref, _results;
+      var state, _i, _ref, _results;
       state = {
         v: [].concat(a),
         currentIndex: -1,
@@ -420,8 +420,7 @@ define(function() {
         }).apply(this),
         funcs: []
       };
-      iterator = h.create(h.iterBase(state));
-      return h.extend(iterator, {
+      return h.create(h.iterBase(state), {
         itemize: function(idx) {
           return [state.v[idx], idx];
         },

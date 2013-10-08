@@ -681,9 +681,7 @@ define () ->
         indices: [0..a.length - 1]
         funcs: []
 
-      iterator = h.create h.iterBase(state)
-
-      h.extend iterator,
+      h.create h.iterBase(state),
         itemize: (idx) ->
           [state.v[idx], idx]
 

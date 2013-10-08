@@ -25,6 +25,7 @@ JavaScript in browsers and on NodeJS.
    - [`#sweep(obj, cb)`](#sweep-obj-cb)
    - [`#extend([guard], obj, mixin, [mixin...])`](#extend-guard-obj-mixin-mixin)
    - [`#mixin(obj, mixin, [mixin...])`](#mixin-obj-mixin-mixin)
+ + [`create(parent, mixin)`](#create-parent-mixin)
    - [`#clone(obj)`](#clone-obj)
    - [`#rekey(obj, map)`](#rekey-obj-map)
    - [`#toArray(v)`](#toarray-v)
@@ -44,6 +45,7 @@ JavaScript in browsers and on NodeJS.
      + [`iterator.apply(fn, [fn...])`](#iterator-apply-fn-fn)
      + [`iterator.get(index)`](#iterator-get-index)
      + [`iterator.next()`](#iterator-next)
+     + [`iterator.prev()`](#iterator-prev)
      + [`iterator.each(callback)`](#iterator-each-callback)
      + [`iterator.map(callback)`](#iterator-map-callback)
      + [`iterator.reduce(callback, initial=0)`](#iterator-reduce-callback-initial-0)
@@ -334,6 +336,14 @@ Example:
     // Note that `foo` is still 1 unlike with `#extend()`
 
 
+## <a name="create-parent-mixin">`create(parent, mixin)`</a>
+
+Prototypal inhertiance as per Douglas Crockford's recipe with support for
+mixins.
+
+The created object additionally has a `__super__` property which points to the
+parent object.
+
 ### <a name="clone-obj">`#clone(obj)`</a>
 
 Returns an exact clone of `obj`.
@@ -547,8 +557,16 @@ array of keys.
 #### <a name="iterator-next">`iterator.next()`</a>
 
 Returns the next member of a sequence that comes after the member returned in
-the previous call. When called for the first time, it returns the first item.
-Once all members have been returned, it throws an exception.
+the previous call or a call to `iterator.get()`. When no next memeber exist, it
+throws an exception. When none of the getter methods have been called, it
+returns the first member.
+
+#### <a name="iterator-prev">`iterator.prev()`</a>
+
+Returns the previous member of a sequence that comes before the member retruned
+in the previous call or a call to `iterator.get()`. When no previous member
+exists, it throws an exception. When none of the getter methods have been
+called or the current index of the iterator is 0, it throws an exception.
 
 #### <a name="iterator-each-callback">`iterator.each(callback)`</a>
 

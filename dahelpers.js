@@ -229,14 +229,14 @@ define(function() {
             return h.propset(obj, c, v);
           } else {
             return h.propset(obj, c, (function() {
-              switch (h.type(v)) {
-                case 'object' || 'arguments':
+              switch (h.klass(v)) {
+                case Object:
                   return {};
-                case 'date':
+                case Date:
                   return new Date(v.getTime());
-                case 'regexp':
+                case RegExp:
                   return new RegExp(v);
-                case 'array':
+                case Array:
                   return v.slice(0);
                 default:
                   return v;

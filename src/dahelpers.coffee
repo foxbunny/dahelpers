@@ -467,11 +467,11 @@ define () ->
 
           else
             h.propset obj, c, (() ->
-              switch h.type(v)
-                when 'object' or 'arguments' then {}
-                when 'date' then new Date v.getTime()
-                when 'regexp' then new RegExp v
-                when 'array' then v[0..]
+              switch h.klass(v)
+                when Object then {}
+                when Date then new Date v.getTime()
+                when RegExp then new RegExp v
+                when Array then v[0..]
                 else v
             )()
       obj

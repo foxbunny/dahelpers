@@ -640,12 +640,23 @@ define () ->
       next: () ->
         throw new Error('No more items') if not @hasNext()
         state.currentIndex += 1
-        this.get state.currentIndex
+        @get state.currentIndex
 
       prev: () ->
         throw new Error('No more items') if not @hasPrev()
         state.currentIndex -= 1
-        this.get state.currentIndex
+        @get state.currentIndex
+
+      slice: (start=0, end) ->
+        lastIndex = @len() - 1
+        if (not end?) or (end > lastIndex)
+          end = lastIndex
+        if end < 0
+          end = lastIndex + end + 1
+        if start < 0
+          start = 0
+        for i in [start..end]
+          @get i
 
       each: (callback) ->
         for idx in state.indices
@@ -794,6 +805,21 @@ define () ->
     # previous member exists, it throws an exception. When none of the getter
     # methods have been called or the current index of the iterator is 0, it
     # throws an exception.
+    #
+    # #### `iterator.slice([start, end])`
+    #
+    # Returns a slice of the sequence starting with `start` index, and ending
+    # with `end` index. Both indices are optional. If none is specified,
+    # entire sequence is returned.
+    #
+    # If only the `end` index is omitted, the method returns the part of the
+    # sequence starting with `start` index all the way to the last member.
+    #
+    # The `end` index can also be a negative integer, in which case it
+    # represents the number of members from the last index towards the start.
+    #
+    # `start` index can be larger than the `end` index, in which case the
+    # sequence is iterated backwards.
     #
     # #### `iterator.each(callback)`
     #

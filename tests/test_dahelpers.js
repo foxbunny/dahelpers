@@ -1474,6 +1474,45 @@ describe('#iter(array)', function() {
       return equal(i.next(), '7');
     });
   });
+  describe('iterator.slice()', function() {
+    it('returns the entire sequence if passed no args', function() {
+      var i;
+      i = h.iter([1, 2, 3, 4]);
+      return deepEqual(i.slice(), [1, 2, 3, 4]);
+    });
+    it('returns the remainder if passed only start index', function() {
+      var i;
+      i = h.iter([1, 2, 3, 4]);
+      return deepEqual(i.slice(1), [2, 3, 4]);
+    });
+    it('returns a portion if both indices are specified', function() {
+      var i;
+      i = h.iter([1, 2, 3, 4]);
+      return deepEqual(i.slice(1, 2), [2, 3]);
+    });
+    it('the end is counted from the last index if negative', function() {
+      var i;
+      i = h.iter([1, 2, 3, 4]);
+      return deepEqual(i.slice(0, -2), [1, 2, 3]);
+    });
+    it('returns serquence in reverse if start > end', function() {
+      var i;
+      i = h.iter([1, 2, 3, 4]);
+      return deepEqual(i.slice(2, 1), [3, 2]);
+    });
+    return it('applies all functions only to sliced members', function() {
+      var called, fn, i;
+      i = h.iter([1, 2, 3, 4]);
+      called = 0;
+      fn = function(v) {
+        called += 1;
+        return v;
+      };
+      i.apply(fn);
+      i.slice(1, 2);
+      return equal(called, 2);
+    });
+  });
   describe('iterator.each()', function() {
     return it('calls a function on each member of the array', function() {
       var a, i, res;
@@ -1782,6 +1821,58 @@ describe('#iter(object)', function() {
       deepEqual(i.next(), ['b', '3']);
       deepEqual(i.next(), ['c', '5']);
       return deepEqual(i.next(), ['d', '7']);
+    });
+  });
+  describe('iterator.slice()', function() {
+    it('returns the entire sequence if passed no args', function() {
+      var i;
+      i = h.iter({
+        a: 1,
+        b: 2,
+        c: 3,
+        d: 4
+      });
+      return deepEqual(i.slice(), [['a', 1], ['b', 2], ['c', 3], ['d', 4]]);
+    });
+    it('returns the remainder if passed only start index', function() {
+      var i;
+      i = h.iter({
+        a: 1,
+        b: 2,
+        c: 3,
+        d: 4
+      });
+      return deepEqual(i.slice(1), [['b', 2], ['c', 3], ['d', 4]]);
+    });
+    it('returns a portion if both indices are specified', function() {
+      var i;
+      i = h.iter({
+        a: 1,
+        b: 2,
+        c: 3,
+        d: 4
+      });
+      return deepEqual(i.slice(1, 2), [['b', 2], ['c', 3]]);
+    });
+    it('the end is counted from the last index if negative', function() {
+      var i;
+      i = h.iter({
+        a: 1,
+        b: 2,
+        c: 3,
+        d: 4
+      });
+      return deepEqual(i.slice(0, -2), [['a', 1], ['b', 2], ['c', 3]]);
+    });
+    return it('returns sequence in reverse if start > end', function() {
+      var i;
+      i = h.iter({
+        a: 1,
+        b: 2,
+        c: 3,
+        d: 4
+      });
+      return deepEqual(i.slice(2, 1), [['c', 3], ['b', 2]]);
     });
   });
   describe('iterator.each()', function() {

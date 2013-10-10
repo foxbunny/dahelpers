@@ -358,6 +358,27 @@ define(function() {
           state.currentIndex -= 1;
           return this.get(state.currentIndex);
         },
+        slice: function(start, end) {
+          var i, lastIndex, _i, _results;
+          if (start == null) {
+            start = 0;
+          }
+          lastIndex = this.len() - 1;
+          if ((end == null) || (end > lastIndex)) {
+            end = lastIndex;
+          }
+          if (end < 0) {
+            end = lastIndex + end + 1;
+          }
+          if (start < 0) {
+            start = 0;
+          }
+          _results = [];
+          for (i = _i = start; start <= end ? _i <= end : _i >= end; i = start <= end ? ++_i : --_i) {
+            _results.push(this.get(i));
+          }
+          return _results;
+        },
         each: function(callback) {
           var idx, _i, _len, _ref, _results;
           _ref = state.indices;

@@ -1078,6 +1078,38 @@ describe '#iter(array)', () ->
       equal i.next(), '5'
       equal i.next(), '7'
 
+  describe 'iterator.slice()', () ->
+
+    it 'returns the entire sequence if passed no args', () ->
+      i = h.iter [1, 2, 3, 4]
+      deepEqual i.slice(), [1, 2, 3, 4]
+
+    it 'returns the remainder if passed only start index', () ->
+      i = h.iter [1, 2, 3, 4]
+      deepEqual i.slice(1), [2, 3, 4]
+
+    it 'returns a portion if both indices are specified', () ->
+      i = h.iter [1, 2, 3, 4]
+      deepEqual i.slice(1, 2), [2, 3]
+
+    it 'the end is counted from the last index if negative', () ->
+      i = h.iter [1, 2, 3, 4]
+      deepEqual i.slice(0, -2), [1, 2, 3]
+
+    it 'returns serquence in reverse if start > end', () ->
+      i = h.iter [1, 2, 3, 4]
+      deepEqual i.slice(2, 1), [3, 2]
+
+    it 'applies all functions only to sliced members', () ->
+      i = h.iter [1, 2, 3, 4]
+      called = 0
+      fn = (v) ->
+        called += 1
+        v
+      i.apply fn
+      i.slice 1, 2
+      equal called, 2
+
   describe 'iterator.each()', () ->
 
     it 'calls a function on each member of the array', () ->
@@ -1316,6 +1348,47 @@ describe '#iter(object)', () ->
       deepEqual i.next(), ['b', '3']
       deepEqual i.next(), ['c', '5']
       deepEqual i.next(), ['d', '7']
+
+  describe 'iterator.slice()', () ->
+
+    it 'returns the entire sequence if passed no args', () ->
+      i = h.iter a: 1, b: 2, c: 3, d: 4
+      deepEqual i.slice(), [
+        ['a', 1]
+        ['b', 2]
+        ['c', 3]
+        ['d', 4]
+      ]
+
+    it 'returns the remainder if passed only start index', () ->
+      i = h.iter a: 1, b: 2, c: 3, d: 4
+      deepEqual i.slice(1), [
+        ['b', 2]
+        ['c', 3]
+        ['d', 4]
+      ]
+
+    it 'returns a portion if both indices are specified', () ->
+      i = h.iter a: 1, b: 2, c: 3, d: 4
+      deepEqual i.slice(1, 2), [
+        ['b', 2]
+        ['c', 3]
+      ]
+
+    it 'the end is counted from the last index if negative', () ->
+      i = h.iter a: 1, b: 2, c: 3, d: 4
+      deepEqual i.slice(0, -2), [
+        ['a', 1]
+        ['b', 2]
+        ['c', 3]
+      ]
+
+    it 'returns sequence in reverse if start > end', () ->
+      i = h.iter a: 1, b: 2, c: 3, d: 4
+      deepEqual i.slice(2, 1), [
+        ['c', 3]
+        ['b', 2]
+      ]
 
   describe 'iterator.each()', () ->
 

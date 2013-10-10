@@ -1,5 +1,11 @@
 # DaHelpers Changelog
 
+## 0.3.3
+
+### Added callback function to `iterartor.slice()`
+
+The callback function gets run for each member of the sequence.
+
 ## 0.3.2
 
 ### Added `iterator.slice()`

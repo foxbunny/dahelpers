@@ -1,5 +1,12 @@
 # DaHelpers Changelog
 
+## 0.3.4
+
+### Fixed bug in `compose()` function
+
+The bug prevented correct composition when return value is an array or
+array-like object such as regexp match. This has been fixed.
+
 ## 0.3.3
 
 ### Added callback function to `iterartor.slice()`

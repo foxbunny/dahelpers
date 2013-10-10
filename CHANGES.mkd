@@ -1,5 +1,19 @@
 # DaHelpers Changelog
 
+## 0.3.2
+
+### Added `iterator.slice()`
+
+The slice method allows us to collect the sequence members and apply the
+functions in one go.
+
+## 0.3.1
+
+### Fixed regression in `extend()`
+
+Fixed a bug where `extend()` would attempt to deep-copy objects using a custom
+constructor.
+
 ## 0.3.0
 
 ### Added guard function to `extend()`

@@ -48,6 +48,7 @@ JavaScript in browsers and on NodeJS.
      + [`iterator.get(index)`](#iterator-get-index)
      + [`iterator.next()`](#iterator-next)
      + [`iterator.prev()`](#iterator-prev)
+     + [`iterator.slice([start, end])`](#iterator-slice-start-end)
      + [`iterator.each(callback)`](#iterator-each-callback)
      + [`iterator.map(callback)`](#iterator-map-callback)
      + [`iterator.reduce(callback, initial=0)`](#iterator-reduce-callback-initial-0)
@@ -552,6 +553,11 @@ Returns the number of remaining members that haven't been returned by
 Adds one or more functions to be applied to each item returned from
 `iterator.get()` and `iterator.next()` methods.
 
+There is one special exception that functions can throw, that is taken into
+account when slicing sequences (see `iterator.slice()`). If the function throws
+a simple string `'skip'` the member is simply omitted from the slice without
+causing the exception to propagate further. Any other exceptions are rethrown.
+
 #### <a name="iterator-get-index">`iterator.get(index)`</a>
 
 Returns a member at the given index.
@@ -573,6 +579,21 @@ Returns the previous member of a sequence that comes before the member retruned
 in the previous call or a call to `iterator.get()`. When no previous member
 exists, it throws an exception. When none of the getter methods have been
 called or the current index of the iterator is 0, it throws an exception.
+
+#### <a name="iterator-slice-start-end">`iterator.slice([start, end])`</a>
+
+Returns a slice of the sequence starting with `start` index, and ending with
+`end` index. Both indices are optional. If none is specified, entire sequence
+is returned.
+
+If only the `end` index is omitted, the method returns the part of the sequence
+starting with `start` index all the way to the last member.
+
+The `end` index can also be a negative integer, in which case it represents the
+number of members from the last index towards the start.
+
+`start` index can be larger than the `end` index, in which case the sequence is
+iterated backwards.
 
 #### <a name="iterator-each-callback">`iterator.each(callback)`</a>
 

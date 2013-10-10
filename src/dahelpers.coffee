@@ -788,6 +788,12 @@ define () ->
     # Adds one or more functions to be applied to each item returned from
     # `iterator.get()` and `iterator.next()` methods.
     #
+    # There is one special exception that functions can throw, that is taken
+    # into account when slicing sequences (see `iterator.slice()`). If the
+    # function throws a simple string `'skip'` the member is simply omitted
+    # from the slice without causing the exception to propagate further. Any
+    # other exceptions are rethrown.
+    #
     # #### `iterator.get(index)`
     #
     # Returns a member at the given index.

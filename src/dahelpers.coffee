@@ -956,9 +956,10 @@ define () ->
     #
     compose: (funcs...) ->
       (args...) ->
+        args == arguments
         for fn in funcs by -1
-          args = fn.apply null, h.toArray(args)
-        args
+          args = [fn.apply null, args]
+        args[0]
 
     # ### `#suicidal(fn)`
     #

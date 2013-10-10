@@ -37,6 +37,9 @@ describe('#type()', function() {
       foo: 'bar'
     }, 'object');
     assertType((function() {}), 'function');
+    (function() {
+      return assertType(arguments, 'arguments');
+    })();
     return (function(somethingUndefined) {
       return assertType(somethingUndefined, 'undefined');
     })();
@@ -58,6 +61,9 @@ describe('#type()', function() {
       foo: 'bar'
     }, 'object');
     assertType((function() {}), 'function');
+    (function() {
+      return assertType(arguments, 'arguments');
+    })();
     return (function(somethingUndefined) {
       return assertType(somethingUndefined, 'undefined');
     })();
@@ -2186,7 +2192,7 @@ describe('#lazy()', function() {
 });
 
 describe('#compose()', function() {
-  return it('composes functions', function() {
+  it('composes functions', function() {
     var fn1, fn2, fn3, fn4, n, res;
     res = [];
     fn1 = function(x) {
@@ -2205,6 +2211,25 @@ describe('#compose()', function() {
     n = fn4(1);
     deepEqual(res, [1, 0.5, 1.5]);
     return equal(n, 2.5);
+  });
+  return it('composes functions when functions return array-like objects', function() {
+    var fn1, fn2, fn3, n, res;
+    res = [];
+    fn1 = function(x) {
+      res.push(x);
+      return '' + (x != null ? x[1] : x) + ' foo';
+    };
+    fn2 = function(x) {
+      res.push(x);
+      return x.match(/^12(.*)$/);
+    };
+    fn3 = h.compose(fn1, fn2);
+    n = fn3('aa');
+    deepEqual(res, ['aa', null]);
+    equal(n, 'null foo');
+    res = [];
+    n = fn3('12a');
+    return equal(n, 'a foo');
   });
 });
 

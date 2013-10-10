@@ -579,11 +579,12 @@ define(function() {
       return function() {
         var args, fn, _i;
         args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+        args === arguments;
         for (_i = funcs.length - 1; _i >= 0; _i += -1) {
           fn = funcs[_i];
-          args = fn.apply(null, h.toArray(args));
+          args = [fn.apply(null, args)];
         }
-        return args;
+        return args[0];
       };
     },
     suicidal: function(fn) {

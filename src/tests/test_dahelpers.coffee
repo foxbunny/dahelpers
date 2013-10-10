@@ -26,6 +26,9 @@ describe '#type()', () ->
     assertType [1,2,3], 'array'
     assertType {foo: 'bar'}, 'object'
     assertType (() ->), 'function'
+    (() ->
+      assertType arguments, 'arguments'
+    )()
     ((somethingUndefined) ->
       assertType somethingUndefined, 'undefined'
     )()
@@ -44,6 +47,9 @@ describe '#type()', () ->
     assertType [1,2,3], 'array'
     assertType {foo: 'bar'}, 'object'
     assertType (() ->), 'function'
+    (() ->
+      assertType arguments, 'arguments'
+    )()
     ((somethingUndefined) ->
       assertType somethingUndefined, 'undefined'
     )()
@@ -1611,18 +1617,36 @@ describe '#compose()', () ->
   it 'composes functions', () ->
     res = []
     fn1 = (x) ->
-      res.push(x)
+      res.push x
       x + 1
     fn2 = (x) ->
-      res.push(x)
+      res.push x
       x * 3
     fn3 = (x) ->
-      res.push(x)
+      res.push x
       x / 2
-    fn4 = h.compose(fn1, fn2, fn3)
+    fn4 = h.compose fn1, fn2, fn3
     n = fn4 1
     deepEqual res, [1, 0.5, 1.5]
     equal n, 2.5
+
+  it 'composes functions when functions return array-like objects', () ->
+    res = []
+    fn1 = (x) ->
+      res.push x
+      '' + (if x? then x[1] else x) + ' foo'
+    fn2 = (x) ->
+      res.push x
+      x.match /^12(.*)$/
+    fn3 = h.compose fn1, fn2
+
+    n = fn3 'aa'
+    deepEqual res, ['aa', null]
+    equal n, 'null foo'
+
+    res = []
+    n = fn3 '12a'
+    equal n, 'a foo'
 
 describe '#suicidal()', () ->
   it 'makes a fn commit suicide after first use', () ->

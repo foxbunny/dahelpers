@@ -1110,6 +1110,13 @@ describe '#iter(array)', () ->
       i.slice 1, 2
       equal called, 2
 
+    it 'will omit members that throw "skip" exception', () ->
+      i = h.iter [1, 2, 3, 4]
+      fn = (v) ->
+        if v % 2 is 0 then v else throw 'skip'
+      i.apply fn
+      deepEqual i.slice(), [2, 4]
+
   describe 'iterator.each()', () ->
 
     it 'calls a function on each member of the array', () ->
@@ -1388,6 +1395,16 @@ describe '#iter(object)', () ->
       deepEqual i.slice(2, 1), [
         ['c', 3]
         ['b', 2]
+      ]
+
+    it 'will omit members that throw "skip" exception', () ->
+      i = h.iter a: 1, b: 2, c: 3, d: 4
+      fn = (v) ->
+        if v % 2 is 0 then v else throw 'skip'
+      i.apply fn
+      deepEqual i.slice(), [
+        ['b', 2]
+        ['d', 4]
       ]
 
   describe 'iterator.each()', () ->

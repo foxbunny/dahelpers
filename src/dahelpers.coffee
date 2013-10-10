@@ -655,8 +655,13 @@ define () ->
           end = lastIndex + end + 1
         if start < 0
           start = 0
+        collected = []
         for i in [start..end]
-          @get i
+          try
+            collected.push @get i
+          catch e
+            throw e if e isnt 'skip'
+        collected
 
       each: (callback) ->
         for idx in state.indices

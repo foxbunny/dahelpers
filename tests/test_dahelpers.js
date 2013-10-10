@@ -1500,7 +1500,7 @@ describe('#iter(array)', function() {
       i = h.iter([1, 2, 3, 4]);
       return deepEqual(i.slice(2, 1), [3, 2]);
     });
-    return it('applies all functions only to sliced members', function() {
+    it('applies all functions only to sliced members', function() {
       var called, fn, i;
       i = h.iter([1, 2, 3, 4]);
       called = 0;
@@ -1511,6 +1511,19 @@ describe('#iter(array)', function() {
       i.apply(fn);
       i.slice(1, 2);
       return equal(called, 2);
+    });
+    return it('will omit members that throw "skip" exception', function() {
+      var fn, i;
+      i = h.iter([1, 2, 3, 4]);
+      fn = function(v) {
+        if (v % 2 === 0) {
+          return v;
+        } else {
+          throw 'skip';
+        }
+      };
+      i.apply(fn);
+      return deepEqual(i.slice(), [2, 4]);
     });
   });
   describe('iterator.each()', function() {
@@ -1864,7 +1877,7 @@ describe('#iter(object)', function() {
       });
       return deepEqual(i.slice(0, -2), [['a', 1], ['b', 2], ['c', 3]]);
     });
-    return it('returns sequence in reverse if start > end', function() {
+    it('returns sequence in reverse if start > end', function() {
       var i;
       i = h.iter({
         a: 1,
@@ -1873,6 +1886,24 @@ describe('#iter(object)', function() {
         d: 4
       });
       return deepEqual(i.slice(2, 1), [['c', 3], ['b', 2]]);
+    });
+    return it('will omit members that throw "skip" exception', function() {
+      var fn, i;
+      i = h.iter({
+        a: 1,
+        b: 2,
+        c: 3,
+        d: 4
+      });
+      fn = function(v) {
+        if (v % 2 === 0) {
+          return v;
+        } else {
+          throw 'skip';
+        }
+      };
+      i.apply(fn);
+      return deepEqual(i.slice(), [['b', 2], ['d', 4]]);
     });
   });
   describe('iterator.each()', function() {

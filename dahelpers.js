@@ -359,7 +359,7 @@ define(function() {
           return this.get(state.currentIndex);
         },
         slice: function(start, end) {
-          var i, lastIndex, _i, _results;
+          var collected, e, i, lastIndex, _i;
           if (start == null) {
             start = 0;
           }
@@ -373,11 +373,18 @@ define(function() {
           if (start < 0) {
             start = 0;
           }
-          _results = [];
+          collected = [];
           for (i = _i = start; start <= end ? _i <= end : _i >= end; i = start <= end ? ++_i : --_i) {
-            _results.push(this.get(i));
+            try {
+              collected.push(this.get(i));
+            } catch (_error) {
+              e = _error;
+              if (e !== 'skip') {
+                throw e;
+              }
+            }
           }
-          return _results;
+          return collected;
         },
         each: function(callback) {
           var idx, _i, _len, _ref, _results;

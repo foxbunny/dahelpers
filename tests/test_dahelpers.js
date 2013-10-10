@@ -1512,7 +1512,7 @@ describe('#iter(array)', function() {
       i.slice(1, 2);
       return equal(called, 2);
     });
-    return it('will omit members that throw "skip" exception', function() {
+    it('will omit members that throw "skip" exception', function() {
       var fn, i;
       i = h.iter([1, 2, 3, 4]);
       fn = function(v) {
@@ -1524,6 +1524,29 @@ describe('#iter(array)', function() {
       };
       i.apply(fn);
       return deepEqual(i.slice(), [2, 4]);
+    });
+    it('takes a callback that gets called for each item', function() {
+      var called, fn, i;
+      i = h.iter([1, 2, 3, 4]);
+      called = 0;
+      fn = function() {
+        return called += 1;
+      };
+      deepEqual(i.slice(0, -1, fn), [1, 2, 3, 4]);
+      return equal(called, 4);
+    });
+    return it('does not mind about callback argument position', function() {
+      var called, fn, i;
+      i = h.iter([1, 2, 3, 4]);
+      called = 0;
+      fn = function() {
+        return called += 1;
+      };
+      i.slice(1, fn);
+      equal(called, 3);
+      called = 0;
+      i.slice(fn);
+      return equal(called, 4);
     });
   });
   describe('iterator.each()', function() {
@@ -1887,7 +1910,7 @@ describe('#iter(object)', function() {
       });
       return deepEqual(i.slice(2, 1), [['c', 3], ['b', 2]]);
     });
-    return it('will omit members that throw "skip" exception', function() {
+    it('will omit members that throw "skip" exception', function() {
       var fn, i;
       i = h.iter({
         a: 1,
@@ -1904,6 +1927,39 @@ describe('#iter(object)', function() {
       };
       i.apply(fn);
       return deepEqual(i.slice(), [['b', 2], ['d', 4]]);
+    });
+    it('takes a callback that gets called for each item', function() {
+      var called, fn, i;
+      i = h.iter({
+        a: 1,
+        b: 2,
+        c: 3,
+        d: 4
+      });
+      called = 0;
+      fn = function() {
+        return called += 1;
+      };
+      i.slice(0, -1, fn);
+      return equal(called, 4);
+    });
+    return it('does not mind about callback argument position', function() {
+      var called, fn, i;
+      i = h.iter({
+        a: 1,
+        b: 2,
+        c: 3,
+        d: 4
+      });
+      called = 0;
+      fn = function() {
+        return called += 1;
+      };
+      i.slice(1, fn);
+      equal(called, 3);
+      called = 0;
+      i.slice(fn);
+      return equal(called, 4);
     });
   });
   describe('iterator.each()', function() {

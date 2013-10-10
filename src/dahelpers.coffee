@@ -647,7 +647,14 @@ define () ->
         state.currentIndex -= 1
         @get state.currentIndex
 
-      slice: (start=0, end) ->
+      slice: (start=0, end, callback) ->
+        if h.type start, 'function'
+          callback = start
+          start = 0
+          end = null
+        if h.type end, 'function'
+          callback = end
+          end = null
         lastIndex = @len() - 1
         if (not end?) or (end > lastIndex)
           end = lastIndex
@@ -658,7 +665,9 @@ define () ->
         collected = []
         for i in [start..end]
           try
-            collected.push @get i
+            item = @get i
+            collected.push item
+            callback(item) if h.type callback, 'function'
           catch e
             throw e if e isnt 'skip'
         collected
@@ -817,7 +826,7 @@ define () ->
     # methods have been called or the current index of the iterator is 0, it
     # throws an exception.
     #
-    # #### `iterator.slice([start, end])`
+    # #### `iterator.slice([start, end, callback])`
     #
     # Returns a slice of the sequence starting with `start` index, and ending
     # with `end` index. Both indices are optional. If none is specified,
@@ -831,6 +840,9 @@ define () ->
     #
     # `start` index can be larger than the `end` index, in which case the
     # sequence is iterated backwards.
+    #
+    # An optional `callback` function can be passed that will be called for
+    # each member of the slice.
     #
     # #### `iterator.each(callback)`
     #

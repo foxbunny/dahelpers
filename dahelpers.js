@@ -358,10 +358,19 @@ define(function() {
           state.currentIndex -= 1;
           return this.get(state.currentIndex);
         },
-        slice: function(start, end) {
-          var collected, e, i, lastIndex, _i;
+        slice: function(start, end, callback) {
+          var collected, e, i, item, lastIndex, _i;
           if (start == null) {
             start = 0;
+          }
+          if (h.type(start, 'function')) {
+            callback = start;
+            start = 0;
+            end = null;
+          }
+          if (h.type(end, 'function')) {
+            callback = end;
+            end = null;
           }
           lastIndex = this.len() - 1;
           if ((end == null) || (end > lastIndex)) {
@@ -376,7 +385,11 @@ define(function() {
           collected = [];
           for (i = _i = start; start <= end ? _i <= end : _i >= end; i = start <= end ? ++_i : --_i) {
             try {
-              collected.push(this.get(i));
+              item = this.get(i);
+              collected.push(item);
+              if (h.type(callback, 'function')) {
+                callback(item);
+              }
             } catch (_error) {
               e = _error;
               if (e !== 'skip') {

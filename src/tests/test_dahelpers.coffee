@@ -1117,6 +1117,23 @@ describe '#iter(array)', () ->
       i.apply fn
       deepEqual i.slice(), [2, 4]
 
+    it 'takes a callback that gets called for each item', () ->
+      i = h.iter [1, 2, 3, 4]
+      called = 0
+      fn = () -> called += 1
+      deepEqual i.slice(0, -1, fn), [1, 2, 3, 4]
+      equal called, 4
+
+    it 'does not mind about callback argument position', () ->
+      i = h.iter [1, 2, 3, 4]
+      called = 0
+      fn = () -> called += 1
+      i.slice(1, fn)
+      equal called, 3
+      called = 0
+      i.slice(fn)
+      equal called, 4
+
   describe 'iterator.each()', () ->
 
     it 'calls a function on each member of the array', () ->
@@ -1406,6 +1423,24 @@ describe '#iter(object)', () ->
         ['b', 2]
         ['d', 4]
       ]
+
+    it 'takes a callback that gets called for each item', () ->
+      i = h.iter a: 1, b: 2, c: 3, d: 4
+      called = 0
+      fn = () -> called += 1
+      i.slice(0, -1, fn)
+      equal called, 4
+
+    it 'does not mind about callback argument position', () ->
+      i = h.iter a: 1, b: 2, c: 3, d: 4
+      called = 0
+      fn = () -> called += 1
+      i.slice(1, fn)
+      equal called, 3
+      called = 0
+      i.slice(fn)
+      equal called, 4
+
 
   describe 'iterator.each()', () ->
 

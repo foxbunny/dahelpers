@@ -59,6 +59,9 @@ JavaScript in browsers and on NodeJS.
    - [`#lazy(fn)`](#lazy-fn)
    - [`#compose([fn...])`](#compose-fn)
    - [`#suicidal(fn)`](#suicidal-fn)
+   - [`#throttled(fn, period)`](#throttled-fn-period)
+   - [`#debounced(fn, period)`](#debounced-fn-period)
+   - [`#queued(fn, [period])`](#queued-fn-period)
  + [Formatting](#formatting)
    - [`#objAttrs(o)`](#objattrs-o)
    - [`#tag(name, content, [attrs, silence])`](#tag-name-content-attrs-silence)
@@ -722,6 +725,81 @@ Example:
     fn = dahelpers.suicidal(fn);
     fn(2); // returns 3
     fn(4); // returns undefined
+
+
+### <a name="throttled-fn-period">`#throttled(fn, period)`</a>
+
+Returns a throttled version of function that will execute at most once in
+`period` when called repeatedly. The period is in milliseconds.
+
+Example:
+
+     var throttled = dahelpers.throttled(function() {
+         console.log('called');
+     }, 1000);
+     while (true) { throttled(); }
+     // Only logs once every second (and eventually crashes)
+
+
+### <a name="debounced-fn-period">`#debounced(fn, period)`</a>
+
+Returns a debounced version of function that will execute at most once when
+`period` milliseconds had elapsed since last call.
+
+Example:
+
+    var debounced = dahelpers.debounced(function() {
+        console.log('called');
+    }, 50);
+    var numCalls = 20;
+    var interval = setInterval(function() {
+        debounced();
+        numCalls -= 1;
+        if (!numCalls) { clearInterval(interval); }
+    }, 10);
+    // Calls `debounced()` 20 times in 10ms intervals.
+    // 'called' is logged only once, 50ms after the last call
+
+
+### <a name="queued-fn-period">`#queued(fn, [period])`</a>
+
+Adds functions calls to a queue and executes the queue all at once `period`
+milliseconds after the last call. Period can be omitted, in which case the
+queue is never executed automatically.
+
+The returned function has a method (yes, you read that right, a method)
+`#run()` which can be called to force immediate execution of the queue even if
+the timeout has not been reached. You can simply omit the `period` argument as
+well and use this method exclusively.
+
+Examples:
+
+    var counter = 0;
+    var queued = dahelpers.queued(function() {
+        counter += 1;
+    }, 50);
+    var numCalls = 20;
+    var interval = setInterval(function() {
+        queued();
+        // Counter is still 0 here
+        numCalls -= 1;
+        if (!numCalls) { clearInterval(interval); }
+    }, 10);
+    // After 50ms after last call is made, counter is incremented by 1,
+    // 20 times.
+
+
+    var accumulated = 0;
+    var queued = dahelpers.queued(function(x) {
+        accumulated += x;
+    });
+    var i = 5;
+    for (; i; i -= 1) {
+        queued(i);
+    }
+    // accumulated is still 0 at this point
+    queued.run();
+    // accumulated is now 15
 
 
 ## <a name="formatting">Formatting</a>

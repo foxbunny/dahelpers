@@ -978,6 +978,51 @@ define () ->
         fn.apply null, arguments
         fn = () ->
 
+    # ### `#throttled(fn, period)`
+    #
+    # Returns a throttled version of function that will execute at most once in
+    # `period` when called repeatedly. The period is in milliseconds.
+    #
+    # Example:
+    #
+    #      var throttled = dahelpers.throttled(function() {
+    #          console.log('called');
+    #      }, 1000);
+    #      while (true) { throttled(); }
+    #      // Only logs once every second (and eventually crashes)
+    #
+    throttled: (fn, period) ->
+      lastCall = null
+      () ->
+        if not lastCall or Date.now() - lastCall >= period
+          lastCall = Date.now()
+          fn.apply null, arguments
+
+    # ### `#debounced(fn, period)`
+    #
+    # Returns a debounced version of function that will execute at most once
+    # when `period` time had elapsed since last call.
+    #
+    # Example:
+    #
+    #     var debounced = dahelpers.debounced(function() {
+    #         console.log('called');
+    #     }, 50);
+    #     var numCalls = 20;
+    #     var interval = setInterval(function() {
+    #         debounced();
+    #         numCalls -= 1;
+    #         if (!numCalls) { clearInterval(interval); }
+    #     }, 10);
+    #     // Calls `debounced()` 20 times in 10ms intervals.
+    #     // 'called' is logged only once, 50ms after the last call
+    #
+    debounced: (fn, period) ->
+      timeout = null
+      () ->
+        clearTimeout timeout if timeout?
+        timeout = setTimeout fn, period
+
     # ## Formatting
     #
 

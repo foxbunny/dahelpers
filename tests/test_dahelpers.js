@@ -2247,6 +2247,43 @@ describe('#suicidal()', function() {
   });
 });
 
+describe('#throttled', function() {
+  return it('throttles the function', function() {
+    var cycles, maxCalls, throttled;
+    maxCalls = 5;
+    cycles = 0;
+    throttled = h.throttled(function() {
+      return maxCalls -= 1;
+    }, 50);
+    while (maxCalls) {
+      throttled();
+      cycles += 1;
+    }
+    return isTrue(cycles > 5);
+  });
+});
+
+describe('#debounced', function() {
+  return it('debounces the function', function() {
+    var actualCalls, debounced, interval, maxCalls;
+    maxCalls = 5;
+    actualCalls = 0;
+    debounced = h.debounced(function() {
+      return actualCalls += 1;
+    }, 50);
+    interval = setInterval(function() {
+      debounced();
+      maxCalls -= 1;
+      if (!maxCalls) {
+        return clearInterval(interval);
+      }
+    }, 45);
+    return setTimeout(function() {
+      return isTrue(actualCalls === 1);
+    }, 5 * 45 + 50 + 30);
+  });
+});
+
 describe('tag aliases', function() {
   it('will render appropriate tags', function() {
     var s, tag, tags, _i, _len;

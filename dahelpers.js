@@ -593,6 +593,26 @@ define(function() {
         return fn = function() {};
       };
     },
+    throttled: function(fn, period) {
+      var lastCall;
+      lastCall = null;
+      return function() {
+        if (!lastCall || Date.now() - lastCall >= period) {
+          lastCall = Date.now();
+          return fn.apply(null, arguments);
+        }
+      };
+    },
+    debounced: function(fn, period) {
+      var timeout;
+      timeout = null;
+      return function() {
+        if (timeout != null) {
+          clearTimeout(timeout);
+        }
+        return timeout = setTimeout(fn, period);
+      };
+    },
     objAttrs: function(o) {
       var attrs, key, val;
       attrs = [];

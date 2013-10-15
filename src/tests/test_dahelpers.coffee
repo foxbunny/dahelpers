@@ -1657,6 +1657,35 @@ describe '#suicidal()', () ->
     f()
     equal called, 1
 
+describe '#throttled', () ->
+  it 'throttles the function', () ->
+    maxCalls = 5
+    cycles = 0
+    throttled = h.throttled () ->
+      maxCalls -= 1
+    , 50
+    while maxCalls
+      throttled()
+      cycles += 1
+    isTrue cycles > 5
+
+describe '#debounced', () ->
+  it 'debounces the function', () ->
+    maxCalls = 5
+    actualCalls = 0
+    debounced = h.debounced () ->
+      actualCalls += 1
+    , 50
+    interval = setInterval () ->
+      debounced()
+      maxCalls -= 1
+      if not maxCalls
+        clearInterval interval
+    , 45
+    setTimeout () ->
+      isTrue actualCalls is 1
+    , 5 * 45 + 50 + 30  # +30ms just in case
+
 describe 'tag aliases', () ->
   it 'will render appropriate tags', () ->
     tags = 'a p strong em ul ol li div span button option'.split ' '

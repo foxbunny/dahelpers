@@ -1,5 +1,16 @@
 # DaHelpers Changelog
 
+## 0.3.5
+
+### Added `throttled()` and `debounced()` functions
+
+For throttling and debouncing, naturally.
+
+### Added `queued()` function
+
+Allows queueing of function call with or without an interval before which the
+queue is executed, and ability to run the queue manually.
+
 ## 0.3.4
 
 ### Fixed bug in `compose()` function

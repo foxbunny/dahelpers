@@ -1679,12 +1679,38 @@ describe '#debounced', () ->
     interval = setInterval () ->
       debounced()
       maxCalls -= 1
-      if not maxCalls
-        clearInterval interval
+      clearInterval interval if not maxCalls
     , 45
     setTimeout () ->
-      isTrue actualCalls is 1
+      equal actualCalls, 1
     , 5 * 45 + 50 + 30  # +30ms just in case
+
+describe '#queued', () ->
+  it 'queues function calls', () ->
+    maxCalls = 5
+    counter = 0
+    queued = h.queued (x) ->
+      counter += x
+    , 50
+    interval = setInterval () ->
+      queued 1
+      equal counter, 0
+      maxCalls -= 1
+      clearInterval interval if not maxCalls
+    , 45
+    setTimeout () ->
+      equal counter, 5
+    , 5 * 45 + 50 + 30  # +30ms just in case
+
+  it 'can be forced to run the queue immediately', () ->
+    maxCalls = 5
+    counter = 0
+    queued = h.queued (x) ->
+      counter += x
+    for i in [0..4]
+      queued 1
+    queued.run()
+    equal counter, 5
 
 describe 'tag aliases', () ->
   it 'will render appropriate tags', () ->

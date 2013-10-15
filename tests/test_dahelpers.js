@@ -2279,8 +2279,43 @@ describe('#debounced', function() {
       }
     }, 45);
     return setTimeout(function() {
-      return isTrue(actualCalls === 1);
+      return equal(actualCalls, 1);
     }, 5 * 45 + 50 + 30);
+  });
+});
+
+describe('#queued', function() {
+  it('queues function calls', function() {
+    var counter, interval, maxCalls, queued;
+    maxCalls = 5;
+    counter = 0;
+    queued = h.queued(function(x) {
+      return counter += x;
+    }, 50);
+    interval = setInterval(function() {
+      queued(1);
+      equal(counter, 0);
+      maxCalls -= 1;
+      if (!maxCalls) {
+        return clearInterval(interval);
+      }
+    }, 45);
+    return setTimeout(function() {
+      return equal(counter, 5);
+    }, 5 * 45 + 50 + 30);
+  });
+  return it('can be forced to run the queue immediately', function() {
+    var counter, i, maxCalls, queued, _i;
+    maxCalls = 5;
+    counter = 0;
+    queued = h.queued(function(x) {
+      return counter += x;
+    });
+    for (i = _i = 0; _i <= 4; i = ++_i) {
+      queued(1);
+    }
+    queued.run();
+    return equal(counter, 5);
   });
 });
 

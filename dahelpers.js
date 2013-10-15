@@ -613,6 +613,40 @@ define(function() {
         return timeout = setTimeout(fn, period);
       };
     },
+    queued: function(fn, period) {
+      var execQueue, queueArgs, queued, timeout;
+      if (period == null) {
+        period = null;
+      }
+      queueArgs = [];
+      timeout = null;
+      execQueue = function() {
+        var a, _i, _len, _results;
+        _results = [];
+        for (_i = 0, _len = queueArgs.length; _i < _len; _i++) {
+          a = queueArgs[_i];
+          _results.push(fn.apply(null, a));
+        }
+        return _results;
+      };
+      queued = function() {
+        var args;
+        args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+        queueArgs.push(args);
+        if (period != null) {
+          if (timeout != null) {
+            clearTimeout(timeout);
+          }
+          return timeout = setTimeout(execQueue, period);
+        }
+      };
+      queued.run = function() {
+        clearTimeout(timeout);
+        execQueue();
+        return queueArgs = [];
+      };
+      return queued;
+    },
     objAttrs: function(o) {
       var attrs, key, val;
       attrs = [];

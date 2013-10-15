@@ -1001,7 +1001,7 @@ define () ->
     # ### `#debounced(fn, period)`
     #
     # Returns a debounced version of function that will execute at most once
-    # when `period` time had elapsed since last call.
+    # when `period` milliseconds had elapsed since last call.
     #
     # Example:
     #
@@ -1022,6 +1022,66 @@ define () ->
       () ->
         clearTimeout timeout if timeout?
         timeout = setTimeout fn, period
+
+    # ### `#queued(fn, [period])`
+    #
+    # Adds functions calls to a queue and executes the queue all at once
+    # `period` milliseconds after the last call. Period can be omitted, in
+    # which case the queue is never executed automatically.
+    #
+    # The returned function has a method (yes, you read that right, a method)
+    # `#run()` which can be called to force immediate execution of the queue
+    # even if the timeout has not been reached. You can simply omit the
+    # `period` argument as well and use this method exclusively.
+    #
+    # Examples:
+    #
+    #     var counter = 0;
+    #     var queued = dahelpers.queued(function() {
+    #         counter += 1;
+    #     }, 50);
+    #     var numCalls = 20;
+    #     var interval = setInterval(function() {
+    #         queued();
+    #         // Counter is still 0 here
+    #         numCalls -= 1;
+    #         if (!numCalls) { clearInterval(interval); }
+    #     }, 10);
+    #     // After 50ms after last call is made, counter is incremented by 1,
+    #     // 20 times.
+    #
+    #     var accumulated = 0;
+    #     var queued = dahelpers.queued(function(x) {
+    #         accumulated += x;
+    #     });
+    #     var i = 5;
+    #     for (; i; i -= 1) {
+    #         queued(i);
+    #     }
+    #     // accumulated is still 0 at this point
+    #     queued.run();
+    #     // accumulated is now 15
+    #
+    queued: (fn, period=null) ->
+      queueArgs = []
+      timeout = null
+
+      execQueue = () ->
+        for a in queueArgs
+          fn.apply null, a
+
+      queued = (args...) ->
+        queueArgs.push args
+        if period?
+          clearTimeout timeout if timeout?
+          timeout = setTimeout execQueue, period
+
+      queued.run = () ->
+        clearTimeout timeout
+        execQueue()
+        queueArgs = []
+
+      queued
 
     # ## Formatting
     #

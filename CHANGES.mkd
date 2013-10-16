@@ -1,5 +1,12 @@
 # DaHelpers Changelog
 
+## 0.3.6
+
+### `throttled()`, `debounced()`, and `queued()` support binding
+
+The three functions now take an additional argument to which the function calls
+will be bound.
+
 ## 0.3.5
 
 ### Added `throttled()` and `debounced()` functions

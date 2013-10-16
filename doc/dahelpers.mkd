@@ -59,9 +59,9 @@ JavaScript in browsers and on NodeJS.
    - [`#lazy(fn)`](#lazy-fn)
    - [`#compose([fn...])`](#compose-fn)
    - [`#suicidal(fn)`](#suicidal-fn)
-   - [`#throttled(fn, period)`](#throttled-fn-period)
-   - [`#debounced(fn, period)`](#debounced-fn-period)
-   - [`#queued(fn, [period])`](#queued-fn-period)
+   - [`#throttled(fn, period, [bindTo])`](#throttled-fn-period-bindto)
+   - [`#debounced(fn, period, [bindTo])`](#debounced-fn-period-bindto)
+   - [`#queued(fn, [period, bindTo])`](#queued-fn-period-bindto)
  + [Formatting](#formatting)
    - [`#objAttrs(o)`](#objattrs-o)
    - [`#tag(name, content, [attrs, silence])`](#tag-name-content-attrs-silence)
@@ -727,10 +727,13 @@ Example:
     fn(4); // returns undefined
 
 
-### <a name="throttled-fn-period">`#throttled(fn, period)`</a>
+### <a name="throttled-fn-period-bindto">`#throttled(fn, period, [bindTo])`</a>
 
 Returns a throttled version of function that will execute at most once in
 `period` when called repeatedly. The period is in milliseconds.
+
+Optional `bindTo` argument can point to an object to which the function should
+be bound. Default is `null`.
 
 Example:
 
@@ -741,10 +744,13 @@ Example:
      // Only logs once every second (and eventually crashes)
 
 
-### <a name="debounced-fn-period">`#debounced(fn, period)`</a>
+### <a name="debounced-fn-period-bindto">`#debounced(fn, period, [bindTo])`</a>
 
 Returns a debounced version of function that will execute at most once when
 `period` milliseconds had elapsed since last call.
+
+Optional `bindTo` argument can point to an object to which the function should
+be bound. Default is `null`.
 
 Example:
 
@@ -761,7 +767,7 @@ Example:
     // 'called' is logged only once, 50ms after the last call
 
 
-### <a name="queued-fn-period">`#queued(fn, [period])`</a>
+### <a name="queued-fn-period-bindto">`#queued(fn, [period, bindTo])`</a>
 
 Adds functions calls to a queue and executes the queue all at once `period`
 milliseconds after the last call. Period can be omitted, in which case the
@@ -771,6 +777,9 @@ The returned function has a method (yes, you read that right, a method)
 `#run()` which can be called to force immediate execution of the queue even if
 the timeout has not been reached. You can simply omit the `period` argument as
 well and use this method exclusively.
+
+Optional `bindTo` argument can point to an object to which the function should
+be bound. Default is `null`.
 
 Examples:
 

@@ -2248,7 +2248,7 @@ describe('#suicidal()', function() {
 });
 
 describe('#throttled', function() {
-  return it('throttles the function', function() {
+  it('throttles the function', function() {
     var cycles, maxCalls, throttled;
     maxCalls = 5;
     cycles = 0;
@@ -2261,10 +2261,25 @@ describe('#throttled', function() {
     }
     return isTrue(cycles > 5);
   });
+  return it('can be bound to custom object', function() {
+    var maxCalls, o, res;
+    res = [];
+    maxCalls = 5;
+    o = {
+      a: function() {
+        maxCalls -= 1;
+        equal(this, o);
+      }
+    };
+    o.a = h.throttled(o.a, 50, o);
+    while (maxCalls) {
+      o.a();
+    }
+  });
 });
 
 describe('#debounced', function() {
-  return it('debounces the function', function() {
+  it('debounces the function', function() {
     var actualCalls, debounced, interval, maxCalls;
     maxCalls = 5;
     actualCalls = 0;
@@ -2280,6 +2295,28 @@ describe('#debounced', function() {
     }, 45);
     return setTimeout(function() {
       return equal(actualCalls, 1);
+    }, 5 * 45 + 50 + 30);
+  });
+  return it('can be bound to objects', function() {
+    var counter, interval, maxCalls, o;
+    maxCalls = 5;
+    counter = 0;
+    o = {
+      a: function() {
+        counter += 1;
+        equal(this, o);
+      }
+    };
+    o.a = h.debounced(o.a, 50, o);
+    interval = setInterval(function() {
+      o.a();
+      maxCalls -= 1;
+      if (!maxCalls) {
+        return clearInterval(interval);
+      }
+    }, 45);
+    return setTimeout(function() {
+      return equal(counter, 1);
     }, 5 * 45 + 50 + 30);
   });
 });
@@ -2304,7 +2341,7 @@ describe('#queued', function() {
       return equal(counter, 5);
     }, 5 * 45 + 50 + 30);
   });
-  return it('can be forced to run the queue immediately', function() {
+  it('can be forced to run the queue immediately', function() {
     var counter, i, maxCalls, queued, _i;
     maxCalls = 5;
     counter = 0;
@@ -2316,6 +2353,28 @@ describe('#queued', function() {
     }
     queued.run();
     return equal(counter, 5);
+  });
+  return it('can be bound to objects', function() {
+    var counter, interval, maxCalls, o;
+    maxCalls = 5;
+    counter = 0;
+    o = {
+      a: function() {
+        counter += 1;
+        equal(this, o);
+      }
+    };
+    o.a = h.queued(o.a, 50, o);
+    interval = setInterval(function() {
+      o.a();
+      maxCalls -= 1;
+      if (!maxCalls) {
+        return clearInterval(interval);
+      }
+    }, 45);
+    return setTimeout(function() {
+      return equal(counter, 5);
+    }, 5 * 45 + 50 + 30);
   });
 });
 

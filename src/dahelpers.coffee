@@ -978,10 +978,13 @@ define () ->
         fn.apply null, arguments
         fn = () ->
 
-    # ### `#throttled(fn, period)`
+    # ### `#throttled(fn, period, [bindTo])`
     #
     # Returns a throttled version of function that will execute at most once in
     # `period` when called repeatedly. The period is in milliseconds.
+    #
+    # Optional `bindTo` argument can point to an object to which the function
+    # should be bound. Default is `null`.
     #
     # Example:
     #
@@ -991,17 +994,20 @@ define () ->
     #      while (true) { throttled(); }
     #      // Only logs once every second (and eventually crashes)
     #
-    throttled: (fn, period) ->
+    throttled: (fn, period, bindTo=null) ->
       lastCall = null
-      () ->
+      (args...) ->
         if not lastCall or Date.now() - lastCall >= period
           lastCall = Date.now()
-          fn.apply null, arguments
+          fn.apply bindTo, args
 
-    # ### `#debounced(fn, period)`
+    # ### `#debounced(fn, period, [bindTo])`
     #
     # Returns a debounced version of function that will execute at most once
     # when `period` milliseconds had elapsed since last call.
+    #
+    # Optional `bindTo` argument can point to an object to which the function
+    # should be bound. Default is `null`.
     #
     # Example:
     #
@@ -1017,13 +1023,15 @@ define () ->
     #     // Calls `debounced()` 20 times in 10ms intervals.
     #     // 'called' is logged only once, 50ms after the last call
     #
-    debounced: (fn, period) ->
+    debounced: (fn, period, bindTo=null) ->
       timeout = null
-      () ->
+      (args...) ->
         clearTimeout timeout if timeout?
-        timeout = setTimeout fn, period
+        timeout = setTimeout () ->
+          fn.apply bindTo, args
+        , period
 
-    # ### `#queued(fn, [period])`
+    # ### `#queued(fn, [period, bindTo])`
     #
     # Adds functions calls to a queue and executes the queue all at once
     # `period` milliseconds after the last call. Period can be omitted, in
@@ -1033,6 +1041,9 @@ define () ->
     # `#run()` which can be called to force immediate execution of the queue
     # even if the timeout has not been reached. You can simply omit the
     # `period` argument as well and use this method exclusively.
+    #
+    # Optional `bindTo` argument can point to an object to which the function
+    # should be bound. Default is `null`.
     #
     # Examples:
     #
@@ -1062,13 +1073,18 @@ define () ->
     #     queued.run();
     #     // accumulated is now 15
     #
-    queued: (fn, period=null) ->
+    queued: (fn, period=null, bindTo=null) ->
       queueArgs = []
       timeout = null
 
+      if arguments.length is 2
+        if not h.type period, 'number'
+          bindTo = period
+          period = null
+
       execQueue = () ->
         for a in queueArgs
-          fn.apply null, a
+          fn.apply bindTo, a
 
       queued = (args...) ->
         queueArgs.push args

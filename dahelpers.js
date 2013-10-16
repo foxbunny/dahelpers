@@ -593,39 +593,60 @@ define(function() {
         return fn = function() {};
       };
     },
-    throttled: function(fn, period) {
+    throttled: function(fn, period, bindTo) {
       var lastCall;
+      if (bindTo == null) {
+        bindTo = null;
+      }
       lastCall = null;
       return function() {
+        var args;
+        args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
         if (!lastCall || Date.now() - lastCall >= period) {
           lastCall = Date.now();
-          return fn.apply(null, arguments);
+          return fn.apply(bindTo, args);
         }
       };
     },
-    debounced: function(fn, period) {
+    debounced: function(fn, period, bindTo) {
       var timeout;
+      if (bindTo == null) {
+        bindTo = null;
+      }
       timeout = null;
       return function() {
+        var args;
+        args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
         if (timeout != null) {
           clearTimeout(timeout);
         }
-        return timeout = setTimeout(fn, period);
+        return timeout = setTimeout(function() {
+          return fn.apply(bindTo, args);
+        }, period);
       };
     },
-    queued: function(fn, period) {
+    queued: function(fn, period, bindTo) {
       var execQueue, queueArgs, queued, timeout;
       if (period == null) {
         period = null;
       }
+      if (bindTo == null) {
+        bindTo = null;
+      }
       queueArgs = [];
       timeout = null;
+      if (arguments.length === 2) {
+        if (!h.type(period, 'number')) {
+          bindTo = period;
+          period = null;
+        }
+      }
       execQueue = function() {
         var a, _i, _len, _results;
         _results = [];
         for (_i = 0, _len = queueArgs.length; _i < _len; _i++) {
           a = queueArgs[_i];
-          _results.push(fn.apply(null, a));
+          _results.push(fn.apply(bindTo, a));
         }
         return _results;
       };

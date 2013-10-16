@@ -1669,6 +1669,20 @@ describe '#throttled', () ->
       cycles += 1
     isTrue cycles > 5
 
+  it 'can be bound to custom object', () ->
+    res = []
+    maxCalls = 5
+    o =
+      a: () ->
+        maxCalls -= 1
+        equal @, o
+        return
+    o.a = h.throttled o.a, 50, o
+
+    while maxCalls
+      o.a()
+    return
+
 describe '#debounced', () ->
   it 'debounces the function', () ->
     maxCalls = 5
@@ -1683,6 +1697,24 @@ describe '#debounced', () ->
     , 45
     setTimeout () ->
       equal actualCalls, 1
+    , 5 * 45 + 50 + 30  # +30ms just in case
+
+  it 'can be bound to objects', () ->
+    maxCalls = 5
+    counter = 0
+    o =
+      a: () ->
+        counter += 1
+        equal @, o
+        return
+    o.a = h.debounced o.a, 50, o
+    interval = setInterval () ->
+      o.a()
+      maxCalls -= 1
+      clearInterval interval if not maxCalls
+    , 45
+    setTimeout () ->
+      equal counter, 1
     , 5 * 45 + 50 + 30  # +30ms just in case
 
 describe '#queued', () ->
@@ -1711,6 +1743,24 @@ describe '#queued', () ->
       queued 1
     queued.run()
     equal counter, 5
+
+  it 'can be bound to objects', () ->
+    maxCalls = 5
+    counter = 0
+    o =
+      a: () ->
+        counter += 1
+        equal @, o
+        return
+    o.a = h.queued o.a, 50, o
+    interval = setInterval () ->
+      o.a()
+      maxCalls -= 1
+      clearInterval interval if not maxCalls
+    , 45
+    setTimeout () ->
+      equal counter, 5
+    , 5 * 45 + 50 + 30  # +30ms just in case
 
 describe 'tag aliases', () ->
   it 'will render appropriate tags', () ->

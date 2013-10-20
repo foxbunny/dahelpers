@@ -2,12 +2,12 @@
 
 ## Dev
 
-### Added `pack()` function
+### Added `zip()` function
 
 This function takes any number of arrays and groups togehter members with the 
 same index.
 
-### Added `zip()` and `unzip()` functions
+### Added `pair()` and `unpair()` functions
 
 These functions provide means for converting arrays to objects and vice versa.
 

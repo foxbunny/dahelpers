@@ -307,6 +307,29 @@ define(function() {
       }
       return true;
     },
+    zip: function(keys, values) {
+      var idx, key, o, _i, _len;
+      if (keys.length !== values.length) {
+        throw new TypeError('Key-value mismatch');
+      }
+      o = {};
+      for (idx = _i = 0, _len = keys.length; _i < _len; idx = ++_i) {
+        key = keys[idx];
+        o[key] = values[idx];
+      }
+      return o;
+    },
+    unzip: function(o) {
+      var key, keys, val, vals;
+      keys = [];
+      vals = [];
+      for (key in o) {
+        val = o[key];
+        keys.push(key);
+        vals.push(val);
+      }
+      return [keys, vals];
+    },
     iterBase: function(state) {
       return {
         indices: function() {

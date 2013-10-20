@@ -894,6 +894,27 @@ describe '#rekey()', () ->
   it 'returns an empty object if map is an empty object', () ->
     deepEqual h.rekey({a: 1}, {}), {}
 
+describe '#zip()', () ->
+  it 'should merge two arrays into an object', () ->
+    a1 = ['foo', 'bar']
+    a2 = [1, 2]
+    o = h.zip a1, a2
+    deepEqual o, {foo: 1, bar: 2}
+
+  it 'should throw an exception if arrays do not match', () ->
+    a1 = ['foo', 'bar', 'baz']
+    a2 = [1, 2]
+    assert.throws () ->
+      h.zip a1, a2
+    , TypeError, 'Key-value mismatch'
+
+describe '#unzip()', () ->
+  it 'should break an object down to two arrays', () ->
+    o = {foo: 1, bar: 2}
+    [a1, a2] = h.unzip o
+    deepEqual a1, ['foo', 'bar']
+    deepEqual a2, [1, 2]
+
 describe '#toArray()', () ->
   it 'should convert to array the non-array values', () ->
     deepEqual h.toArray('foo'), ['foo']

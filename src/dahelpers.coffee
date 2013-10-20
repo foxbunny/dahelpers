@@ -606,6 +606,45 @@ define () ->
         return false
       return true
 
+    # ### `#zip(keys, values)`
+    #
+    # Returns an object whose keys are taken from the first argument, and
+    # mapped to values in the second argument.
+    #
+    # Eample:
+    #
+    #     var a1 = ['foo', 'bar'];
+    #     var a2 = [1, 2];
+    #     dahelpers.zip(a1, a2);
+    #     // returns {foo: 1, bar: 2}
+    #
+    zip: (keys, values) ->
+      if keys.length isnt values.length
+        throw new TypeError 'Key-value mismatch'
+      o = {}
+      for key, idx in keys
+        o[key] = values[idx]
+      o
+
+    # ### `#unzip(o)`
+    #
+    # Returns a two-member array where the first memeber is an array of keys,
+    # and second member is an array of values.
+    #
+    # Example:
+    #
+    #     var o = {foo: 1, bar: 2};
+    #     dahelpers.unzip(o);
+    #     // returns [['foo', 'bar'], [1, 2]]
+    #
+    unzip: (o) ->
+      keys = []
+      vals = []
+      for key, val of o
+        keys.push key
+        vals.push val
+      [keys, vals]
+
     # ## Iteration
     #
 

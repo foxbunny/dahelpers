@@ -1,5 +1,11 @@
 # DaHelpers Changelog
 
+## Dev
+
+### Added `zip()` and `unzip()` functions
+
+These functions provide means for converting arrays to objects and vice versa.
+
 ## 0.3.6
 
 ### `throttled()`, `debounced()`, and `queued()` support binding

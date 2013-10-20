@@ -330,6 +330,29 @@ define(function() {
       }
       return [keys, vals];
     },
+    pack: function() {
+      var a, arr, arrays, i, res, shortest, _i, _j, _len, _ref;
+      arrays = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+      shortest = Math.min.apply(Math, (function() {
+        var _i, _len, _results;
+        _results = [];
+        for (_i = 0, _len = arrays.length; _i < _len; _i++) {
+          a = arrays[_i];
+          _results.push(a.length);
+        }
+        return _results;
+      })());
+      res = [];
+      for (i = _i = 0, _ref = shortest - 1; 0 <= _ref ? _i <= _ref : _i >= _ref; i = 0 <= _ref ? ++_i : --_i) {
+        a = [];
+        for (_j = 0, _len = arrays.length; _j < _len; _j++) {
+          arr = arrays[_j];
+          a.push(arr[i]);
+        }
+        res.push(a);
+      }
+      return res;
+    },
     iterBase: function(state) {
       return {
         indices: function() {

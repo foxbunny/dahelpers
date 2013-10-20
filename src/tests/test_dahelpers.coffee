@@ -915,6 +915,19 @@ describe '#unzip()', () ->
     deepEqual a1, ['foo', 'bar']
     deepEqual a2, [1, 2]
 
+describe '#pack()', () ->
+  it 'should pack arrays together', () ->
+    a = [1, 2, 3]
+    b = [11, 12, 13]
+    r = h.pack(a, b)
+    deepEqual r, [[1, 11], [2, 12], [3, 13]]
+
+  it 'should be as long as shortest', () ->
+    a = [1, 2]
+    b = [11, 12, 13]
+    r = h.pack(a, b)
+    equal r.length, a.length
+
 describe '#toArray()', () ->
   it 'should convert to array the non-array values', () ->
     deepEqual h.toArray('foo'), ['foo']

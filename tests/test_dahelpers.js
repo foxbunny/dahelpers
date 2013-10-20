@@ -1245,6 +1245,23 @@ describe('#unzip()', function() {
   });
 });
 
+describe('#pack()', function() {
+  it('should pack arrays together', function() {
+    var a, b, r;
+    a = [1, 2, 3];
+    b = [11, 12, 13];
+    r = h.pack(a, b);
+    return deepEqual(r, [[1, 11], [2, 12], [3, 13]]);
+  });
+  return it('should be as long as shortest', function() {
+    var a, b, r;
+    a = [1, 2];
+    b = [11, 12, 13];
+    r = h.pack(a, b);
+    return equal(r.length, a.length);
+  });
+});
+
 describe('#toArray()', function() {
   it('should convert to array the non-array values', function() {
     deepEqual(h.toArray('foo'), ['foo']);

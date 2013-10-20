@@ -609,27 +609,19 @@ define () ->
     # ## Working with arrays
     #
 
-    # ### `#zip(keys, values)`
+    # ### `#pair(keys, values)`
     #
     # Returns an object whose keys are taken from the first argument, and
     # mapped to values in the second argument.
-    #
-    # Python developers should be aware that `#zip()` doesn't work like
-    # Python's built-in function. This function is closer to Python's
-    # `dict(zip())` combination, except that it throws an exception if the
-    # arguments are not of the same length.
-    #
-    # Please use [`#pack()`](#pack-arrays) if you are looking for `zip()`
-    # replacement.
     #
     # Eample:
     #
     #     var a1 = ['foo', 'bar'];
     #     var a2 = [1, 2];
-    #     dahelpers.zip(a1, a2);
+    #     dahelpers.pair(a1, a2);
     #     // returns {foo: 1, bar: 2}
     #
-    zip: (keys, values) ->
+    pair: (keys, values) ->
       if keys.length isnt values.length
         throw new TypeError 'Key-value mismatch'
       o = {}
@@ -637,7 +629,7 @@ define () ->
         o[key] = values[idx]
       o
 
-    # ### `#unzip(o)`
+    # ### `#unpair(o)`
     #
     # Returns a two-member array where the first memeber is an array of keys,
     # and second member is an array of values.
@@ -645,10 +637,10 @@ define () ->
     # Example:
     #
     #     var o = {foo: 1, bar: 2};
-    #     dahelpers.unzip(o);
+    #     dahelpers.unpair(o);
     #     // returns [['foo', 'bar'], [1, 2]]
     #
-    unzip: (o) ->
+    unpair: (o) ->
       keys = []
       vals = []
       for key, val of o
@@ -656,7 +648,7 @@ define () ->
         vals.push val
       [keys, vals]
 
-    # ### `#pack(array, [array...])`
+    # ### `#zip(array, [array...])`
     #
     # Returns an array when each member is an array of members with the
     # corresponding index from all arrays passed to this function. The
@@ -664,13 +656,13 @@ define () ->
     #
     # Example:
     #
-    #   var a = [1, 2, 3, 4];
-    #   var b = [11, 12, 13];
-    #   var c = [101, 102, 103];
-    #   dahelpers.pack(a, b, c);
-    #   // returns [[1, 11, 101], [2, 12, 102], [3, 13, 103]]
+    #     var a = [1, 2, 3, 4];
+    #     var b = [11, 12, 13];
+    #     var c = [101, 102, 103];
+    #     dahelpers.zip(a, b, c);
+    #     // returns [[1, 11, 101], [2, 12, 102], [3, 13, 103]]
     #
-    pack: (arrays...) ->
+    zip: (arrays...) ->
       shortest = Math.min (a.length for a in arrays)...
       res = []
       for i in [0..shortest - 1]

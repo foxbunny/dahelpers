@@ -894,38 +894,38 @@ describe '#rekey()', () ->
   it 'returns an empty object if map is an empty object', () ->
     deepEqual h.rekey({a: 1}, {}), {}
 
-describe '#zip()', () ->
+describe '#pair()', () ->
   it 'should merge two arrays into an object', () ->
     a1 = ['foo', 'bar']
     a2 = [1, 2]
-    o = h.zip a1, a2
+    o = h.pair a1, a2
     deepEqual o, {foo: 1, bar: 2}
 
   it 'should throw an exception if arrays do not match', () ->
     a1 = ['foo', 'bar', 'baz']
     a2 = [1, 2]
     assert.throws () ->
-      h.zip a1, a2
+      h.pair a1, a2
     , TypeError, 'Key-value mismatch'
 
-describe '#unzip()', () ->
+describe '#unpair()', () ->
   it 'should break an object down to two arrays', () ->
     o = {foo: 1, bar: 2}
-    [a1, a2] = h.unzip o
+    [a1, a2] = h.unpair o
     deepEqual a1, ['foo', 'bar']
     deepEqual a2, [1, 2]
 
-describe '#pack()', () ->
-  it 'should pack arrays together', () ->
+describe '#zip()', () ->
+  it 'should zip arrays together', () ->
     a = [1, 2, 3]
     b = [11, 12, 13]
-    r = h.pack(a, b)
+    r = h.zip(a, b)
     deepEqual r, [[1, 11], [2, 12], [3, 13]]
 
   it 'should be as long as shortest', () ->
     a = [1, 2]
     b = [11, 12, 13]
-    r = h.pack(a, b)
+    r = h.zip(a, b)
     equal r.length, a.length
 
 describe '#toArray()', () ->

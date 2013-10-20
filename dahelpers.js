@@ -5,7 +5,8 @@
 */
 
 var define,
-  __slice = [].slice;
+  __slice = [].slice,
+  __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
 define = (function(root) {
   if (typeof root.define === 'function' && root.define.amd) {
@@ -307,7 +308,7 @@ define(function() {
       }
       return true;
     },
-    zip: function(keys, values) {
+    pair: function(keys, values) {
       var idx, key, o, _i, _len;
       if (keys.length !== values.length) {
         throw new TypeError('Key-value mismatch');
@@ -319,7 +320,7 @@ define(function() {
       }
       return o;
     },
-    unzip: function(o) {
+    unpair: function(o) {
       var key, keys, val, vals;
       keys = [];
       vals = [];
@@ -330,7 +331,7 @@ define(function() {
       }
       return [keys, vals];
     },
-    pack: function() {
+    zip: function() {
       var a, arr, arrays, i, res, shortest, _i, _j, _len, _ref;
       arrays = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
       shortest = Math.min.apply(Math, (function() {

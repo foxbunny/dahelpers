@@ -1211,12 +1211,12 @@ describe('#rekey()', function() {
   });
 });
 
-describe('#zip()', function() {
+describe('#pair()', function() {
   it('should merge two arrays into an object', function() {
     var a1, a2, o;
     a1 = ['foo', 'bar'];
     a2 = [1, 2];
-    o = h.zip(a1, a2);
+    o = h.pair(a1, a2);
     return deepEqual(o, {
       foo: 1,
       bar: 2
@@ -1227,37 +1227,37 @@ describe('#zip()', function() {
     a1 = ['foo', 'bar', 'baz'];
     a2 = [1, 2];
     return assert.throws(function() {
-      return h.zip(a1, a2);
+      return h.pair(a1, a2);
     }, TypeError, 'Key-value mismatch');
   });
 });
 
-describe('#unzip()', function() {
+describe('#unpair()', function() {
   return it('should break an object down to two arrays', function() {
     var a1, a2, o, _ref;
     o = {
       foo: 1,
       bar: 2
     };
-    _ref = h.unzip(o), a1 = _ref[0], a2 = _ref[1];
+    _ref = h.unpair(o), a1 = _ref[0], a2 = _ref[1];
     deepEqual(a1, ['foo', 'bar']);
     return deepEqual(a2, [1, 2]);
   });
 });
 
-describe('#pack()', function() {
-  it('should pack arrays together', function() {
+describe('#zip()', function() {
+  it('should zip arrays together', function() {
     var a, b, r;
     a = [1, 2, 3];
     b = [11, 12, 13];
-    r = h.pack(a, b);
+    r = h.zip(a, b);
     return deepEqual(r, [[1, 11], [2, 12], [3, 13]]);
   });
   return it('should be as long as shortest', function() {
     var a, b, r;
     a = [1, 2];
     b = [11, 12, 13];
-    r = h.pack(a, b);
+    r = h.zip(a, b);
     return equal(r.length, a.length);
   });
 });

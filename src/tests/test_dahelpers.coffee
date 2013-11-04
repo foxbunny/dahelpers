@@ -1118,6 +1118,16 @@ describe '#iter(array)', () ->
       equal i.next(), '5'
       equal i.next(), '7'
 
+    it 'passes value and index to applied function', () ->
+      i = h.iter [1, 2, 3, 4]
+      fn = (x, idx) ->
+        isTrue typeof idx is 'number'
+      i.apply fn
+      i.next()
+      i.next()
+      i.next()
+      i.next()
+
   describe 'iterator.slice()', () ->
 
     it 'returns the entire sequence if passed no args', () ->
@@ -1413,6 +1423,15 @@ describe '#iter(object)', () ->
       deepEqual i.next(), ['c', '5']
       deepEqual i.next(), ['d', '7']
 
+    it 'passes value and index to applied function', () ->
+      i = h.iter a: 1, b: 2, c: 3, d: 4
+      fn = (x, idx) ->
+        isTrue typeof idx is 'number'
+      i.apply fn
+      i.next()
+      i.next()
+      i.next()
+      i.next()
   describe 'iterator.slice()', () ->
 
     it 'returns the entire sequence if passed no args', () ->

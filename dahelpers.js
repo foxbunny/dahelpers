@@ -387,7 +387,7 @@ define(function() {
           state.currentIndex = idx;
           if (state.funcs.length) {
             fn = h.compose.apply(null, state.funcs);
-            val = fn.call(state.v, val);
+            val = fn.call(state.v, val, idx);
           }
           return val;
         },

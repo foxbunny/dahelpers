@@ -1515,7 +1515,7 @@ describe('#iter(array)', function() {
       equal(i.next(), 5);
       return equal(i.next(), 6);
     });
-    return it('can add more functions', function() {
+    it('can add more functions', function() {
       var fn1, fn2, i;
       i = h.iter([1, 2, 3, 4]);
       fn1 = function(x) {
@@ -1529,6 +1529,18 @@ describe('#iter(array)', function() {
       equal(i.next(), '3');
       equal(i.next(), '5');
       return equal(i.next(), '7');
+    });
+    return it('passes value and index to applied function', function() {
+      var fn, i;
+      i = h.iter([1, 2, 3, 4]);
+      fn = function(x, idx) {
+        return isTrue(typeof idx === 'number');
+      };
+      i.apply(fn);
+      i.next();
+      i.next();
+      i.next();
+      return i.next();
     });
   });
   describe('iterator.slice()', function() {
@@ -1895,7 +1907,7 @@ describe('#iter(object)', function() {
       deepEqual(i.next(), ['c', 4]);
       return deepEqual(i.next(), ['d', 5]);
     });
-    return it('can add more functions', function() {
+    it('can add more functions', function() {
       var fn1, fn2, i;
       i = h.iter({
         a: 1,
@@ -1914,6 +1926,23 @@ describe('#iter(object)', function() {
       deepEqual(i.next(), ['b', '3']);
       deepEqual(i.next(), ['c', '5']);
       return deepEqual(i.next(), ['d', '7']);
+    });
+    return it('passes value and index to applied function', function() {
+      var fn, i;
+      i = h.iter({
+        a: 1,
+        b: 2,
+        c: 3,
+        d: 4
+      });
+      fn = function(x, idx) {
+        return isTrue(typeof idx === 'number');
+      };
+      i.apply(fn);
+      i.next();
+      i.next();
+      i.next();
+      return i.next();
     });
   });
   describe('iterator.slice()', function() {
